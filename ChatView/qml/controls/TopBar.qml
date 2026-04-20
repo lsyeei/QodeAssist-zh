@@ -209,11 +209,12 @@ Rectangle {
             }
         }
 
-        RowLayout {
+        // RowLayout {
+        Flow {
             id: secondRow
 
-            Layout.preferredWidth: root.width
-            Layout.preferredHeight: firstRow.height
+            // Layout.preferredWidth: root.width
+            // Layout.preferredHeight: firstRow.height
 
             spacing: 10
 

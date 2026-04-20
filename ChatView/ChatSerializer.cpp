@@ -59,9 +59,11 @@ SerializationResult ChatSerializer::loadFromFile(ChatModel *model, const QString
     if (!file.open(QIODevice::ReadOnly)) {
         return {false, QString("Failed to open file for reading: %1").arg(filePath)};
     }
-
+    QByteArray bytes = file.readAll();
+    QString jsonStr = QString::fromUtf8(bytes);
     QJsonParseError error;
-    QJsonDocument doc = QJsonDocument::fromJson(file.readAll(), &error);
+    // QJsonDocument doc = QJsonDocument::fromJson(file.readAll(), &error);
+    QJsonDocument doc = QJsonDocument::fromJson(jsonStr.toUtf8(), &error);
     if (error.error != QJsonParseError::NoError) {
         return {false, QString("JSON parse error: %1").arg(error.errorString())};
     }

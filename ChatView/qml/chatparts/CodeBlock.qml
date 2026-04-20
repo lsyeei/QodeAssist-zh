@@ -21,7 +21,7 @@ import QtQuick
 import QtQuick.Controls
 import ChatView
 import UIControls
-import Qt.labs.platform as Platform
+// import Qt.labs.platform as Platform
 
 Rectangle {
     id: root
@@ -39,7 +39,7 @@ Rectangle {
                                                 : Qt.lighter(root.color, 1.3)
     border.width: 2
     radius: 4
-    implicitWidth: parent.width
+    implicitWidth: parent.width - 10
     clip: true
 
     Behavior on implicitHeight {
@@ -99,6 +99,7 @@ Rectangle {
             top: header.bottom
             margins: 10
         }
+        padding: 10
         text: root.code
         readOnly: true
         selectByMouse: true
@@ -109,48 +110,109 @@ Rectangle {
         MouseArea {
             anchors.fill: parent
             acceptedButtons: Qt.RightButton
-            onClicked: contextMenu.open()
+            onClicked: contextMenu.popup()
         }
     }
 
-    Platform.Menu {
+    // Platform.Menu {
+    Menu{
         id: contextMenu
 
-        Platform.MenuItem {
+        width: 130
+        background: Rectangle{
+            anchors.fill: parent
+            border{
+                width: 1
+                color: palette.light
+            }
+            radius: 6
+            color: palette.alternateBase
+        }
+        padding: 2
+        palette: root.palette
+
+        // Platform.MenuItem {
+        MenuItem{
             text: qsTr("Copy")
+            icon{
+                source: "qrc:/qt/qml/ChatView/icons/edit-copy.svg"
+                width: 15
+                height: 15
+                color: palette.brightText
+            }
+            padding: 2
+            hoverEnabled: true
+            background: Rectangle {
+                color: parent.hovered ? palette.highlight : "transparent"
+                z: -1
+            }
+            // width: parent.width
             onTriggered: {
                 const textToCopy = codeText.selectedText || root.code
                 utils.copyToClipboard(textToCopy)
             }
         }
 
-        Platform.MenuSeparator {}
+        // Platform.MenuSeparator {}
+        MenuSeparator{
+            padding: 0
+        }
 
-        Platform.MenuItem {
+        // Platform.MenuItem {
+        MenuItem{
+            id: collapseMenuId
             text: root.expanded ? qsTr("Collapse") : qsTr("Expand")
+            icon{
+                source: "qrc:/qt/qml/ChatView/icons/list-collapse.svg"
+                width: 15
+                height: 15
+                color: palette.brightText
+            }
+            padding: 2
+            background: Rectangle {
+                anchors.fill: parent
+                color: parent.hovered ? palette.highlight : "transparent"
+                z: -1
+            }
             onTriggered: root.expanded = !root.expanded
         }
     }
 
-    QoAButton {
+    // QoAButton {
+    ToolButton {
         id: copyButton
 
         anchors.right: parent.right
         anchors.rightMargin: 5
 
         y: 5
-        text: qsTr("Copy")
+        // text: qsTr("Copy")
+        // flat: true
+        icon{
+            source: "qrc:/qt/qml/ChatView/icons/edit-copy.svg"
+            width: 15
+            height: 15
+        }
+        background : Rectangle {
+            implicitWidth: 24
+            implicitHeight: 24
+            opacity: 0.3
+            color: palette.alternateBase
+        }
+        ToolTip.text: qsTr("Copy")
+        ToolTip.delay: 250
+        ToolTip.visible: hovered
 
         onClicked: {
             utils.copyToClipboard(root.code)
-            text = qsTr("Copied")
+            // text = qsTr("Copied")
             copyTimer.start()
         }
 
         Timer {
             id: copyTimer
             interval: 2000
-            onTriggered: parent.text = qsTr("Copy")
+            // onTriggered: parent.text = qsTr("Copy")
         }
     }
 

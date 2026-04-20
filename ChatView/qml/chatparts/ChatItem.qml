@@ -55,8 +55,9 @@ Rectangle {
 
     height: msgColumn.implicitHeight + 10
     radius: 8
-    color: isUserMessage ? palette.alternateBase
-                         : palette.base
+    // color: isUserMessage ? palette.alternateBase
+    //                      : palette.base
+    color: palette.base
 
     HoverHandler {
         id: mouse
@@ -67,7 +68,11 @@ Rectangle {
 
         x: 5
         width: parent.width - x
+        anchors.fill: parent
         anchors.verticalCenter: parent.verticalCenter
+        // anchors.centerIn: parent
+        // anchors.right: parent.right
+        anchors.rightMargin: 20
         spacing: 5
 
         Repeater {
@@ -88,9 +93,16 @@ Rectangle {
                     }
 
                     switch(modelData.type) {
-                        case MessagePartType.Text: return textComponent;
+                        case MessagePartType.Text: return isUserMessage?userMsgComponent:textComponent;
                         case MessagePartType.Code: return codeBlockComponent;
                         default: return textComponent;
+                    }
+                }
+
+                Component {
+                    id: userMsgComponent
+                    UserMessageComponent{
+                        itemData: msgCreatorDelegate.modelData
                     }
                 }
 
@@ -153,39 +165,117 @@ Rectangle {
         }
     }
 
-    Rectangle {
-        id: userMessageMarker
+    component UserMessageComponent : Item {
+        required property var itemData
+        width: parent.width
+        height: mainLayout.implicitHeight
 
-        anchors.verticalCenter: parent.verticalCenter
-        width: 3
-        height: root.height - root.radius
-        color: "#92BD6C"
-        radius: root.radius
-        visible: root.isUserMessage
-    }
+        ColumnLayout{
+            id: mainLayout
+            anchors.fill: parent
+            spacing: 5
+            Layout.alignment: Qt.AlignTop
+            Item{height:15}
+        RowLayout{
+            id: textRow
+            spacing: 0
+            width: parent.width
+            Item{
+                Layout.fillWidth: true
+            }
 
-    QoAButton {
-        id: stopButtonId
+            Rectangle{
+                id: editorPanel
+                border.color: root.color.hslLightness > 0.5 ? Qt.darker(root.color, 1.3)
+                                                            : Qt.lighter(root.color, 1.3)
+                border.width: 2
+                color: palette.alternateBase
+                clip: true
+                height: editorId.implicitHeight + 20
+                width: editorId.implicitWidth + 30
+                radius: 8
+                TextBlock {
+                    id: editorId
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    height: implicitHeight
+                    verticalAlignment: Text.AlignVCenter
+                    Layout.alignment: Qt.AlignVCenter
+                    Layout.maximumWidth: parent.width - 15
+                    Layout.fillHeight: true
+                    text: itemData.text
+                    font.family: root.textFontFamily
+                    font.pointSize: root.textFontSize
+                    textFormat: {
+                        if (root.textFormat == 0) {
+                            return Text.MarkdownText
+                        } else if (root.textFormat == 1) {
+                            return Text.RichText
+                        } else {
+                            return Text.PlainText
+                        }
+                    }
+                    ChatUtils {
+                        id: utils
+                    }
+                }
+            }
+            Rectangle {
+                id: userMessageMarker
 
-        anchors {
-            right: parent.right
-            top: parent.top
+                anchors.top: editorPanel.top
+                anchors.right: editorPanel.right
+                anchors.rightMargin: -3
+                width: 3
+                height: editorPanel.height
+                color: "#92BD6C"
+                radius: editorPanel.radius
+            }
+            Item{ width: 10}
         }
+        RowLayout{
+            id: toolRow
+            Layout.alignment: Qt.AlignRight
+            // height: 30
+            width: parent.width
+            spacing: 5
+            ToolButton {
+                id: stopButtonId
+                icon {
+                    source: "qrc:/qt/qml/ChatView/icons/undo-changes-button.svg"
+                    height: 15
+                    width: 15
+                    color: palette.highlightedText
+                }
+                background: Rectangle{
+                    anchors.fill: parent
+                    radius: 5
+                    z : -1
+                    color: palette.base
+                    border{
+                        width: 1
+                        color: palette.brightText
+                    }
+                }
 
-        icon {
-            source: "qrc:/qt/qml/ChatView/icons/undo-changes-button.svg"
-            height: 15
-            width: 15
+                visible: mouse.hovered
+                onClicked: function() {
+                    root.resetChatToMessage(root.messageIndex)
+                }
+                ToolTip {
+                    visible: stopButtonId.hovered
+                    text: qsTr("Reset chat to this message and edit")
+                    delay: 500
+                }
+            }
+            Item{width: 10; height: 25;}
         }
-        visible: root.isUserMessage && mouse.hovered
-        onClicked: function() {
-            root.resetChatToMessage(root.messageIndex)
         }
-
-        QoAToolTip {
-            visible: stopButtonId.hovered
-            text: qsTr("Reset chat to this message and edit")
-            delay: 500
+        MouseArea{
+            anchors.fill: editorPanel
+            hoverEnabled: true
+            onEntered: stopButtonId.visible = true
+            onExited: stopButtonId.visible = false
         }
     }
 
@@ -193,9 +283,10 @@ Rectangle {
         required property var itemData
         height: implicitHeight + 10
         verticalAlignment: Text.AlignVCenter
-        leftPadding: 10
-        text: textFormat == Text.MarkdownText ? utils.getSafeMarkdownText(itemData.text)
-                                              : itemData.text
+        rightPadding: 10
+        // text: textFormat == Text.MarkdownText ? utils.getSafeMarkdownText(itemData.text)
+        //                                       : itemData.text
+        text: itemData.text
         font.family: root.textFontFamily
         font.pointSize: root.textFontSize
         textFormat: {

@@ -129,19 +129,19 @@ ChatRootView {
                         root.applyConfiguration(root.availableConfigurations[index])
                     }
                 }
-                
+
                 popup.onAboutToShow: {
                     root.loadAvailableConfigurations()
                 }
             }
-            
+
             roleSelector {
                 model: root.availableAgentRoles
                 displayText: root.currentAgentRole
                 onActivated: function(index) {
                     root.applyAgentRole(root.availableAgentRoles[index])
                 }
-                
+
                 popup.onAboutToShow: {
                     root.loadAvailableAgentRoles()
                 }
@@ -155,7 +155,8 @@ ChatRootView {
 
             Layout.fillWidth: true
             Layout.fillHeight: true
-            leftMargin: 5
+            leftMargin: 10
+            rightMargin: 15
             model: root.chatModel
             clip: true
             spacing: 0
@@ -193,7 +194,6 @@ ChatRootView {
                         return chatItemComponent
                     }
                 }
-
             }
 
             header: Item {
@@ -210,32 +210,45 @@ ChatRootView {
 
                 anchors {
                     bottom: parent.bottom
-                    horizontalCenter: parent.horizontalCenter
+                    right: parent.right
+                    rightMargin: 5
+                    // horizontalCenter: parent.horizontalCenter
                     bottomMargin: 10
                 }
-                width: 36
-                height: 36
-                radius: 18
+                width: 32
+                height: 32
+                radius: 16
                 color: palette.button
                 border.color: palette.mid
                 border.width: 1
                 visible: chatListView.userScrolledUp
-                opacity: 0.9
+                opacity: 0.5
                 z: 100
 
-                Text {
+                Image {
                     anchors.centerIn: parent
-                    text: "▼"
-                    font.pixelSize: 14
-                    color: palette.buttonText
+                    source: "qrc:/qt/qml/ChatView/icons/scroll-to-bottom.svg"
                 }
+                // Text {
+                //     anchors.centerIn: parent
+                //     text: "﹀"
+                //     font.pixelSize: 16
+                //     color: palette.buttonText
+                // }
 
                 MouseArea {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
+                    hoverEnabled: true
                     onClicked: {
                         chatListView.userScrolledUp = false
                         root.scrollToBottom()
+                    }
+                    onEntered: {
+                        parent.opacity = 1
+                    }
+                    onExited: {
+                        parent.opacity = 0.5
                     }
                 }
 
@@ -262,7 +275,7 @@ ChatRootView {
                 ChatItem {
                     id: chatItemInstance
 
-                    width: parent.width
+                    width: parent.width - 30
                     msgModel: root.chatModel.processMessageContent(model.content)
                     messageAttachments: model.attachments
                     messageImages: model.images
@@ -345,9 +358,13 @@ ChatRootView {
             Layout.fillWidth: true
             Layout.minimumHeight: 30
             Layout.maximumHeight: root.height / 2
+            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+            ScrollBar.vertical.policy: ScrollBar.AsNeeded
 
             QQC.TextArea {
                 id: messageInput
+                padding: 10
+                wrapMode: Text.Wrap
 
                 placeholderText: Qt.platform.os === "osx"
                                  ? qsTr("Type your message here... (⌘+↩ to send)")
@@ -355,10 +372,14 @@ ChatRootView {
                 placeholderTextColor: palette.mid
                 color: palette.text
                 background: Rectangle {
-                    radius: 2
+                    radius: 5
                     color: palette.base
-                    border.color:  messageInput.activeFocus ? palette.highlight : palette.button
+                    border.color:  palette.highlight
+                    // messageInput.activeFocus ? palette.highlight : palette.button
                     border.width: 1
+                    anchors.fill: parent
+                    anchors.leftMargin: 5
+                    anchors.rightMargin: 5
 
                     Behavior on border.color {
                         ColorAnimation { duration: 150 }
