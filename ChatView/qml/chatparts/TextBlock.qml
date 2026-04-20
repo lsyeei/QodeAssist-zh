@@ -25,7 +25,7 @@ TextEdit {
 
     readOnly: true
     selectByMouse: true
-    wrapMode: Text.WordWrap
+    wrapMode: TextEdit.Wrap
     selectionColor: palette.highlight
     color: palette.text
 

@@ -168,7 +168,7 @@ Rectangle {
     component UserMessageComponent : Item {
         required property var itemData
         width: parent.width
-        height: mainLayout.implicitHeight
+        implicitHeight: mainLayout.implicitHeight
 
         ColumnLayout{
             id: mainLayout
@@ -181,6 +181,7 @@ Rectangle {
             spacing: 0
             width: parent.width
             Item{
+                width: Math.max(0,root.width -  editorId.width)
                 Layout.fillWidth: true
             }
 
@@ -191,18 +192,25 @@ Rectangle {
                 border.width: 2
                 color: palette.alternateBase
                 clip: true
-                height: editorId.implicitHeight + 20
-                width: editorId.implicitWidth + 30
+                implicitHeight: editorId.implicitHeight + 20
+                implicitWidth: editorId.width
+                width: implicitWidth
+                height: implicitHeight
                 radius: 8
                 TextBlock {
                     id: editorId
+
                     anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    height: implicitHeight
+                    anchors.left: parent.left
+                    width: Math.min(implicitWidth, root.width-10)
+                    height: contentHeight + 10
+                    leftPadding: 15
+                    rightPadding: 15
+                    topPadding: 10
+                    bottomPadding: 10
                     verticalAlignment: Text.AlignVCenter
                     Layout.alignment: Qt.AlignVCenter
-                    Layout.maximumWidth: parent.width - 15
-                    Layout.fillHeight: true
+                    // Layout.fillHeight: true
                     text: itemData.text
                     font.family: root.textFontFamily
                     font.pointSize: root.textFontSize
@@ -223,11 +231,10 @@ Rectangle {
             Rectangle {
                 id: userMessageMarker
 
-                anchors.top: editorPanel.top
-                anchors.right: editorPanel.right
-                anchors.rightMargin: -3
+                Layout.leftMargin: -3
+                anchors.top: editorPanel.top - editorPanel.radius
                 width: 3
-                height: editorPanel.height
+                implicitHeight: editorPanel.height - editorPanel.radius * 2
                 color: "#92BD6C"
                 radius: editorPanel.radius
             }

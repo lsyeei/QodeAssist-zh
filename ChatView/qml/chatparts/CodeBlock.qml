@@ -83,8 +83,9 @@ Rectangle {
 
             Text {
                 anchors.verticalCenter: parent.verticalCenter
-                text: root.expanded ? "▼" : "▶"
-                font.pixelSize: 10
+                text: root.expanded ? "∨" : "∧"//▼▶
+                font.pixelSize: 12
+                font.bold: true
                 color: palette.mid
             }
         }
@@ -97,14 +98,16 @@ Rectangle {
             left: parent.left
             right: parent.right
             top: header.bottom
-            margins: 10
         }
-        padding: 10
+        leftPadding: 20
+        rightPadding: 20
+        topPadding: 10
+        bottomPadding: 10
         text: root.code
         readOnly: true
         selectByMouse: true
         color: parent.color.hslLightness > 0.5 ? "black" : "white"
-        wrapMode: Text.WordWrap
+        wrapMode: TextEdit.Wrap
         selectionColor: palette.highlight
 
         MouseArea {
