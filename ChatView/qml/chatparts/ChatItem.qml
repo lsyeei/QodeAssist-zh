@@ -70,8 +70,6 @@ Rectangle {
         width: parent.width - x
         anchors.fill: parent
         anchors.verticalCenter: parent.verticalCenter
-        // anchors.centerIn: parent
-        // anchors.right: parent.right
         anchors.rightMargin: 20
         spacing: 5
 
@@ -192,11 +190,12 @@ Rectangle {
                 border.width: 2
                 color: palette.alternateBase
                 clip: true
-                implicitHeight: editorId.implicitHeight + 20
+                implicitHeight: editorId.implicitHeight + 10
                 implicitWidth: editorId.width
                 width: implicitWidth
                 height: implicitHeight
                 radius: 8
+
                 TextBlock {
                     id: editorId
 
@@ -210,7 +209,6 @@ Rectangle {
                     bottomPadding: 10
                     verticalAlignment: Text.AlignVCenter
                     Layout.alignment: Qt.AlignVCenter
-                    // Layout.fillHeight: true
                     text: itemData.text
                     font.family: root.textFontFamily
                     font.pointSize: root.textFontSize
@@ -243,25 +241,28 @@ Rectangle {
         RowLayout{
             id: toolRow
             Layout.alignment: Qt.AlignRight
-            // height: 30
             width: parent.width
-            spacing: 5
+            spacing: 0
+            HoverHandler {
+                id: toolMouse
+            }
             ToolButton {
                 id: stopButtonId
                 icon {
                     source: "qrc:/qt/qml/ChatView/icons/undo-changes-button.svg"
-                    height: 15
-                    width: 15
+                    height: 12
+                    width: 12
                     color: palette.highlightedText
                 }
                 background: Rectangle{
                     anchors.fill: parent
                     radius: 5
                     z : -1
-                    color: palette.base
+                    color: parent.hovered?palette.alternateBase:palette.base
                     border{
                         width: 1
-                        color: palette.brightText
+                        color: root.color.hslLightness > 0.5 ? Qt.darker(root.color, 1.3)
+                                                             : Qt.lighter(root.color, 1.3)
                     }
                 }
 
@@ -275,14 +276,8 @@ Rectangle {
                     delay: 500
                 }
             }
-            Item{width: 10; height: 25;}
+            Item{width: 10; height: 27;}
         }
-        }
-        MouseArea{
-            anchors.fill: editorPanel
-            hoverEnabled: true
-            onEntered: stopButtonId.visible = true
-            onExited: stopButtonId.visible = false
         }
     }
 
