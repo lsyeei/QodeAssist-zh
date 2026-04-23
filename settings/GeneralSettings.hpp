@@ -36,6 +36,7 @@ namespace QodeAssist::Settings {
 
 class GeneralSettings : public Utils::AspectContainer
 {
+    Q_OBJECT
 public:
     GeneralSettings();
 

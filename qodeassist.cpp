@@ -102,7 +102,7 @@ public:
 
     void loadTranslations()
     {
-        const QString langId = Core::ICore::userInterfaceLanguage();
+        const QString langId = "zh_CN";//Core::ICore::userInterfaceLanguage();
 
         QTranslator *translator = new QTranslator(qApp);
         QString resourcePath = QString(":/translations/QodeAssist_%1.qm").arg(langId);
