@@ -44,6 +44,9 @@ public:
     Utils::BoolAspect enableLogging{this};
     Utils::BoolAspect enableCheckUpdate{this};
 
+    Utils::SelectionAspect languageIndex{this};
+    Utils::StringAspect languageCode{this};
+
     ButtonAspect checkUpdate{this};
     ButtonAspect resetToDefaults{this};
 
@@ -177,9 +180,13 @@ public:
     void loadPresetConfigurations(Utils::SelectionAspect &aspect, ConfigurationType type);
     void applyPresetConfiguration(int index, ConfigurationType type);
 
+    void loadLanguageOptions();
+
 private:
     void setupConnections();
     void resetPageToDefaults();
+    QMap<QString, QString> getLanguagesByDir(const QString &dirPath);
+    QString langCodeOfQm(const QString &qmFilePath);
     
     QVector<AIConfiguration> m_ccPresets;
     QVector<AIConfiguration> m_caPresets;

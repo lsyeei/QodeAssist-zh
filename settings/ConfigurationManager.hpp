@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <QMap>
 #include <QObject>
 #include <QString>
 #include <QVector>
@@ -59,7 +60,7 @@ public:
     AIConfiguration getConfigurationById(const QString &id, ConfigurationType type) const;
 
     QString getConfigurationDirectory(ConfigurationType type) const;
-    
+
     static QVector<AIConfiguration> getPredefinedConfigurations(ConfigurationType type);
 
 signals:

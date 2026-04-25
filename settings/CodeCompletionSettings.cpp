@@ -22,8 +22,10 @@
 #include <coreplugin/dialogs/ioptionspage.h>
 #include <coreplugin/icore.h>
 #include <utils/layoutbuilder.h>
+#include <Logger.hpp>
 #include <QMessageBox>
 
+#include "SettingOptionsPage.h"
 #include "SettingsConstants.hpp"
 #include "SettingsTr.hpp"
 #include "SettingsUtils.hpp"
@@ -388,7 +390,7 @@ CodeCompletionSettings::CodeCompletionSettings()
 
         return Column{Row{Stretch{1}, resetToDefaults},
                       Space{8},
-                      Group{title(TrConstants::AUTO_COMPLETION_SETTINGS),
+                      Group{title(Tr::tr(TrConstants::AUTO_COMPLETION_SETTINGS)),
                             Column{Group{title(Tr::tr("General Settings")), generalSettings},
                                    Space{8},
                                    Group{title(Tr::tr("Automatic Trigger Mode")), autoTriggerSettings},
@@ -493,7 +495,7 @@ QString CodeCompletionSettings::processMessageToFIM(const QString &prefix, const
     return result;
 }
 
-class CodeCompletionSettingsPage : public Core::IOptionsPage
+class CodeCompletionSettingsPage : public SettingOptionsPage// Core::IOptionsPage
 {
 public:
     CodeCompletionSettingsPage()
@@ -503,8 +505,15 @@ public:
         setCategory(Constants::QODE_ASSIST_GENERAL_OPTIONS_CATEGORY);
         setSettingsProvider([] { return &codeCompletionSettings(); });
     }
+
+    // SettingOptionsPage interface
+    void retranslate() override
+    {
+        setDisplayName(Tr::tr("Code Completion"));
+    }
 };
 
-const CodeCompletionSettingsPage codeCompletionSettingsPage;
+// const CodeCompletionSettingsPage codeCompletionSettingsPage;
+REGISTER_PAGE(CodeCompletionSettingsPage)
 
 } // namespace QodeAssist::Settings

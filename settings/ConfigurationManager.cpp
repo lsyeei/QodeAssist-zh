@@ -25,6 +25,8 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QRegularExpression>
+#include <QTimer>
+#include <QTranslator>
 #include <QUuid>
 
 #include <coreplugin/icore.h>
@@ -35,7 +37,8 @@ namespace QodeAssist::Settings {
 
 ConfigurationManager::ConfigurationManager(QObject *parent)
     : QObject(parent)
-{}
+{
+}
 
 ConfigurationManager &ConfigurationManager::instance()
 {

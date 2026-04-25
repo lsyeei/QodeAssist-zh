@@ -478,7 +478,7 @@ Create .md files in .qodeassist/rules/common/ or .qodeassist/rules/chat/</source
         <location filename="../../pluginllmcore/PromptTemplateManager.cpp" line="92"/>
         <source>Template &apos;%1&apos; was not found or has been updated. Please re-set new one.</source>
         <translatorcomment>未找到模板 &apos;%1&apos; ，或者已升级.，请重新设置。</translatorcomment>
-        <translation></translation>
+        <translation>未找到模板 &apos;%1&apos; ，或者已升级.，请重新设置。</translation>
     </message>
 </context>
 <context>
@@ -855,7 +855,7 @@ Your role is to:
         <source>QodeAssist is an open-source project that helps
 developers write better code. If you find it useful, please</source>
         <translation>QodeAssist 是一个开源项目，用于帮助开发人员写出更好的代码。
-  如果你觉得有用，请</translation>
+  如果你觉得有用，请支持一下！</translation>
     </message>
     <message>
         <location filename="../../settings/UpdateDialog.cpp" line="70"/>
@@ -877,7 +877,7 @@ developers write better code. If you find it useful, please</source>
         <location filename="../../settings/UpdateDialog.cpp" line="92"/>
         <location filename="../../settings/UpdateDialog.cpp" line="144"/>
         <source>Version %1 is now available - you have %2</source>
-        <translation>版本 %1不可用 - 你的版本 %2</translation>
+        <translation>新版本 %1 - 当前版本 %2</translation>
     </message>
     <message>
         <location filename="../../settings/UpdateDialog.cpp" line="96"/>
@@ -971,34 +971,34 @@ developers write better code. If you find it useful, please</source>
         <translation>模板：</translation>
     </message>
     <message>
-        <location filename="../../qodeassist.cpp" line="145"/>
+        <location filename="../../qodeassist.cpp" line="147"/>
         <source>Generate QodeAssist suggestion at the current cursor position.</source>
         <translation>在光标位置使用 QodeAssist 生成代码。</translation>
     </message>
     <message>
-        <location filename="../../qodeassist.cpp" line="146"/>
+        <location filename="../../qodeassist.cpp" line="148"/>
         <source>Request QodeAssist Suggestion</source>
         <translation>使用 QodeAssist 生成代码</translation>
     </message>
     <message>
-        <location filename="../../qodeassist.cpp" line="189"/>
+        <location filename="../../qodeassist.cpp" line="191"/>
         <source>Refactor code using QodeAssist</source>
         <translation>使用 QodeAssist 重构代码</translation>
     </message>
     <message>
-        <location filename="../../qodeassist.cpp" line="190"/>
+        <location filename="../../qodeassist.cpp" line="192"/>
         <source>Quick Refactor with QodeAssist</source>
         <translation>使用 QodeAssist 快速重构</translation>
     </message>
     <message>
-        <location filename="../../qodeassist.cpp" line="215"/>
-        <location filename="../../qodeassist.cpp" line="216"/>
+        <location filename="../../qodeassist.cpp" line="217"/>
+        <location filename="../../qodeassist.cpp" line="218"/>
         <source>Show QodeAssist Chat</source>
         <translation>显示 QodeAssist 对话</translation>
     </message>
     <message>
-        <location filename="../../qodeassist.cpp" line="235"/>
-        <location filename="../../qodeassist.cpp" line="236"/>
+        <location filename="../../qodeassist.cpp" line="237"/>
+        <location filename="../../qodeassist.cpp" line="238"/>
         <source>Close QodeAssist Chat</source>
         <translation>关闭 QodeAssist 对话</translation>
     </message>
@@ -1161,62 +1161,62 @@ developers write better code. If you find it useful, please</source>
     </message>
     <message>
         <location filename="../../settings/ChatAssistantSettings.cpp" line="79"/>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="146"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="147"/>
         <location filename="../../settings/QuickRefactorSettings.cpp" line="47"/>
         <source>Temperature:</source>
         <translation>温度：</translation>
     </message>
     <message>
         <location filename="../../settings/ChatAssistantSettings.cpp" line="85"/>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="152"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="153"/>
         <location filename="../../settings/QuickRefactorSettings.cpp" line="53"/>
         <source>Max Tokens:</source>
         <translation>最大 Token 数量：</translation>
     </message>
     <message>
         <location filename="../../settings/ChatAssistantSettings.cpp" line="92"/>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="159"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="160"/>
         <location filename="../../settings/QuickRefactorSettings.cpp" line="60"/>
         <source>Top P:</source>
         <translation>Top P:</translation>
     </message>
     <message>
         <location filename="../../settings/ChatAssistantSettings.cpp" line="101"/>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="168"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="169"/>
         <location filename="../../settings/QuickRefactorSettings.cpp" line="69"/>
         <source>Top K:</source>
         <translation>Top K:</translation>
     </message>
     <message>
         <location filename="../../settings/ChatAssistantSettings.cpp" line="109"/>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="176"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="177"/>
         <location filename="../../settings/QuickRefactorSettings.cpp" line="77"/>
         <source>Presence Penalty:</source>
         <translation>话题新鲜度：</translation>
     </message>
     <message>
         <location filename="../../settings/ChatAssistantSettings.cpp" line="118"/>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="185"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="186"/>
         <location filename="../../settings/QuickRefactorSettings.cpp" line="86"/>
         <source>Frequency Penalty:</source>
         <translation>频率惩罚度：</translation>
     </message>
     <message>
         <location filename="../../settings/ChatAssistantSettings.cpp" line="128"/>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="211"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="212"/>
         <source>Use System Prompt</source>
         <translation>使用系统提示词</translation>
     </message>
     <message>
         <location filename="../../settings/ChatAssistantSettings.cpp" line="141"/>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="293"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="294"/>
         <location filename="../../settings/QuickRefactorSettings.cpp" line="96"/>
         <source>Time to suspend Ollama after completion request (in minutes), Only Ollama,  -1 to disable</source>
         <translation>完成请求后暂停Ollama的时间（分钟），只用于 Ollama，-1 表示禁用</translation>
     </message>
     <message>
         <location filename="../../settings/ChatAssistantSettings.cpp" line="148"/>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="300"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="301"/>
         <location filename="../../settings/QuickRefactorSettings.cpp" line="104"/>
         <source>Context Window:</source>
         <translation>上下文窗口：</translation>
@@ -1253,14 +1253,14 @@ developers write better code. If you find it useful, please</source>
     </message>
     <message>
         <location filename="../../settings/ChatAssistantSettings.cpp" line="179"/>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="306"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="307"/>
         <location filename="../../settings/QuickRefactorSettings.cpp" line="143"/>
         <source>Reasoning effort:</source>
         <translation>推理强度：</translation>
     </message>
     <message>
         <location filename="../../settings/ChatAssistantSettings.cpp" line="188"/>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="315"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="316"/>
         <location filename="../../settings/QuickRefactorSettings.cpp" line="152"/>
         <source>Constrains effort on reasoning for OpenAI gpt-5 and o-series models:
 
@@ -1331,35 +1331,35 @@ Note: Reducing effort = faster responses + fewer tokens</source>
     </message>
     <message>
         <location filename="../../settings/ChatAssistantSettings.cpp" line="326"/>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="408"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="409"/>
         <location filename="../../settings/QuickRefactorSettings.cpp" line="302"/>
         <source>OpenAI Responses API</source>
         <translation>OpenAI 响应 API</translation>
     </message>
     <message>
         <location filename="../../settings/ChatAssistantSettings.cpp" line="330"/>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="398"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="399"/>
         <location filename="../../settings/QuickRefactorSettings.cpp" line="294"/>
         <source>General Parameters</source>
         <translation>常规参数</translation>
     </message>
     <message>
         <location filename="../../settings/ChatAssistantSettings.cpp" line="334"/>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="403"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="404"/>
         <location filename="../../settings/QuickRefactorSettings.cpp" line="298"/>
         <source>Advanced Parameters</source>
         <translation>高级参数</translation>
     </message>
     <message>
         <location filename="../../settings/ChatAssistantSettings.cpp" line="337"/>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="406"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="407"/>
         <location filename="../../settings/QuickRefactorSettings.cpp" line="304"/>
         <source>Context Settings</source>
         <translation>上下文配置</translation>
     </message>
     <message>
         <location filename="../../settings/ChatAssistantSettings.cpp" line="342"/>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="410"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="411"/>
         <location filename="../../settings/ProviderSettings.cpp" line="140"/>
         <location filename="../../settings/QuickRefactorSettings.cpp" line="310"/>
         <source>Ollama Settings</source>
@@ -1367,7 +1367,7 @@ Note: Reducing effort = faster responses + fewer tokens</source>
     </message>
     <message>
         <location filename="../../settings/ChatAssistantSettings.cpp" line="362"/>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="443"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="444"/>
         <location filename="../../settings/CustomPromptSettings.cpp" line="126"/>
         <location filename="../../settings/ProviderSettings.cpp" line="176"/>
         <location filename="../../settings/QuickRefactorSettings.cpp" line="372"/>
@@ -1378,7 +1378,7 @@ Note: Reducing effort = faster responses + fewer tokens</source>
     </message>
     <message>
         <location filename="../../settings/ChatAssistantSettings.cpp" line="363"/>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="444"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="445"/>
         <location filename="../../settings/CustomPromptSettings.cpp" line="127"/>
         <location filename="../../settings/ProviderSettings.cpp" line="177"/>
         <location filename="../../settings/QuickRefactorSettings.cpp" line="373"/>
@@ -1393,29 +1393,29 @@ Note: Reducing effort = faster responses + fewer tokens</source>
         <translation>角色</translation>
     </message>
     <message>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="43"/>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="502"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="44"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="503"/>
         <location filename="../../settings/SettingsTr.hpp" line="49"/>
         <source>Code Completion</source>
         <translation>代码补全</translation>
     </message>
     <message>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="47"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="48"/>
         <source>Enable Auto Complete</source>
         <translation>启用自动补全</translation>
     </message>
     <message>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="52"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="53"/>
         <source>Enable Multiline Completion</source>
         <translation>启用多行补全</translation>
     </message>
     <message>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="54"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="55"/>
         <source>Text output proccessing mode:</source>
         <translation>文本输出处理模式：</translation>
     </message>
     <message>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="62"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="63"/>
         <source>Auto: Automatically detects codeblock and applies processing when found, other text as comments
 Force Processing: Always processes text with codeblock formatting and other text as comments
 Raw Text: Shows unprocessed text without any formatting</source>
@@ -1424,24 +1424,24 @@ Raw Text: Shows unprocessed text without any formatting</source>
 原始文本：显示未处理的文本，不带任何格式</translation>
     </message>
     <message>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="68"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="69"/>
         <source>Completion trigger mode:</source>
         <translation>补全触发方式：</translation>
     </message>
     <message>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="75"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="76"/>
         <source>Hint-based: Shows a hint when typing, press Tab to request completion
 Automatic: Automatically requests completion after typing threshold</source>
         <translation>基于提示：输入时显示提示，按Tab键请求完成
 自动：在输入阈值后自动请求完成</translation>
     </message>
     <message>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="79"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="80"/>
         <source>with delay(ms)</source>
         <translation>然后，延迟(ms)</translation>
     </message>
     <message>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="81"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="82"/>
         <source>Delay before sending the completion request.
 (Only for Automatic trigger mode)</source>
         <translatorcomment>发送补全请求前延迟。
@@ -1449,56 +1449,56 @@ Automatic: Automatically requests completion after typing threshold</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="87"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="88"/>
         <source>AI suggestion triggers after typing</source>
         <translation>AI 触发条件：输入</translation>
     </message>
     <message>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="89"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="90"/>
         <source>The number of characters that need to be typed within the typing interval before an AI suggestion request is sent automatically.
 (Only for Automatic trigger mode)</source>
         <translation>在规定时间内输入指定的字符数量会自动发送 AI 请求。
 (仅用于自动触发模式)</translation>
     </message>
     <message>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="96"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="97"/>
         <source>character(s) within(ms)</source>
         <translation>个字符，且不超过（ms）</translation>
     </message>
     <message>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="98"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="99"/>
         <source>The time window (in milliseconds) during which the character threshold must be met to trigger an AI suggestion request automatically.
 (Only for Automatic trigger mode)</source>
         <translation>自动触发 AI 请求的时间窗口（毫秒），在时间窗口内输入字符数量超过阈值即可触发。
 (仅用于自动触发模式)</translation>
     </message>
     <message>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="105"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="106"/>
         <source>Hint shows after typing</source>
         <translation>自动显示提示：输入字符数大于</translation>
     </message>
     <message>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="107"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="108"/>
         <source>The number of characters that need to be typed before the hint widget appears (only for Hint-based trigger mode).</source>
         <translation>至少输入指定的字符数才会触发提示窗口（仅用于基于提示的触发模式）。</translation>
     </message>
     <message>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="113"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="114"/>
         <source>Hint auto-hide timeout (ms)</source>
         <translation>自动隐藏提示：显示超过（ms）</translation>
     </message>
     <message>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="115"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="116"/>
         <source>Time in milliseconds after which the hint widget will automatically hide (only for Hint-based trigger mode).</source>
         <translation>提示窗口显示多长后自动隐藏（仅用于基于提示的触发模式）。</translation>
     </message>
     <message>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="120"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="121"/>
         <source>Trigger key:</source>
         <translation>触发键：</translation>
     </message>
     <message>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="131"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="132"/>
         <source>Key to press for requesting completion when hint is visible.
 Space is recommended as least conflicting with context menu.
 (Only for Hint-based trigger mode)</source>
@@ -1507,54 +1507,54 @@ Space is recommended as least conflicting with context menu.
 (仅用于基于提示的触发模式)</translation>
     </message>
     <message>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="137"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="138"/>
         <source>Ignore spaces and tabs in character count</source>
         <translation>字符数时忽略空格和 tab 键</translation>
     </message>
     <message>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="140"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="141"/>
         <source>When enabled, spaces and tabs are not counted towards the character threshold for triggering completions. This helps trigger completions based on actual code characters only.</source>
         <translation>启用后，在计算触发代码补全所需的字符数时不考虑空格和tab键。代码补全的触发条件将仅依赖于真实的代码字符。</translation>
     </message>
     <message>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="194"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="195"/>
         <location filename="../../settings/QuickRefactorSettings.cpp" line="163"/>
         <source>Read Full File</source>
         <translation>读全文</translation>
     </message>
     <message>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="197"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="198"/>
         <location filename="../../settings/QuickRefactorSettings.cpp" line="166"/>
         <source>Read Strings Before Cursor:</source>
         <translation>读光标附近的字符串：</translation>
     </message>
     <message>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="205"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="206"/>
         <source>Read Strings After Cursor:</source>
         <translation>光标之后：</translation>
     </message>
     <message>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="222"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="223"/>
         <source>Use special system prompt and user message for non FIM models</source>
         <translation>对于非 FIM 模型使用特殊的系统提示词和用户消息</translation>
     </message>
     <message>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="226"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="227"/>
         <source>System prompt for non FIM models:</source>
         <translation>非 FIM 模型的系统提示词：</translation>
     </message>
     <message>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="251"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="252"/>
         <source>User message for non FIM models:</source>
         <translation>非 FIM 模型的用户消息：</translation>
     </message>
     <message>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="258"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="259"/>
         <source>Additional Programming Languages for handling: Example: rust,//,rust rs,rs</source>
         <translation>用于处理的其他编程语言（例：rust,//,rust rs,rs）：</translation>
     </message>
     <message>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="259"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="260"/>
         <source>Specify additional programming languages in format: name,comment_style,model_names,extensions
 Example: rust,//,rust rs,rs
 Fields: language name, comment prefix, names from LLM (space-separated), file extensions (space-separated)</source>
@@ -1563,34 +1563,34 @@ Fields: language name, comment prefix, names from LLM (space-separated), file ex
 字段含义：语言名称,注释前缀,LLM识别的名称（有多个时使用空格分开）,文件扩展名（有多个时使用空格分开）</translation>
     </message>
     <message>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="267"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="268"/>
         <source>Show progress indicator during code completion</source>
         <translation>执行代码补全时显示进度指示</translation>
     </message>
     <message>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="271"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="272"/>
         <source>Abort existing assist on new completion request</source>
         <translation>出现新的补全请求时中止当前操作</translation>
     </message>
     <message>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="273"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="274"/>
         <source>When enabled, cancels any active Qt Creator code assist popup before requesting LLM completion.
 (Only for Automatic trigger mode)</source>
         <translation>启用后，Qt Creator 的所有代码提示都会被取消，直到发出 LLM 代码补全请求。
 (仅用于自动触发模式)</translation>
     </message>
     <message>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="279"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="280"/>
         <source>Include context from open files</source>
         <translation>上下文包含所有已打开文件</translation>
     </message>
     <message>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="284"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="285"/>
         <source>Max Changes Cache Size:</source>
         <translation>代码变更缓存：</translation>
     </message>
     <message>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="323"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="324"/>
         <location filename="../../settings/CustomPromptSettings.cpp" line="81"/>
         <location filename="../../settings/ProviderSettings.cpp" line="116"/>
         <location filename="../../settings/SettingsTr.hpp" line="30"/>
@@ -1599,27 +1599,27 @@ Fields: language name, comment prefix, names from LLM (space-separated), file ex
         <translation>重置本页参数</translation>
     </message>
     <message>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="358"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="359"/>
         <source>Prompts for FIM models</source>
         <translation>用于 FIM 模型的提示词</translation>
     </message>
     <message>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="360"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="361"/>
         <source>Prompts for Non FIM models</source>
         <translation>用于非 FIM 模型的提示词</translation>
     </message>
     <message>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="392"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="393"/>
         <source>General Settings</source>
         <translation>常规配置</translation>
     </message>
     <message>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="394"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="395"/>
         <source>Automatic Trigger Mode</source>
         <translation>自动触发模式</translation>
     </message>
     <message>
-        <location filename="../../settings/CodeCompletionSettings.cpp" line="396"/>
+        <location filename="../../settings/CodeCompletionSettings.cpp" line="397"/>
         <source>Hint-based Trigger Mode</source>
         <translation>基于提示的触发模式</translation>
     </message>
@@ -1725,78 +1725,88 @@ Fields: language name, comment prefix, names from LLM (space-separated), file ex
         <translation>加载 JSON 模板失败。</translation>
     </message>
     <message>
+        <location filename="../../settings/GeneralSettings.cpp" line="93"/>
+        <source>Language</source>
+        <translation>语言</translation>
+    </message>
+    <message>
         <location filename="../../settings/GeneralSettings.cpp" line="94"/>
+        <source>Effective after restart Qt Creator</source>
+        <translation>重启 Qt Creator 后生效</translation>
+    </message>
+    <message>
         <location filename="../../settings/GeneralSettings.cpp" line="101"/>
         <location filename="../../settings/GeneralSettings.cpp" line="108"/>
+        <location filename="../../settings/GeneralSettings.cpp" line="115"/>
         <source>Quick Setup</source>
         <translation>快速设置</translation>
     </message>
     <message>
-        <location filename="../../settings/GeneralSettings.cpp" line="97"/>
         <location filename="../../settings/GeneralSettings.cpp" line="104"/>
         <location filename="../../settings/GeneralSettings.cpp" line="111"/>
+        <location filename="../../settings/GeneralSettings.cpp" line="118"/>
         <location filename="../../settings/SettingsTr.hpp" line="85"/>
         <source>Configure API Key</source>
         <translation>配置 API Key</translation>
     </message>
     <message>
-        <location filename="../../settings/GeneralSettings.cpp" line="98"/>
         <location filename="../../settings/GeneralSettings.cpp" line="105"/>
         <location filename="../../settings/GeneralSettings.cpp" line="112"/>
+        <location filename="../../settings/GeneralSettings.cpp" line="119"/>
         <source>Open Provider Settings to configure API keys</source>
         <translation>打开供应商配置页面配置 API keys</translation>
     </message>
     <message>
-        <location filename="../../settings/GeneralSettings.cpp" line="152"/>
-        <location filename="../../settings/GeneralSettings.cpp" line="244"/>
-        <location filename="../../settings/GeneralSettings.cpp" line="289"/>
+        <location filename="../../settings/GeneralSettings.cpp" line="159"/>
+        <location filename="../../settings/GeneralSettings.cpp" line="251"/>
+        <location filename="../../settings/GeneralSettings.cpp" line="296"/>
         <source>Load configuration (includes predefined cloud models)</source>
         <translation>加载配置（包括预定义的云模型）</translation>
     </message>
     <message>
-        <location filename="../../settings/GeneralSettings.cpp" line="295"/>
-        <location filename="../../settings/GeneralSettings.cpp" line="299"/>
-        <location filename="../../settings/GeneralSettings.cpp" line="303"/>
+        <location filename="../../settings/GeneralSettings.cpp" line="302"/>
+        <location filename="../../settings/GeneralSettings.cpp" line="306"/>
+        <location filename="../../settings/GeneralSettings.cpp" line="310"/>
         <source>Show template information</source>
         <translation>显示模板信息</translation>
     </message>
     <message>
-        <location filename="../../settings/GeneralSettings.cpp" line="559"/>
+        <location filename="../../settings/GeneralSettings.cpp" line="567"/>
         <source>Template Information</source>
         <translation>模板信息</translation>
     </message>
     <message>
-        <location filename="../../settings/GeneralSettings.cpp" line="560"/>
+        <location filename="../../settings/GeneralSettings.cpp" line="568"/>
         <source>Template</source>
         <translation>模板</translation>
     </message>
     <message>
-        <location filename="../../settings/GeneralSettings.cpp" line="563"/>
+        <location filename="../../settings/GeneralSettings.cpp" line="571"/>
         <source>Description:</source>
         <translation>描述：</translation>
     </message>
     <message>
-        <location filename="../../settings/GeneralSettings.cpp" line="807"/>
+        <location filename="../../settings/GeneralSettings.cpp" line="815"/>
         <source>Failed to save configuration. Check logs for details.</source>
         <translation>配置保存失败。查看日志了解详情。</translation>
     </message>
     <message>
-        <location filename="../../settings/GeneralSettings.cpp" line="848"/>
+        <location filename="../../settings/GeneralSettings.cpp" line="856"/>
         <source>[Preset] configurations are predefined cloud models ready to use.</source>
         <translation>[预设] 配置是预定义的云模型</translation>
     </message>
     <message>
-        <location filename="../../settings/GeneralSettings.cpp" line="895"/>
+        <location filename="../../settings/GeneralSettings.cpp" line="903"/>
         <source>Predefined configurations cannot be deleted.</source>
         <translation>预定义配置不能删除</translation>
     </message>
     <message>
-        <location filename="../../settings/GeneralSettings.cpp" line="913"/>
+        <location filename="../../settings/GeneralSettings.cpp" line="921"/>
         <source>Failed to delete configuration.</source>
         <translation>配置删除失败。</translation>
     </message>
     <message>
-        <location filename="../../settings/GeneralSettings.cpp" line="978"/>
+        <location filename="../../settings/GeneralSettings.cpp" line="986"/>
         <source>-- Select Preset --</source>
         <translation>-- 请选择 --</translation>
     </message>

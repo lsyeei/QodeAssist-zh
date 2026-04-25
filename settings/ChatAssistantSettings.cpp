@@ -30,6 +30,7 @@
 #include "SettingsTr.hpp"
 #include "SettingsUtils.hpp"
 #include "AgentRolesWidget.hpp"
+#include "SettingOptionsPage.h"
 
 namespace QodeAssist::Settings {
 
@@ -266,7 +267,7 @@ ChatAssistantSettings::ChatAssistantSettings()
     lastUsedRoleId.setSettingsKey(Constants::CA_LAST_USED_ROLE);
     lastUsedRoleId.setDefaultValue("");
 
-    resetToDefaults.m_buttonText = TrConstants::RESET_TO_DEFAULTS;
+    resetToDefaults.m_buttonText = Tr::tr(TrConstants::RESET_TO_DEFAULTS);
 
     readSettings();
 
@@ -395,7 +396,7 @@ void ChatAssistantSettings::resetSettingsToDefaults()
     }
 }
 
-class ChatAssistantSettingsPage : public Core::IOptionsPage
+class ChatAssistantSettingsPage : public SettingOptionsPage //Core::IOptionsPage
 {
 public:
     ChatAssistantSettingsPage()
@@ -405,11 +406,18 @@ public:
         setCategory(Constants::QODE_ASSIST_GENERAL_OPTIONS_CATEGORY);
         setSettingsProvider([] { return &chatAssistantSettings(); });
     }
+
+    // SettingOptionsPage interface
+    void retranslate() override
+    {
+        setDisplayName(Tr::tr("Chat Assistant"));
+    }
 };
 
-const ChatAssistantSettingsPage chatAssistantSettingsPage;
+// const ChatAssistantSettingsPage chatAssistantSettingsPage;
+REGISTER_PAGE(ChatAssistantSettingsPage)
 
-class AgentRolesSettingsPage : public Core::IOptionsPage
+class AgentRolesSettingsPage : public SettingOptionsPage //Core::IOptionsPage
 {
 public:
     AgentRolesSettingsPage()
@@ -419,8 +427,15 @@ public:
         setCategory(Constants::QODE_ASSIST_GENERAL_OPTIONS_CATEGORY);
         setWidgetCreator([]() { return new AgentRolesWidget(); });
     }
+
+    // SettingOptionsPage interface
+    void retranslate() override
+    {
+        setDisplayName(Tr::tr("Agent Roles"));
+    }
 };
 
-const AgentRolesSettingsPage agentRolesSettingsPage;
+// const AgentRolesSettingsPage agentRolesSettingsPage;
+REGISTER_PAGE(AgentRolesSettingsPage)
 
 } // namespace QodeAssist::Settings

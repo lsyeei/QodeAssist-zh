@@ -24,6 +24,7 @@
 #include <utils/layoutbuilder.h>
 #include <QMessageBox>
 
+#include "SettingOptionsPage.h"
 #include "SettingsConstants.hpp"
 #include "SettingsTr.hpp"
 #include "SettingsUtils.hpp"
@@ -217,7 +218,7 @@ void ToolsSettings::resetSettingsToDefaults()
     }
 }
 
-class ToolsSettingsPage : public Core::IOptionsPage
+class ToolsSettingsPage : public SettingOptionsPage //Core::IOptionsPage
 {
 public:
     ToolsSettingsPage()
@@ -227,8 +228,15 @@ public:
         setCategory(Constants::QODE_ASSIST_GENERAL_OPTIONS_CATEGORY);
         setSettingsProvider([] { return &toolsSettings(); });
     }
+
+    // SettingOptionsPage interface
+    void retranslate() override
+    {
+        setDisplayName(Tr::tr("Tools"));
+    }
 };
 
-const ToolsSettingsPage toolsSettingsPage;
+// const ToolsSettingsPage toolsSettingsPage;
+REGISTER_PAGE(ToolsSettingsPage)
 
 } // namespace QodeAssist::Settings

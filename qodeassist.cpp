@@ -19,7 +19,9 @@
 
 #include "QodeAssistConstants.hpp"
 #include "QodeAssisttr.h"
+#include "logger/Logger.hpp"
 #include "settings/PluginUpdater.hpp"
+#include "settings/SettingOptionsPage.h"
 #include "settings/UpdateDialog.hpp"
 
 #include <coreplugin/actionmanager/actioncontainer.h>
@@ -102,7 +104,12 @@ public:
 
     void loadTranslations()
     {
-        const QString langId = "zh_CN";//Core::ICore::userInterfaceLanguage();
+        /*const */QString langId = "en";//Core::ICore::userInterfaceLanguage();
+        QSettings setting;
+        auto val = setting.value(Constants::LANGUAGE_CODE_QODE_ASSIST);
+        if (!val.isNull()) {
+            langId = val.toString();
+        }
 
         QTranslator *translator = new QTranslator(qApp);
         QString resourcePath = QString(":/translations/QodeAssist_%1.qm").arg(langId);
@@ -110,6 +117,7 @@ public:
         bool success = translator->load(resourcePath);
         if (success) {
             qApp->installTranslator(translator);
+            Settings::retranslate();
             qDebug() << "Loaded translation from resources:" << resourcePath;
         } else {
             delete translator;
@@ -125,10 +133,10 @@ public:
             Constants::QODE_ASSIST_GENERAL_OPTIONS_DISPLAY_CATEGORY,
             ":/resources/images/qoderassist-icon.png");
 #endif
+        loadTranslations();
         QQuickWindow::setSceneGraphBackend(
             Settings::chatAssistantSettings().chatRenderer.stringValue());
 
-        loadTranslations();
 
         Providers::registerProviders();
         Templates::registerTemplates();

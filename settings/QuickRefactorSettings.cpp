@@ -24,6 +24,7 @@
 #include <utils/layoutbuilder.h>
 #include <QMessageBox>
 
+#include "SettingOptionsPage.h"
 #include "SettingsConstants.hpp"
 #include "SettingsTr.hpp"
 #include "SettingsUtils.hpp"
@@ -240,7 +241,7 @@ QuickRefactorSettings::QuickRefactorSettings()
         Tr::tr("Include context from open files in quick refactor"));
     useOpenFilesInQuickRefactor.setDefaultValue(false);
 
-    resetToDefaults.m_buttonText = TrConstants::RESET_TO_DEFAULTS;
+    resetToDefaults.m_buttonText = Tr::tr(TrConstants::RESET_TO_DEFAULTS);
 
     readSettings();
 
@@ -407,7 +408,7 @@ void QuickRefactorSettings::resetSettingsToDefaults()
     }
 }
 
-class QuickRefactorSettingsPage : public Core::IOptionsPage
+class QuickRefactorSettingsPage : public SettingOptionsPage // Core::IOptionsPage
 {
 public:
     QuickRefactorSettingsPage()
@@ -417,8 +418,15 @@ public:
         setCategory(Constants::QODE_ASSIST_GENERAL_OPTIONS_CATEGORY);
         setSettingsProvider([] { return &quickRefactorSettings(); });
     }
+
+    // SettingOptionsPage interface
+    void retranslate() override
+    {
+        setDisplayName(Tr::tr("Quick Refactor"));
+    }
 };
 
-const QuickRefactorSettingsPage quickRefactorSettingsPage;
+// const QuickRefactorSettingsPage quickRefactorSettingsPage;
+REGISTER_PAGE(QuickRefactorSettingsPage)
 
 } // namespace QodeAssist::Settings

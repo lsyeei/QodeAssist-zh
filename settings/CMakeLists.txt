@@ -19,6 +19,8 @@ add_library(QodeAssistSettings STATIC
     AgentRole.hpp AgentRole.cpp
     AgentRoleDialog.hpp AgentRoleDialog.cpp
     AgentRolesWidget.hpp AgentRolesWidget.cpp
+    SettingOptionsPage.h
+    SettingOptionsPage.cpp
 )
 
 target_link_libraries(QodeAssistSettings
@@ -31,8 +33,3 @@ target_link_libraries(QodeAssistSettings
     QodeAssistLogger
 )
 target_include_directories(QodeAssistSettings PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-
-qt_add_translations(
-    TARGETS QodeAssistSettings
-    TS_FILE_DIR ${CMAKE_CURRENT_LIST_DIR}/../resources/translations
-)

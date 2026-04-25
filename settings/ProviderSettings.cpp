@@ -24,6 +24,7 @@
 #include <utils/layoutbuilder.h>
 #include <QMessageBox>
 
+#include "SettingOptionsPage.h"
 #include "SettingsConstants.hpp"
 #include "SettingsTr.hpp"
 #include "SettingsUtils.hpp"
@@ -189,7 +190,7 @@ void ProviderSettings::resetSettingsToDefaults()
     }
 }
 
-class ProviderSettingsPage : public Core::IOptionsPage
+class ProviderSettingsPage : public SettingOptionsPage //Core::IOptionsPage
 {
 public:
     ProviderSettingsPage()
@@ -199,8 +200,15 @@ public:
         setCategory(Constants::QODE_ASSIST_GENERAL_OPTIONS_CATEGORY);
         setSettingsProvider([] { return &providerSettings(); });
     }
+
+    // SettingOptionsPage interface
+    void retranslate() override
+    {
+        setDisplayName(Tr::tr("Provider Settings"));
+    }
 };
 
-const ProviderSettingsPage providerSettingsPage;
+// const ProviderSettingsPage providerSettingsPage;
+REGISTER_PAGE(ProviderSettingsPage)
 
 } // namespace QodeAssist::Settings

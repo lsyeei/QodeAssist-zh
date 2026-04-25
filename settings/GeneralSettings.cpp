@@ -32,6 +32,7 @@
 #include <QPushButton>
 #include <QTextEdit>
 #include <QTimer>
+#include <QTranslator>
 #include <QUrl>
 #include <QUuid>
 #include <QtWidgets/qboxlayout.h>
@@ -43,6 +44,7 @@
 #include "../Version.hpp"
 #include "ConfigurationManager.hpp"
 #include "Logger.hpp"
+#include "SettingOptionsPage.h"
 #include "SettingsConstants.hpp"
 #include "SettingsDialog.hpp"
 #include "SettingsTr.hpp"
@@ -72,60 +74,67 @@ GeneralSettings::GeneralSettings()
 {
     setAutoApply(false);
 
-    setDisplayName(TrConstants::GENERAL);
+    setDisplayName(Tr::tr(TrConstants::GENERAL));
 
     enableQodeAssist.setSettingsKey(Constants::ENABLE_QODE_ASSIST);
-    enableQodeAssist.setLabelText(TrConstants::ENABLE_QODE_ASSIST);
+    enableQodeAssist.setLabelText(Tr::tr(TrConstants::ENABLE_QODE_ASSIST));
     enableQodeAssist.setDefaultValue(true);
 
     enableLogging.setSettingsKey(Constants::ENABLE_LOGGING);
-    enableLogging.setLabelText(TrConstants::ENABLE_LOG);
-    enableLogging.setToolTip(TrConstants::ENABLE_LOG_TOOLTIP);
+    enableLogging.setLabelText(Tr::tr(TrConstants::ENABLE_LOG));
+    enableLogging.setToolTip(Tr::tr(TrConstants::ENABLE_LOG_TOOLTIP));
     enableLogging.setDefaultValue(false);
 
     enableCheckUpdate.setSettingsKey(Constants::ENABLE_CHECK_UPDATE);
-    enableCheckUpdate.setLabelText(TrConstants::ENABLE_CHECK_UPDATE_ON_START);
+    enableCheckUpdate.setLabelText(Tr::tr(TrConstants::ENABLE_CHECK_UPDATE_ON_START));
     enableCheckUpdate.setDefaultValue(true);
 
-    resetToDefaults.m_buttonText = TrConstants::RESET_TO_DEFAULTS;
-    checkUpdate.m_buttonText = TrConstants::CHECK_UPDATE;
-    
+    languageIndex.setSettingsKey(Constants::LANGUAGE_QODE_ASSIST);
+    languageIndex.setDisplayStyle(Utils::SelectionAspect::DisplayStyle::ComboBox);
+    languageIndex.setLabelText(Tr::tr("Language"));
+    languageIndex.setToolTip(Tr::tr("Effective after restart Qt Creator"));
+    loadLanguageOptions();
+    languageCode.setSettingsKey(Constants::LANGUAGE_CODE_QODE_ASSIST);
+
+    resetToDefaults.m_buttonText = Tr::tr(TrConstants::RESET_TO_DEFAULTS);
+    checkUpdate.m_buttonText = Tr::tr(TrConstants::CHECK_UPDATE);
+
     ccPresetConfig.setDisplayStyle(Utils::SelectionAspect::DisplayStyle::ComboBox);
     ccPresetConfig.setLabelText(Tr::tr("Quick Setup"));
     loadPresetConfigurations(ccPresetConfig, ConfigurationType::CodeCompletion);
-    
+
     ccConfigureApiKey.m_buttonText = Tr::tr("Configure API Key");
     ccConfigureApiKey.m_tooltip = Tr::tr("Open Provider Settings to configure API keys");
-    
+
     caPresetConfig.setDisplayStyle(Utils::SelectionAspect::DisplayStyle::ComboBox);
     caPresetConfig.setLabelText(Tr::tr("Quick Setup"));
     loadPresetConfigurations(caPresetConfig, ConfigurationType::Chat);
-    
+
     caConfigureApiKey.m_buttonText = Tr::tr("Configure API Key");
     caConfigureApiKey.m_tooltip = Tr::tr("Open Provider Settings to configure API keys");
-    
+
     qrPresetConfig.setDisplayStyle(Utils::SelectionAspect::DisplayStyle::ComboBox);
     qrPresetConfig.setLabelText(Tr::tr("Quick Setup"));
     loadPresetConfigurations(qrPresetConfig, ConfigurationType::QuickRefactor);
-    
+
     qrConfigureApiKey.m_buttonText = Tr::tr("Configure API Key");
     qrConfigureApiKey.m_tooltip = Tr::tr("Open Provider Settings to configure API keys");
 
-    initStringAspect(ccProvider, Constants::CC_PROVIDER, TrConstants::PROVIDER, "Ollama");
+    initStringAspect(ccProvider, Constants::CC_PROVIDER, Tr::tr(TrConstants::PROVIDER), "Ollama");
     ccProvider.setReadOnly(true);
-    ccSelectProvider.m_buttonText = TrConstants::SELECT;
+    ccSelectProvider.m_buttonText = Tr::tr(TrConstants::SELECT);
 
-    initStringAspect(ccModel, Constants::CC_MODEL, TrConstants::MODEL, "qwen2.5-coder:7b");
+    initStringAspect(ccModel, Constants::CC_MODEL, Tr::tr(TrConstants::MODEL), "qwen2.5-coder:7b");
     ccModel.setHistoryCompleter(Constants::CC_MODEL_HISTORY);
-    ccSelectModel.m_buttonText = TrConstants::SELECT;
+    ccSelectModel.m_buttonText = Tr::tr(TrConstants::SELECT);
 
-    initStringAspect(ccTemplate, Constants::CC_TEMPLATE, TrConstants::TEMPLATE, "Ollama FIM");
+    initStringAspect(ccTemplate, Constants::CC_TEMPLATE, Tr::tr(TrConstants::TEMPLATE), "Ollama FIM");
     ccTemplate.setReadOnly(true);
-    ccSelectTemplate.m_buttonText = TrConstants::SELECT;
+    ccSelectTemplate.m_buttonText = Tr::tr(TrConstants::SELECT);
 
-    initStringAspect(ccUrl, Constants::CC_URL, TrConstants::URL, "http://localhost:11434");
+    initStringAspect(ccUrl, Constants::CC_URL, Tr::tr(TrConstants::URL), "http://localhost:11434");
     ccUrl.setHistoryCompleter(Constants::CC_CUSTOM_ENDPOINT_HISTORY);
-    ccSetUrl.m_buttonText = TrConstants::SELECT;
+    ccSetUrl.m_buttonText = Tr::tr(TrConstants::SELECT);
 
     ccEndpointMode.setSettingsKey(Constants::CC_ENDPOINT_MODE);
     ccEndpointMode.setDisplayStyle(Utils::SelectionAspect::DisplayStyle::ComboBox);
@@ -135,28 +144,28 @@ GeneralSettings::GeneralSettings()
     ccEndpointMode.addOption("Chat");
     ccEndpointMode.setDefaultValue("Auto");
 
-    initStringAspect(ccCustomEndpoint, Constants::CC_CUSTOM_ENDPOINT, TrConstants::ENDPOINT_MODE, "");
+    initStringAspect(ccCustomEndpoint, Constants::CC_CUSTOM_ENDPOINT, Tr::tr(TrConstants::ENDPOINT_MODE), "");
     ccCustomEndpoint.setHistoryCompleter(Constants::CC_CUSTOM_ENDPOINT_HISTORY);
 
     ccStatus.setDisplayStyle(Utils::StringAspect::LabelDisplay);
-    ccStatus.setLabelText(TrConstants::STATUS);
+    ccStatus.setLabelText(Tr::tr(TrConstants::STATUS));
     ccStatus.setDefaultValue("");
-    ccTest.m_buttonText = TrConstants::TEST;
+    ccTest.m_buttonText = Tr::tr(TrConstants::TEST);
 
     ccTemplateDescription.setDisplayStyle(Utils::StringAspect::TextEditDisplay);
     ccTemplateDescription.setReadOnly(true);
     ccTemplateDescription.setDefaultValue("");
 
-    ccSaveConfig.m_buttonText = TrConstants::SAVE_CONFIG;
-    ccLoadConfig.m_buttonText = TrConstants::LOAD_CONFIG;
+    ccSaveConfig.m_buttonText = Tr::tr(TrConstants::SAVE_CONFIG);
+    ccLoadConfig.m_buttonText = Tr::tr(TrConstants::LOAD_CONFIG);
     ccLoadConfig.m_tooltip = Tr::tr("Load configuration (includes predefined cloud models)");
-    ccOpenConfigFolder.m_buttonText = TrConstants::OPEN_CONFIG_FOLDER;
+    ccOpenConfigFolder.m_buttonText = Tr::tr(TrConstants::OPEN_CONFIG_FOLDER);
     ccOpenConfigFolder.m_icon = Utils::Icons::OPENFILE.icon();
     ccOpenConfigFolder.m_isCompact = true;
 
     // preset1
     specifyPreset1.setSettingsKey(Constants::CC_SPECIFY_PRESET1);
-    specifyPreset1.setLabelText(TrConstants::ADD_NEW_PRESET);
+    specifyPreset1.setLabelText(Tr::tr(TrConstants::ADD_NEW_PRESET));
     specifyPreset1.setDefaultValue(false);
 
     preset1Language.setSettingsKey(Constants::CC_PRESET1_LANGUAGE);
@@ -167,14 +176,14 @@ GeneralSettings::GeneralSettings()
     preset1Language.addOption("python");
 
     initStringAspect(
-        ccPreset1Provider, Constants::CC_PRESET1_PROVIDER, TrConstants::PROVIDER, "Ollama");
+        ccPreset1Provider, Constants::CC_PRESET1_PROVIDER, Tr::tr(TrConstants::PROVIDER), "Ollama");
     ccPreset1Provider.setReadOnly(true);
-    ccPreset1SelectProvider.m_buttonText = TrConstants::SELECT;
+    ccPreset1SelectProvider.m_buttonText = Tr::tr(TrConstants::SELECT);
 
     initStringAspect(
-        ccPreset1Url, Constants::CC_PRESET1_URL, TrConstants::URL, "http://localhost:11434");
+        ccPreset1Url, Constants::CC_PRESET1_URL, Tr::tr(TrConstants::URL), "http://localhost:11434");
     ccPreset1Url.setHistoryCompleter(Constants::CC_PRESET1_URL_HISTORY);
-    ccPreset1SetUrl.m_buttonText = TrConstants::SELECT;
+    ccPreset1SetUrl.m_buttonText = Tr::tr(TrConstants::SELECT);
 
     ccPreset1EndpointMode.setSettingsKey(Constants::CC_PRESET1_ENDPOINT_MODE);
     ccPreset1EndpointMode.setDisplayStyle(Utils::SelectionAspect::DisplayStyle::ComboBox);
@@ -187,37 +196,37 @@ GeneralSettings::GeneralSettings()
     initStringAspect(
         ccPreset1CustomEndpoint,
         Constants::CC_PRESET1_CUSTOM_ENDPOINT,
-        TrConstants::ENDPOINT_MODE,
+        Tr::tr(TrConstants::ENDPOINT_MODE),
         "");
     ccPreset1CustomEndpoint.setHistoryCompleter(Constants::CC_PRESET1_CUSTOM_ENDPOINT_HISTORY);
 
     initStringAspect(
-        ccPreset1Model, Constants::CC_PRESET1_MODEL, TrConstants::MODEL, "qwen2.5-coder:7b");
+        ccPreset1Model, Constants::CC_PRESET1_MODEL, Tr::tr(TrConstants::MODEL), "qwen2.5-coder:7b");
     ccPreset1Model.setHistoryCompleter(Constants::CC_PRESET1_MODEL_HISTORY);
-    ccPreset1SelectModel.m_buttonText = TrConstants::SELECT;
+    ccPreset1SelectModel.m_buttonText = Tr::tr(TrConstants::SELECT);
 
     initStringAspect(
-        ccPreset1Template, Constants::CC_PRESET1_TEMPLATE, TrConstants::TEMPLATE, "Ollama FIM");
+        ccPreset1Template, Constants::CC_PRESET1_TEMPLATE, Tr::tr(TrConstants::TEMPLATE), "Ollama FIM");
     ccPreset1Template.setReadOnly(true);
-    ccPreset1SelectTemplate.m_buttonText = TrConstants::SELECT;
+    ccPreset1SelectTemplate.m_buttonText = Tr::tr(TrConstants::SELECT);
 
     // chat assistance
-    initStringAspect(caProvider, Constants::CA_PROVIDER, TrConstants::PROVIDER, "Ollama");
+    initStringAspect(caProvider, Constants::CA_PROVIDER, Tr::tr(TrConstants::PROVIDER), "Ollama");
     caProvider.setReadOnly(true);
-    caSelectProvider.m_buttonText = TrConstants::SELECT;
+    caSelectProvider.m_buttonText = Tr::tr(TrConstants::SELECT);
 
-    initStringAspect(caModel, Constants::CA_MODEL, TrConstants::MODEL, "qwen2.5-coder:7b");
+    initStringAspect(caModel, Constants::CA_MODEL, Tr::tr(TrConstants::MODEL), "qwen2.5-coder:7b");
     caModel.setHistoryCompleter(Constants::CA_MODEL_HISTORY);
-    caSelectModel.m_buttonText = TrConstants::SELECT;
+    caSelectModel.m_buttonText = Tr::tr(TrConstants::SELECT);
 
-    initStringAspect(caTemplate, Constants::CA_TEMPLATE, TrConstants::TEMPLATE, "Ollama Chat");
+    initStringAspect(caTemplate, Constants::CA_TEMPLATE, Tr::tr(TrConstants::TEMPLATE), "Ollama Chat");
     caTemplate.setReadOnly(true);
 
-    caSelectTemplate.m_buttonText = TrConstants::SELECT;
+    caSelectTemplate.m_buttonText = Tr::tr(TrConstants::SELECT);
 
-    initStringAspect(caUrl, Constants::CA_URL, TrConstants::URL, "http://localhost:11434");
+    initStringAspect(caUrl, Constants::CA_URL, Tr::tr(TrConstants::URL), "http://localhost:11434");
     caUrl.setHistoryCompleter(Constants::CA_URL_HISTORY);
-    caSetUrl.m_buttonText = TrConstants::SELECT;
+    caSetUrl.m_buttonText = Tr::tr(TrConstants::SELECT);
 
     caEndpointMode.setSettingsKey(Constants::CA_ENDPOINT_MODE);
     caEndpointMode.setDisplayStyle(Utils::SelectionAspect::DisplayStyle::ComboBox);
@@ -227,42 +236,42 @@ GeneralSettings::GeneralSettings()
     caEndpointMode.addOption("Chat");
     caEndpointMode.setDefaultValue("Auto");
 
-    initStringAspect(caCustomEndpoint, Constants::CA_CUSTOM_ENDPOINT, TrConstants::ENDPOINT_MODE, "");
+    initStringAspect(caCustomEndpoint, Constants::CA_CUSTOM_ENDPOINT, Tr::tr(TrConstants::ENDPOINT_MODE), "");
     caCustomEndpoint.setHistoryCompleter(Constants::CA_CUSTOM_ENDPOINT_HISTORY);
 
     caStatus.setDisplayStyle(Utils::StringAspect::LabelDisplay);
-    caStatus.setLabelText(TrConstants::STATUS);
+    caStatus.setLabelText(Tr::tr(TrConstants::STATUS));
     caStatus.setDefaultValue("");
-    caTest.m_buttonText = TrConstants::TEST;
+    caTest.m_buttonText = Tr::tr(TrConstants::TEST);
 
     caTemplateDescription.setDisplayStyle(Utils::StringAspect::TextEditDisplay);
     caTemplateDescription.setReadOnly(true);
     caTemplateDescription.setDefaultValue("");
 
-    caSaveConfig.m_buttonText = TrConstants::SAVE_CONFIG;
-    caLoadConfig.m_buttonText = TrConstants::LOAD_CONFIG;
+    caSaveConfig.m_buttonText = Tr::tr(TrConstants::SAVE_CONFIG);
+    caLoadConfig.m_buttonText = Tr::tr(TrConstants::LOAD_CONFIG);
     caLoadConfig.m_tooltip = Tr::tr("Load configuration (includes predefined cloud models)");
-    caOpenConfigFolder.m_buttonText = TrConstants::OPEN_CONFIG_FOLDER;
+    caOpenConfigFolder.m_buttonText = Tr::tr(TrConstants::OPEN_CONFIG_FOLDER);
     caOpenConfigFolder.m_icon = Utils::Icons::OPENFILE.icon();
     caOpenConfigFolder.m_isCompact = true;
 
     // quick refactor settings
-    initStringAspect(qrProvider, Constants::QR_PROVIDER, TrConstants::PROVIDER, "Ollama");
+    initStringAspect(qrProvider, Constants::QR_PROVIDER, Tr::tr(TrConstants::PROVIDER), "Ollama");
     qrProvider.setReadOnly(true);
-    qrSelectProvider.m_buttonText = TrConstants::SELECT;
+    qrSelectProvider.m_buttonText = Tr::tr(TrConstants::SELECT);
 
-    initStringAspect(qrModel, Constants::QR_MODEL, TrConstants::MODEL, "qwen2.5-coder:7b");
+    initStringAspect(qrModel, Constants::QR_MODEL, Tr::tr(TrConstants::MODEL), "qwen2.5-coder:7b");
     qrModel.setHistoryCompleter(Constants::QR_MODEL_HISTORY);
-    qrSelectModel.m_buttonText = TrConstants::SELECT;
+    qrSelectModel.m_buttonText = Tr::tr(TrConstants::SELECT);
 
-    initStringAspect(qrTemplate, Constants::QR_TEMPLATE, TrConstants::TEMPLATE, "Ollama Chat");
+    initStringAspect(qrTemplate, Constants::QR_TEMPLATE, Tr::tr(TrConstants::TEMPLATE), "Ollama Chat");
     qrTemplate.setReadOnly(true);
 
-    qrSelectTemplate.m_buttonText = TrConstants::SELECT;
+    qrSelectTemplate.m_buttonText = Tr::tr(TrConstants::SELECT);
 
-    initStringAspect(qrUrl, Constants::QR_URL, TrConstants::URL, "http://localhost:11434");
+    initStringAspect(qrUrl, Constants::QR_URL, Tr::tr(TrConstants::URL), "http://localhost:11434");
     qrUrl.setHistoryCompleter(Constants::QR_URL_HISTORY);
-    qrSetUrl.m_buttonText = TrConstants::SELECT;
+    qrSetUrl.m_buttonText = Tr::tr(TrConstants::SELECT);
 
     qrEndpointMode.setSettingsKey(Constants::QR_ENDPOINT_MODE);
     qrEndpointMode.setDisplayStyle(Utils::SelectionAspect::DisplayStyle::ComboBox);
@@ -272,22 +281,22 @@ GeneralSettings::GeneralSettings()
     qrEndpointMode.addOption("Chat");
     qrEndpointMode.setDefaultValue("Auto");
 
-    initStringAspect(qrCustomEndpoint, Constants::QR_CUSTOM_ENDPOINT, TrConstants::ENDPOINT_MODE, "");
+    initStringAspect(qrCustomEndpoint, Constants::QR_CUSTOM_ENDPOINT, Tr::tr(TrConstants::ENDPOINT_MODE), "");
     qrCustomEndpoint.setHistoryCompleter(Constants::QR_CUSTOM_ENDPOINT_HISTORY);
 
     qrStatus.setDisplayStyle(Utils::StringAspect::LabelDisplay);
-    qrStatus.setLabelText(TrConstants::STATUS);
+    qrStatus.setLabelText(Tr::tr(TrConstants::STATUS));
     qrStatus.setDefaultValue("");
-    qrTest.m_buttonText = TrConstants::TEST;
+    qrTest.m_buttonText = Tr::tr(TrConstants::TEST);
 
     qrTemplateDescription.setDisplayStyle(Utils::StringAspect::TextEditDisplay);
     qrTemplateDescription.setReadOnly(true);
     qrTemplateDescription.setDefaultValue("");
 
-    qrSaveConfig.m_buttonText = TrConstants::SAVE_CONFIG;
-    qrLoadConfig.m_buttonText = TrConstants::LOAD_CONFIG;
+    qrSaveConfig.m_buttonText = Tr::tr(TrConstants::SAVE_CONFIG);
+    qrLoadConfig.m_buttonText = Tr::tr(TrConstants::LOAD_CONFIG);
     qrLoadConfig.m_tooltip = Tr::tr("Load configuration (includes predefined cloud models)");
-    qrOpenConfigFolder.m_buttonText = TrConstants::OPEN_CONFIG_FOLDER;
+    qrOpenConfigFolder.m_buttonText = Tr::tr(TrConstants::OPEN_CONFIG_FOLDER);
     qrOpenConfigFolder.m_icon = Utils::Icons::OPENFILE.icon();
     qrOpenConfigFolder.m_isCompact = true;
 
@@ -347,7 +356,7 @@ GeneralSettings::GeneralSettings()
         qrGrid.addRow({qrTemplate, qrSelectTemplate, qrShowTemplateInfo});
 
         auto ccGroup = Group{
-            title(TrConstants::CODE_COMPLETION),
+            title(Tr::tr(TrConstants::CODE_COMPLETION)),
             Column{
                 Row{ccSaveConfig, ccLoadConfig, ccOpenConfigFolder, Stretch{1}},
                 Row{ccPresetConfig, ccConfigureApiKey, Stretch{1}},
@@ -356,14 +365,14 @@ GeneralSettings::GeneralSettings()
                 ccPreset1Grid}};
 
         auto caGroup = Group{
-            title(TrConstants::CHAT_ASSISTANT),
+            title(Tr::tr(TrConstants::CHAT_ASSISTANT)),
             Column{
                 Row{caSaveConfig, caLoadConfig, caOpenConfigFolder, Stretch{1}},
                 Row{caPresetConfig, caConfigureApiKey, Stretch{1}},
                 caGrid}};
 
         auto qrGroup = Group{
-            title(TrConstants::QUICK_REFACTOR),
+            title(Tr::tr(TrConstants::QUICK_REFACTOR)),
             Column{
                 Row{qrSaveConfig, qrLoadConfig, qrOpenConfigFolder, Stretch{1}},
                 Row{qrPresetConfig, qrConfigureApiKey, Stretch{1}},
@@ -373,6 +382,7 @@ GeneralSettings::GeneralSettings()
             Row{enableQodeAssist, Stretch{1}, Row{checkUpdate, resetToDefaults}},
             Row{enableLogging, Stretch{1}},
             Row{enableCheckUpdate, Stretch{1}},
+            Row{languageIndex, Stretch{1}},
             Space{8},
             ccGroup,
             Space{8},
@@ -410,9 +420,9 @@ void GeneralSettings::showSelectionDialog(
 
 void GeneralSettings::showModelsNotFoundDialog(Utils::StringAspect &aspect)
 {
-    SettingsDialog dialog(TrConstants::CONNECTION_ERROR);
-    dialog.addLabel(TrConstants::NO_MODELS_FOUND);
-    dialog.addLabel(TrConstants::CHECK_CONNECTION);
+    SettingsDialog dialog(Tr::tr(TrConstants::CONNECTION_ERROR));
+    dialog.addLabel(Tr::tr(TrConstants::NO_MODELS_FOUND));
+    dialog.addLabel(Tr::tr(TrConstants::CHECK_CONNECTION));
     dialog.addSpacing();
 
     ButtonAspect *providerButton = nullptr;
@@ -430,10 +440,10 @@ void GeneralSettings::showModelsNotFoundDialog(Utils::StringAspect &aspect)
     }
 
     if (providerButton && urlButton) {
-        auto selectProviderBtn = new QPushButton(TrConstants::SELECT_PROVIDER);
-        auto selectUrlBtn = new QPushButton(TrConstants::SELECT_URL);
-        auto enterManuallyBtn = new QPushButton(TrConstants::ENTER_MODEL_MANUALLY);
-        auto configureApiKeyBtn = new QPushButton(TrConstants::CONFIGURE_API_KEY);
+        auto selectProviderBtn = new QPushButton(Tr::tr(TrConstants::SELECT_PROVIDER));
+        auto selectUrlBtn = new QPushButton(Tr::tr(TrConstants::SELECT_URL));
+        auto enterManuallyBtn = new QPushButton(Tr::tr(TrConstants::ENTER_MODEL_MANUALLY));
+        auto configureApiKeyBtn = new QPushButton(Tr::tr(TrConstants::CONFIGURE_API_KEY));
 
         connect(selectProviderBtn, &QPushButton::clicked, &dialog, [this, providerButton, &dialog]() {
             dialog.close();
@@ -461,7 +471,7 @@ void GeneralSettings::showModelsNotFoundDialog(Utils::StringAspect &aspect)
         dialog.buttonLayout()->addWidget(configureApiKeyBtn);
     }
 
-    auto closeBtn = new QPushButton(TrConstants::CLOSE);
+    auto closeBtn = new QPushButton(Tr::tr(TrConstants::CLOSE));
     connect(closeBtn, &QPushButton::clicked, &dialog, &QDialog::close);
     dialog.buttonLayout()->addWidget(closeBtn);
 
@@ -470,8 +480,8 @@ void GeneralSettings::showModelsNotFoundDialog(Utils::StringAspect &aspect)
 
 void GeneralSettings::showModelsNotSupportedDialog(Utils::StringAspect &aspect)
 {
-    SettingsDialog dialog(TrConstants::MODEL_SELECTION);
-    dialog.addLabel(TrConstants::MODEL_LISTING_NOT_SUPPORTED_INFO);
+    SettingsDialog dialog(Tr::tr(TrConstants::MODEL_SELECTION));
+    dialog.addLabel(Tr::tr(TrConstants::MODEL_LISTING_NOT_SUPPORTED_INFO));
     dialog.addSpacing();
 
     QString key = QString("CompleterHistory/")
@@ -489,7 +499,7 @@ void GeneralSettings::showModelsNotSupportedDialog(Utils::StringAspect &aspect)
     auto modelList = dialog.addComboBox(historyList, aspect.value());
     dialog.addSpacing();
 
-    auto okButton = new QPushButton(TrConstants::OK);
+    auto okButton = new QPushButton(Tr::tr(TrConstants::OK));
     connect(okButton, &QPushButton::clicked, &dialog, [this, &aspect, modelList, &dialog]() {
         QString value = modelList->currentText().trimmed();
         if (!value.isEmpty()) {
@@ -499,7 +509,7 @@ void GeneralSettings::showModelsNotSupportedDialog(Utils::StringAspect &aspect)
         }
     });
 
-    auto cancelButton = new QPushButton(TrConstants::CANCEL);
+    auto cancelButton = new QPushButton(Tr::tr(TrConstants::CANCEL));
     connect(cancelButton, &QPushButton::clicked, &dialog, &QDialog::reject);
 
     addDialogButtons(dialog.buttonLayout(), okButton, cancelButton);
@@ -511,8 +521,8 @@ void GeneralSettings::showModelsNotSupportedDialog(Utils::StringAspect &aspect)
 void GeneralSettings::showUrlSelectionDialog(
     Utils::StringAspect &aspect, const QStringList &predefinedUrls)
 {
-    SettingsDialog dialog(TrConstants::URL_SELECTION);
-    dialog.addLabel(TrConstants::URL_SELECTION_INFO);
+    SettingsDialog dialog(Tr::tr(TrConstants::URL_SELECTION));
+    dialog.addLabel(Tr::tr(TrConstants::URL_SELECTION_INFO));
     dialog.addSpacing();
 
     QStringList allUrls = predefinedUrls;
@@ -534,7 +544,7 @@ void GeneralSettings::showUrlSelectionDialog(
     auto urlList = dialog.addComboBox(allUrls, aspect.value());
     dialog.addSpacing();
 
-    auto okButton = new QPushButton(TrConstants::OK);
+    auto okButton = new QPushButton(Tr::tr(TrConstants::OK));
     connect(okButton, &QPushButton::clicked, &dialog, [this, &aspect, urlList, &dialog]() {
         QString value = urlList->currentText().trimmed();
         if (!value.isEmpty()) {
@@ -544,7 +554,7 @@ void GeneralSettings::showUrlSelectionDialog(
         }
     });
 
-    auto cancelButton = new QPushButton(TrConstants::CANCEL);
+    auto cancelButton = new QPushButton(Tr::tr(TrConstants::CANCEL));
     connect(cancelButton, &QPushButton::clicked, &dialog, &QDialog::reject);
 
     addDialogButtons(dialog.buttonLayout(), okButton, cancelButton);
@@ -572,7 +582,7 @@ void GeneralSettings::showTemplateInfoDialog(
 
     dialog.addSpacing();
 
-    auto *closeButton = new QPushButton(TrConstants::CLOSE);
+    auto *closeButton = new QPushButton(Tr::tr(TrConstants::CLOSE));
     connect(closeButton, &QPushButton::clicked, &dialog, &QDialog::accept);
     dialog.buttonLayout()->addWidget(closeButton);
 
@@ -704,6 +714,19 @@ void GeneralSettings::setupConnections()
         QUrl url = QUrl::fromLocalFile(dir.absolutePath());
         QDesktopServices::openUrl(url);
     });
+    connect(&languageIndex, &Utils::SelectionAspect::changed, this, [&]{
+        languageCode.setValue(languageIndex.itemValue().toString());
+    });
+    connect(&languageCode, &Utils::StringAspect::changed, this, [&]{
+        auto code = languageCode.value();
+        auto index = languageIndex.indexForItemValue(code);
+        languageIndex.setValue(index);
+        // for (int i=0; i < languageIndex.optionCount(); i++){
+        //     if () {
+
+        //     }
+        // }
+    });
 }
 
 void GeneralSettings::resetPageToDefaults()
@@ -711,8 +734,8 @@ void GeneralSettings::resetPageToDefaults()
     QMessageBox::StandardButton reply;
     reply = QMessageBox::question(
         Core::ICore::dialogParent(),
-        TrConstants::RESET_SETTINGS,
-        TrConstants::CONFIRMATION,
+        Tr::tr(TrConstants::RESET_SETTINGS),
+        Tr::tr(TrConstants::CONFIRMATION),
         QMessageBox::Yes | QMessageBox::No);
 
     if (reply == QMessageBox::Yes) {
@@ -754,8 +777,8 @@ void GeneralSettings::onSaveConfiguration(const QString &prefix)
     bool ok;
     QString configName = QInputDialog::getText(
         Core::ICore::dialogParent(),
-        TrConstants::SAVE_CONFIGURATION,
-        TrConstants::CONFIGURATION_NAME,
+        Tr::tr(TrConstants::SAVE_CONFIGURATION),
+        Tr::tr(TrConstants::CONFIGURATION_NAME),
         QLineEdit::Normal,
         QString(),
         &ok);
@@ -798,12 +821,12 @@ void GeneralSettings::onSaveConfiguration(const QString &prefix)
     if (manager.saveConfiguration(config)) {
         QMessageBox::information(
             Core::ICore::dialogParent(),
-            TrConstants::SAVE_CONFIGURATION,
-            TrConstants::CONFIGURATION_SAVED);
+            Tr::tr(TrConstants::SAVE_CONFIGURATION),
+            Tr::tr(TrConstants::CONFIGURATION_SAVED));
     } else {
         QMessageBox::warning(
             Core::ICore::dialogParent(),
-            TrConstants::SAVE_CONFIGURATION,
+            Tr::tr(TrConstants::SAVE_CONFIGURATION),
             Tr::tr("Failed to save configuration. Check logs for details."));
     }
 }
@@ -828,13 +851,13 @@ void GeneralSettings::onLoadConfiguration(const QString &prefix)
     if (configs.isEmpty()) {
         QMessageBox::information(
             Core::ICore::dialogParent(),
-            TrConstants::LOAD_CONFIGURATION,
-            TrConstants::NO_CONFIGURATIONS_FOUND);
+            Tr::tr(TrConstants::LOAD_CONFIGURATION),
+            Tr::tr(TrConstants::NO_CONFIGURATIONS_FOUND));
         return;
     }
 
-    SettingsDialog dialog(TrConstants::LOAD_CONFIGURATION);
-    dialog.addLabel(TrConstants::SELECT_CONFIGURATION);
+    SettingsDialog dialog(Tr::tr(TrConstants::LOAD_CONFIGURATION));
+    dialog.addLabel(Tr::tr(TrConstants::SELECT_CONFIGURATION));
     
     int predefinedCount = 0;
     for (const AIConfiguration &config : configs) {
@@ -867,9 +890,9 @@ void GeneralSettings::onLoadConfiguration(const QString &prefix)
     auto configList = dialog.addComboBox(configNames, QString());
     dialog.addSpacing();
 
-    auto *deleteButton = new QPushButton(TrConstants::DELETE_CONFIGURATION);
-    auto *okButton = new QPushButton(TrConstants::OK);
-    auto *cancelButton = new QPushButton(TrConstants::CANCEL);
+    auto *deleteButton = new QPushButton(Tr::tr(TrConstants::DELETE_CONFIGURATION));
+    auto *okButton = new QPushButton(Tr::tr(TrConstants::OK));
+    auto *cancelButton = new QPushButton(Tr::tr(TrConstants::CANCEL));
 
     auto updateDeleteButtonState = [&]() {
         int currentIndex = configList->currentIndex();
@@ -891,15 +914,15 @@ void GeneralSettings::onLoadConfiguration(const QString &prefix)
             if (configToDelete.isPredefined) {
                 QMessageBox::information(
                     &dialog,
-                    TrConstants::DELETE_CONFIGURATION,
+                    Tr::tr(TrConstants::DELETE_CONFIGURATION),
                     Tr::tr("Predefined configurations cannot be deleted."));
                 return;
             }
 
             QMessageBox::StandardButton reply = QMessageBox::question(
                 &dialog,
-                TrConstants::DELETE_CONFIGURATION,
-                TrConstants::CONFIRM_DELETE_CONFIG,
+                Tr::tr(TrConstants::DELETE_CONFIGURATION),
+                Tr::tr(TrConstants::CONFIRM_DELETE_CONFIG),
                 QMessageBox::Yes | QMessageBox::No);
 
             if (reply == QMessageBox::Yes) {
@@ -909,7 +932,7 @@ void GeneralSettings::onLoadConfiguration(const QString &prefix)
                 } else {
                     QMessageBox::warning(
                         &dialog,
-                        TrConstants::DELETE_CONFIGURATION,
+                        Tr::tr(TrConstants::DELETE_CONFIGURATION),
                         Tr::tr("Failed to delete configuration."));
                 }
             }
@@ -947,8 +970,8 @@ void GeneralSettings::onLoadConfiguration(const QString &prefix)
             writeSettings();
             QMessageBox::information(
                 Core::ICore::dialogParent(),
-                TrConstants::LOAD_CONFIGURATION,
-                TrConstants::CONFIGURATION_LOADED);
+                Tr::tr(TrConstants::LOAD_CONFIGURATION),
+                Tr::tr(TrConstants::CONFIGURATION_LOADED));
             dialog.accept();
         }
     });
@@ -1029,13 +1052,50 @@ void GeneralSettings::applyPresetConfiguration(int index, ConfigurationType type
     writeSettings();
 }
 
-class GeneralSettingsPage : public Core::IOptionsPage
+void GeneralSettings::loadLanguageOptions(){
+    auto languages = getLanguagesByDir(":/translations");
+    for (auto item = languages.cbegin(); item != languages.cend(); item++) {
+        languageIndex.addOption({item.key(),item.key(),item.value()});
+    }
+    languageIndex.setDefaultValue(0);
+    languageCode.setDefaultValue(languageIndex.itemValue().toString());
+}
+
+QString GeneralSettings::langCodeOfQm(const QString &qmFilePath)
+{
+    QTranslator translator;
+
+    // 只加载文件头部，不解析全文，速度极快
+    if (translator.load(qmFilePath)) {
+        return translator.language();
+    }
+
+    return QString();
+}
+
+QMap<QString, QString> GeneralSettings::getLanguagesByDir(const QString &dirPath)
+{
+    QMap<QString, QString> result;
+    QDir dir(dirPath);
+    QFileInfoList files = dir.entryInfoList({"*.qm"}, QDir::Files);
+    foreach (const QFileInfo &file, files) {
+        QString langCode = langCodeOfQm(file.absoluteFilePath());
+        if (!langCode.isEmpty()) {
+            QLocale locale(langCode);
+            result.insert(locale.nativeLanguageName(), langCode);
+        }
+    }
+
+    return result;
+}
+
+class GeneralSettingsPage : public SettingOptionsPage //Core::IOptionsPage
 {
 public:
     GeneralSettingsPage()
     {
         setId(Constants::QODE_ASSIST_GENERAL_SETTINGS_PAGE_ID);
-        setDisplayName(TrConstants::GENERAL);
+        setDisplayName(Tr::tr(TrConstants::GENERAL));
         setCategory(Constants::QODE_ASSIST_GENERAL_OPTIONS_CATEGORY);
 #if QODEASSIST_QT_CREATOR_VERSION < QT_VERSION_CHECK(15, 0, 83)
         setDisplayCategory(Constants::QODE_ASSIST_GENERAL_OPTIONS_DISPLAY_CATEGORY);
@@ -1043,9 +1103,14 @@ public:
 #endif
         setSettingsProvider([] { return &generalSettings(); });
     }
+
+    void retranslate() override {
+        setDisplayName(Tr::tr(TrConstants::GENERAL));
+    }
 };
 
-const GeneralSettingsPage generalSettingsPage;
+// const GeneralSettingsPage generalSettingsPage;
+REGISTER_PAGE(GeneralSettingsPage)
 /*!
     \sa {Core::ICore::showOptionsDialog()}, {Core::ICore::showSettings()}
     \note This function was added to fix Qt Creator API broken changes in v19.0.0-beta2 version
