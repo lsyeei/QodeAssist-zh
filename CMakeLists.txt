@@ -34,7 +34,7 @@ add_definitions(
   -DQODEASSIST_QT_CREATOR_VERSION_PATCH=${QODEASSIST_QT_CREATOR_VERSION_PATCH}
 )
 
-add_subdirectory(sources/external/llmcore)
+add_subdirectory(sources/external/llmqore)
 add_subdirectory(pluginllmcore)
 add_subdirectory(settings)
 add_subdirectory(logger)
@@ -62,7 +62,7 @@ add_qtc_plugin(QodeAssist
     QtCreator::ExtensionSystem
     QtCreator::Utils
     QtCreator::CPlusPlus
-    LLMCore
+    LLMQore
     PluginLLMCore
     QodeAssistChatViewplugin
   SOURCES
@@ -96,10 +96,12 @@ add_qtc_plugin(QodeAssist
     templates/OpenAIResponses.hpp
     providers/Providers.hpp
     providers/OllamaProvider.hpp providers/OllamaProvider.cpp
+    providers/OllamaCompatProvider.hpp providers/OllamaCompatProvider.cpp
     providers/ClaudeProvider.hpp providers/ClaudeProvider.cpp
     providers/OpenAIProvider.hpp providers/OpenAIProvider.cpp
     providers/MistralAIProvider.hpp providers/MistralAIProvider.cpp
     providers/LMStudioProvider.hpp providers/LMStudioProvider.cpp
+    providers/LMStudioResponsesProvider.hpp providers/LMStudioResponsesProvider.cpp
     providers/OpenAICompatProvider.hpp providers/OpenAICompatProvider.cpp
     providers/OpenRouterAIProvider.hpp providers/OpenRouterAIProvider.cpp
     providers/GoogleAIProvider.hpp providers/GoogleAIProvider.cpp
@@ -151,9 +153,14 @@ add_qtc_plugin(QodeAssist
     tools/BuildProjectTool.hpp tools/BuildProjectTool.cpp
     tools/ExecuteTerminalCommandTool.hpp tools/ExecuteTerminalCommandTool.cpp
     tools/ProjectSearchTool.hpp tools/ProjectSearchTool.cpp
-    tools/FindAndReadFileTool.hpp tools/FindAndReadFileTool.cpp
+    tools/FindFileTool.hpp tools/FindFileTool.cpp
+    tools/ReadFileTool.hpp tools/ReadFileTool.cpp
     tools/FileSearchUtils.hpp tools/FileSearchUtils.cpp
     tools/TodoTool.hpp tools/TodoTool.cpp
+    mcp/McpServerManager.hpp mcp/McpServerManager.cpp
+    mcp/McpServerConnection.hpp mcp/McpServerConnection.cpp
+    mcp/McpClientsManager.hpp mcp/McpClientsManager.cpp
+    settings/McpClientsListAspect.hpp settings/McpClientsListAspect.cpp
 )
 
 get_target_property(QtCreatorCorePath QtCreator::Core LOCATION)

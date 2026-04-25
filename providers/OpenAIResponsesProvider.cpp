@@ -1,24 +1,8 @@
-/*
- * Copyright (C) 2024-2025 Petr Mironychev
- *
- * This file is part of QodeAssist.
- *
- * QodeAssist is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * QodeAssist is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with QodeAssist. If not, see <https://www.gnu.org/licenses/>.
- */
+// Copyright (C) 2024-2026 Petr Mironychev
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "OpenAIResponsesProvider.hpp"
-#include <LLMCore/ToolsManager.hpp>
+#include <LLMQore/ToolsManager.hpp>
 #include "tools/ToolsRegistration.hpp"
 
 #include "logger/Logger.hpp"
@@ -36,14 +20,14 @@ namespace QodeAssist::Providers {
 
 OpenAIResponsesProvider::OpenAIResponsesProvider(QObject *parent)
     : PluginLLMCore::Provider(parent)
-    , m_client(new ::LLMCore::OpenAIResponsesClient(QString(), QString(), QString(), this))
+    , m_client(new ::LLMQore::OpenAIResponsesClient(QString(), QString(), QString(), this))
 {
     Tools::registerQodeAssistTools(m_client->tools());
 }
 
 QString OpenAIResponsesProvider::name() const
 {
-    return "OpenAI Responses";
+    return "OpenAI (Responses API)";
 }
 
 QString OpenAIResponsesProvider::apiKey() const
@@ -53,17 +37,7 @@ QString OpenAIResponsesProvider::apiKey() const
 
 QString OpenAIResponsesProvider::url() const
 {
-    return "https://api.openai.com";
-}
-
-QString OpenAIResponsesProvider::completionEndpoint() const
-{
-    return "/v1/responses";
-}
-
-QString OpenAIResponsesProvider::chatEndpoint() const
-{
-    return "/v1/responses";
+    return "https://api.openai.com/v1";
 }
 
 void OpenAIResponsesProvider::prepareRequest(
@@ -124,24 +98,11 @@ void OpenAIResponsesProvider::prepareRequest(
     }
 
     if (isToolsEnabled) {
-        const auto toolsDefinitions
-            = m_client->tools()->getToolsDefinitions();
+        const auto toolsDefinitions = m_client->tools()->getToolsDefinitions();
         if (!toolsDefinitions.isEmpty()) {
-            QJsonArray responsesTools;
-
-            for (const QJsonValue &toolValue : toolsDefinitions) {
-                const QJsonObject tool = toolValue.toObject();
-                if (tool.contains("function")) {
-                    const QJsonObject functionObj = tool["function"].toObject();
-                    QJsonObject responsesTool;
-                    responsesTool["type"] = "function";
-                    responsesTool["name"] = functionObj["name"];
-                    responsesTool["description"] = functionObj["description"];
-                    responsesTool["parameters"] = functionObj["parameters"];
-                    responsesTools.append(responsesTool);
-                }
-            }
-            request["tools"] = responsesTools;
+            request["tools"] = toolsDefinitions;
+            LOG_MESSAGE(QString("Added %1 tools to OpenAI Responses request")
+                            .arg(toolsDefinitions.size()));
         }
     }
 
@@ -179,7 +140,7 @@ PluginLLMCore::ProviderCapabilities OpenAIResponsesProvider::capabilities() cons
            | PluginLLMCore::ProviderCapability::ModelListing;
 }
 
-::LLMCore::BaseClient *OpenAIResponsesProvider::client() const
+::LLMQore::BaseClient *OpenAIResponsesProvider::client() const
 {
     return m_client;
 }

@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2025 Petr Mironychev
- *
- * This file is part of QodeAssist.
- *
- * QodeAssist is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * QodeAssist is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with QodeAssist. If not, see <https://www.gnu.org/licenses/>.
- */
+// Copyright (C) 2025-2026 Petr Mironychev
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "BuildProjectTool.hpp"
 
@@ -71,13 +55,10 @@ QString BuildProjectTool::displayName() const
 
 QString BuildProjectTool::description() const
 {
-    return "Build the current project in Qt Creator and wait for completion. "
-           "Optionally run the project after successful build. "
-           "Returns build status (success/failure) and any compilation errors/warnings after "
-           "the build finishes. "
-           "Optional 'rebuild' parameter: set to true to force a clean rebuild (default: false). "
-           "Optional 'run_after_build' parameter: set to true to run the project after successful build (default: false). "
-           "Note: This operation may take some time depending on project size.";
+    return "Build the active Qt Creator project using its current build configuration and block "
+           "until the build finishes. Returns success/failure along with the full compiler output "
+           "(stdout + stderr). Use `get_issues_list` afterwards to get structured diagnostics. "
+           "This call is blocking and may take a long time for large projects.";
 }
 
 QJsonObject BuildProjectTool::parametersSchema() const
@@ -99,23 +80,23 @@ QJsonObject BuildProjectTool::parametersSchema() const
     return definition;
 }
 
-QFuture<QString> BuildProjectTool::executeAsync(const QJsonObject &input)
+QFuture<LLMQore::ToolResult> BuildProjectTool::executeAsync(const QJsonObject &input)
 {
     auto *project = ProjectExplorer::ProjectManager::startupProject();
     if (!project) {
         return QtFuture::makeReadyFuture(
-            QString("Error: No active project found. Please open a project in Qt Creator."));
+            LLMQore::ToolResult::error("Error: No active project found. Please open a project in Qt Creator."));
     }
 
     if (ProjectExplorer::BuildManager::isBuilding(project)) {
         return QtFuture::makeReadyFuture(
-            QString("Error: Build is already in progress. Please wait for it to complete."));
+            LLMQore::ToolResult::error("Error: Build is already in progress. Please wait for it to complete."));
     }
 
     if (m_activeBuilds.contains(project)) {
         return QtFuture::makeReadyFuture(
-            QString("Error: Build is already being tracked for project '%1'.")
-                .arg(project->displayName()));
+            LLMQore::ToolResult::error(QString("Error: Build is already being tracked for project '%1'.")
+                .arg(project->displayName())));
     }
 
     bool rebuild = input.value("rebuild").toBool(false);
@@ -126,7 +107,7 @@ QFuture<QString> BuildProjectTool::executeAsync(const QJsonObject &input)
                     .arg(project->displayName())
                     .arg(runAfterBuild ? QString(" (run after build)") : QString()));
 
-    auto promise = QSharedPointer<QPromise<QString>>::create();
+    auto promise = QSharedPointer<QPromise<LLMQore::ToolResult>>::create();
     promise->start();
 
     BuildInfo buildInfo;
@@ -187,7 +168,7 @@ void BuildProjectTool::onBuildQueueFinished(bool success)
             }
 
             if (info.promise) {
-                info.promise->addResult(result);
+                info.promise->addResult(LLMQore::ToolResult::text(result));
                 info.promise->finish();
             }
 

@@ -1,25 +1,9 @@
-/* 
- * Copyright (C) 2024-2025 Petr Mironychev
- *
- * This file is part of QodeAssist.
- *
- * QodeAssist is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * QodeAssist is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with QodeAssist. If not, see <https://www.gnu.org/licenses/>.
- */
+// Copyright (C) 2024-2026 Petr Mironychev
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "ClientInterface.hpp"
 
-#include <LLMCore/BaseClient.hpp>
+#include <LLMQore/BaseClient.hpp>
 
 #include <projectexplorer/buildconfiguration.h>
 #include <projectexplorer/target.h>
@@ -42,7 +26,7 @@
 #include <texteditor/textdocument.h>
 #include <texteditor/texteditor.h>
 
-#include <LLMCore/ToolsManager.hpp>
+#include <LLMQore/ToolsManager.hpp>
 
 #include "tools/TodoTool.hpp"
 
@@ -51,7 +35,6 @@
 #include "GeneralSettings.hpp"
 #include "Logger.hpp"
 #include "ProvidersManager.hpp"
-#include "RequestConfig.hpp"
 #include "ToolsSettings.hpp"
 #include <RulesLoader.hpp>
 #include <context/ChangesManager.h>
@@ -248,70 +231,62 @@ void ClientInterface::sendMessage(
 
     context.history = messages;
 
-    PluginLLMCore::LLMConfig config;
-    config.requestType = PluginLLMCore::RequestType::Chat;
-    config.provider = provider;
-    config.promptTemplate = promptTemplate;
-    if (provider->providerID() == PluginLLMCore::ProviderID::GoogleAI) {
-        QString stream = QString{"streamGenerateContent?alt=sse"};
-        config.url = QUrl(QString("%1/models/%2:%3")
-                              .arg(
-                                  Settings::generalSettings().caUrl(),
-                                  Settings::generalSettings().caModel(),
-                                  stream));
-    } else {
-        config.url
-            = QString("%1%2").arg(Settings::generalSettings().caUrl(), provider->chatEndpoint());
-        config.providerRequest
-            = {{"model", Settings::generalSettings().caModel()}, {"stream", true}};
-    }
+    QJsonObject payload{
+        {"model", Settings::generalSettings().caModel()}, {"stream", true}};
 
-    config.provider->prepareRequest(
-        config.providerRequest,
+    provider->prepareRequest(
+        payload,
         promptTemplate,
         context,
         PluginLLMCore::RequestType::Chat,
         useTools,
         useThinking);
 
+    provider->client()->setMaxToolContinuations(
+        Settings::toolsSettings().maxToolContinuations());
+
     connect(
         provider->client(),
-        &::LLMCore::BaseClient::chunkReceived,
+        &::LLMQore::BaseClient::chunkReceived,
         this,
         &ClientInterface::handlePartialResponse,
         Qt::UniqueConnection);
     connect(
         provider->client(),
-        &::LLMCore::BaseClient::requestCompleted,
+        &::LLMQore::BaseClient::requestCompleted,
         this,
         &ClientInterface::handleFullResponse,
         Qt::UniqueConnection);
     connect(
         provider->client(),
-        &::LLMCore::BaseClient::requestFailed,
+        &::LLMQore::BaseClient::requestFailed,
         this,
         &ClientInterface::handleRequestFailed,
         Qt::UniqueConnection);
     connect(
         provider->client(),
-        &::LLMCore::BaseClient::toolStarted,
+        &::LLMQore::BaseClient::toolStarted,
         this,
         &ClientInterface::handleToolExecutionStarted,
         Qt::UniqueConnection);
     connect(
         provider->client(),
-        &::LLMCore::BaseClient::toolResultReady,
+        &::LLMQore::BaseClient::toolResultReady,
         this,
         &ClientInterface::handleToolExecutionCompleted,
         Qt::UniqueConnection);
     connect(
         provider->client(),
-        &::LLMCore::BaseClient::thinkingBlockReceived,
+        &::LLMQore::BaseClient::thinkingBlockReceived,
         this,
         &ClientInterface::handleThinkingBlockReceived,
         Qt::UniqueConnection);
 
-    auto requestId = provider->sendRequest(config.url, config.providerRequest);
+    const QString customEndpoint = Settings::generalSettings().caCustomEndpoint();
+    const QString endpoint = !customEndpoint.isEmpty() ? customEndpoint
+                                                       : promptTemplate->endpoint();
+    auto requestId
+        = provider->sendRequest(QUrl(Settings::generalSettings().caUrl()), payload, endpoint);
     QJsonObject request{{"id", requestId}};
 
     m_activeRequests[requestId] = {request, provider};

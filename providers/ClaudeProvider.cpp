@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2024-2025 Petr Mironychev
- *
- * This file is part of QodeAssist.
- *
- * QodeAssist is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * QodeAssist is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with QodeAssist. If not, see <https://www.gnu.org/licenses/>.
- */
+// Copyright (C) 2024-2026 Petr Mironychev
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "ClaudeProvider.hpp"
 
@@ -23,7 +7,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-#include <LLMCore/ToolsManager.hpp>
+#include <LLMQore/ToolsManager.hpp>
 
 #include "logger/Logger.hpp"
 #include "settings/ChatAssistantSettings.hpp"
@@ -37,7 +21,7 @@ namespace QodeAssist::Providers {
 
 ClaudeProvider::ClaudeProvider(QObject *parent)
     : PluginLLMCore::Provider(parent)
-    , m_client(new ::LLMCore::ClaudeClient(QString(), QString(), QString(), this))
+    , m_client(new ::LLMQore::ClaudeClient(QString(), QString(), QString(), this))
 {
     Tools::registerQodeAssistTools(m_client->tools());
 }
@@ -55,16 +39,6 @@ QString ClaudeProvider::apiKey() const
 QString ClaudeProvider::url() const
 {
     return "https://api.anthropic.com";
-}
-
-QString ClaudeProvider::completionEndpoint() const
-{
-    return "/v1/messages";
-}
-
-QString ClaudeProvider::chatEndpoint() const
-{
-    return "/v1/messages";
 }
 
 void ClaudeProvider::prepareRequest(
@@ -151,7 +125,7 @@ PluginLLMCore::ProviderCapabilities ClaudeProvider::capabilities() const
            | PluginLLMCore::ProviderCapability::ModelListing;
 }
 
-::LLMCore::BaseClient *ClaudeProvider::client() const
+::LLMQore::BaseClient *ClaudeProvider::client() const
 {
     return m_client;
 }

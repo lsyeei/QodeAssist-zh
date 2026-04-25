@@ -1,25 +1,9 @@
-/*
- * Copyright (C) 2024-2025 Petr Mironychev
- *
- * This file is part of QodeAssist.
- *
- * QodeAssist is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * QodeAssist is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with QodeAssist. If not, see <https://www.gnu.org/licenses/>.
- */
+// Copyright (C) 2024-2026 Petr Mironychev
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "GoogleAIProvider.hpp"
 
-#include <LLMCore/ToolsManager.hpp>
+#include <LLMQore/ToolsManager.hpp>
 
 #include <QJsonArray>
 #include "tools/ToolsRegistration.hpp"
@@ -38,7 +22,7 @@ namespace QodeAssist::Providers {
 
 GoogleAIProvider::GoogleAIProvider(QObject *parent)
     : PluginLLMCore::Provider(parent)
-    , m_client(new ::LLMCore::GoogleAIClient(QString(), QString(), QString(), this))
+    , m_client(new ::LLMQore::GoogleAIClient(QString(), QString(), QString(), this))
 {
     Tools::registerQodeAssistTools(m_client->tools());
 }
@@ -56,16 +40,6 @@ QString GoogleAIProvider::apiKey() const
 QString GoogleAIProvider::url() const
 {
     return "https://generativelanguage.googleapis.com/v1beta";
-}
-
-QString GoogleAIProvider::completionEndpoint() const
-{
-    return {};
-}
-
-QString GoogleAIProvider::chatEndpoint() const
-{
-    return {};
 }
 
 void GoogleAIProvider::prepareRequest(
@@ -165,7 +139,25 @@ PluginLLMCore::ProviderCapabilities GoogleAIProvider::capabilities() const
            | PluginLLMCore::ProviderCapability::ModelListing;
 }
 
-::LLMCore::BaseClient *GoogleAIProvider::client() const
+PluginLLMCore::RequestID GoogleAIProvider::sendRequest(
+    const QUrl &url, const QJsonObject &payload, const QString &endpoint)
+{
+    // Gemini takes the model from the URL path and streaming from the
+    // action suffix (:streamGenerateContent vs :generateContent), and
+    // rejects unknown top-level body fields. The shared call-site seeds
+    // payload with {model, stream}; consume them here into client state
+    // before they hit the wire.
+    QJsonObject cleaned = payload;
+    if (cleaned.contains("model")) {
+        m_client->setModel(cleaned["model"].toString());
+        cleaned.remove("model");
+    }
+    cleaned.remove("stream");
+
+    return PluginLLMCore::Provider::sendRequest(url, cleaned, endpoint);
+}
+
+::LLMQore::BaseClient *GoogleAIProvider::client() const
 {
     return m_client;
 }

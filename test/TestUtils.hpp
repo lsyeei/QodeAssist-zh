@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2025 Povilas Kanapickas
- *
- * This file is part of QodeAssist.
- *
- * QodeAssist is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * QodeAssist is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with QodeAssist. If not, see <https://www.gnu.org/licenses/>.
- */
+// Copyright (C) 2025 Povilas Kanapickas
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <iostream>
 #include <pluginllmcore/ContextData.hpp>
@@ -59,16 +43,16 @@ std::ostream &operator<<(std::ostream &out, const std::optional<T> &value)
     return out;
 }
 
-namespace QodeAssist::LLMCore {
+namespace QodeAssist::PluginLLMCore {
 
-inline std::ostream &operator<<(std::ostream &out, const PluginLLMCore::Message &value)
+inline std::ostream &operator<<(std::ostream &out, const Message &value)
 {
     out << "Message{"
         << "role=" << value.role << "content=" << value.content << "}";
     return out;
 }
 
-inline std::ostream &operator<<(std::ostream &out, const PluginLLMCore::ContextData &value)
+inline std::ostream &operator<<(std::ostream &out, const ContextData &value)
 {
     out << "ContextData{"
         << "\n  systemPrompt=" << value.systemPrompt << "\n  prefix=" << value.prefix
@@ -77,4 +61,4 @@ inline std::ostream &operator<<(std::ostream &out, const PluginLLMCore::ContextD
     return out;
 }
 
-} // namespace QodeAssist::LLMCore
+} // namespace QodeAssist::PluginLLMCore

@@ -1,25 +1,9 @@
-/*
- * Copyright (C) 2025 Petr Mironychev
- *
- * This file is part of QodeAssist.
- *
- * QodeAssist is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * QodeAssist is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with QodeAssist. If not, see <https://www.gnu.org/licenses/>.
- */
+// Copyright (C) 2025-2026 Petr Mironychev
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "QuickRefactorHandler.hpp"
 
-#include <LLMCore/BaseClient.hpp>
+#include <LLMQore/BaseClient.hpp>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QUuid>
@@ -30,12 +14,12 @@
 #include <context/Utils.hpp>
 #include <pluginllmcore/PromptTemplateManager.hpp>
 #include <pluginllmcore/ProvidersManager.hpp>
-#include <pluginllmcore/RequestConfig.hpp>
 #include <pluginllmcore/RulesLoader.hpp>
 #include <logger/Logger.hpp>
 #include <settings/ChatAssistantSettings.hpp>
 #include <settings/GeneralSettings.hpp>
 #include <settings/QuickRefactorSettings.hpp>
+#include <settings/ToolsSettings.hpp>
 
 namespace QodeAssist {
 
@@ -141,55 +125,45 @@ void QuickRefactorHandler::prepareAndSendRequest(
         return;
     }
 
-    PluginLLMCore::LLMConfig config;
-    config.requestType = PluginLLMCore::RequestType::QuickRefactoring;
-    config.provider = provider;
-    config.promptTemplate = promptTemplate;
-    config.url = QString("%1%2").arg(settings.qrUrl(), provider->chatEndpoint());
-
-    if (provider->providerID() == PluginLLMCore::ProviderID::GoogleAI) {
-        QString stream = QString{"streamGenerateContent?alt=sse"};
-        config.url = QUrl(QString("%1/models/%2:%3")
-                              .arg(
-                                  Settings::generalSettings().qrUrl(),
-                                  Settings::generalSettings().qrModel(),
-                                  stream));
-    } else {
-        config.url
-            = QString("%1%2").arg(Settings::generalSettings().qrUrl(), provider->chatEndpoint());
-        config.providerRequest
-            = {{"model", Settings::generalSettings().qrModel()}, {"stream", true}};
-    }
+    QJsonObject payload{
+        {"model", Settings::generalSettings().qrModel()}, {"stream", true}};
 
     PluginLLMCore::ContextData context = prepareContext(editor, range, instructions);
 
     bool enableTools = Settings::quickRefactorSettings().useTools();
     bool enableThinking = Settings::quickRefactorSettings().useThinking();
     provider->prepareRequest(
-        config.providerRequest,
+        payload,
         promptTemplate,
         context,
         PluginLLMCore::RequestType::QuickRefactoring,
         enableTools,
         enableThinking);
 
+    provider->client()->setMaxToolContinuations(
+        Settings::toolsSettings().maxToolContinuations());
+
     m_isRefactoringInProgress = true;
 
     connect(
         provider->client(),
-        &::LLMCore::BaseClient::requestCompleted,
+        &::LLMQore::BaseClient::requestCompleted,
         this,
         &QuickRefactorHandler::handleFullResponse,
         Qt::UniqueConnection);
 
     connect(
         provider->client(),
-        &::LLMCore::BaseClient::requestFailed,
+        &::LLMQore::BaseClient::requestFailed,
         this,
         &QuickRefactorHandler::handleRequestFailed,
         Qt::UniqueConnection);
 
-    auto requestId = provider->sendRequest(config.url, config.providerRequest);
+    const QString customEndpoint = Settings::generalSettings().qrCustomEndpoint();
+    const QString endpoint = !customEndpoint.isEmpty() ? customEndpoint
+                                                       : promptTemplate->endpoint();
+    auto requestId
+        = provider->sendRequest(QUrl(Settings::generalSettings().qrUrl()), payload, endpoint);
     m_lastRequestId = requestId;
     QJsonObject request{{"id", requestId}};
 

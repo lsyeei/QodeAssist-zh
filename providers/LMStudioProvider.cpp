@@ -1,25 +1,9 @@
-/*
- * Copyright (C) 2024-2025 Petr Mironychev
- *
- * This file is part of QodeAssist.
- *
- * QodeAssist is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * QodeAssist is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with QodeAssist. If not, see <https://www.gnu.org/licenses/>.
- */
+// Copyright (C) 2024-2026 Petr Mironychev
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "LMStudioProvider.hpp"
 
-#include <LLMCore/ToolsManager.hpp>
+#include <LLMQore/ToolsManager.hpp>
 
 #include "tools/ToolsRegistration.hpp"
 #include "logger/Logger.hpp"
@@ -37,14 +21,14 @@ namespace QodeAssist::Providers {
 
 LMStudioProvider::LMStudioProvider(QObject *parent)
     : PluginLLMCore::Provider(parent)
-    , m_client(new ::LLMCore::OpenAIClient(QString(), QString(), QString(), this))
+    , m_client(new ::LLMQore::OpenAIClient(QString(), QString(), QString(), this))
 {
     Tools::registerQodeAssistTools(m_client->tools());
 }
 
 QString LMStudioProvider::name() const
 {
-    return "LM Studio";
+    return "LM Studio (Chat Completions)";
 }
 
 QString LMStudioProvider::apiKey() const
@@ -54,17 +38,7 @@ QString LMStudioProvider::apiKey() const
 
 QString LMStudioProvider::url() const
 {
-    return "http://localhost:1234";
-}
-
-QString LMStudioProvider::completionEndpoint() const
-{
-    return "/v1/completions";
-}
-
-QString LMStudioProvider::chatEndpoint() const
-{
-    return "/v1/chat/completions";
+    return "http://localhost:1234/v1";
 }
 
 QFuture<QList<QString>> LMStudioProvider::getInstalledModels(const QString &url)
@@ -130,7 +104,7 @@ void LMStudioProvider::prepareRequest(
     }
 }
 
-::LLMCore::BaseClient *LMStudioProvider::client() const
+::LLMQore::BaseClient *LMStudioProvider::client() const
 {
     return m_client;
 }

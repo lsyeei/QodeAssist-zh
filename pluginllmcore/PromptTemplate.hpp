@@ -1,21 +1,5 @@
-/* 
- * Copyright (C) 2024-2025 Petr Mironychev
- *
- * This file is part of QodeAssist.
- *
- * QodeAssist is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * QodeAssist is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with QodeAssist. If not, see <https://www.gnu.org/licenses/>.
- */
+// Copyright (C) 2024-2026 Petr Mironychev
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #pragma once
 
@@ -40,5 +24,13 @@ public:
     virtual void prepareRequest(QJsonObject &request, const ContextData &context) const = 0;
     virtual QString description() const = 0;
     virtual bool isSupportProvider(ProviderID id) const = 0;
+
+    // Endpoint path this template expects to be sent to. Empty string
+    // (default) means "let the provider's client use its standard chat
+    // path" (/chat/completions, /api/chat, /v1/messages, ...). Templates
+    // producing non-chat payload shapes (e.g. {prompt, suffix} for
+    // Mistral FIM, {input_prefix, input_suffix} for llama.cpp infill)
+    // must override this to the path their payload is valid for.
+    virtual QString endpoint() const { return {}; }
 };
 } // namespace QodeAssist::PluginLLMCore

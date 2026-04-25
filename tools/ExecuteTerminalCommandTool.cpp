@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2025 Petr Mironychev
- *
- * This file is part of QodeAssist.
- *
- * QodeAssist is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * QodeAssist is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with QodeAssist. If not, see <https://www.gnu.org/licenses/>.
- */
+// Copyright (C) 2025-2026 Petr Mironychev
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "ExecuteTerminalCommandTool.hpp"
 
@@ -80,30 +64,32 @@ QJsonObject ExecuteTerminalCommandTool::parametersSchema() const
     return definition;
 }
 
-QFuture<QString> ExecuteTerminalCommandTool::executeAsync(const QJsonObject &input)
+QFuture<LLMQore::ToolResult> ExecuteTerminalCommandTool::executeAsync(const QJsonObject &input)
 {
+    using LLMQore::ToolResult;
+
     const QString command = input.value("command").toString().trimmed();
     const QString args = input.value("args").toString().trimmed();
 
     if (command.isEmpty()) {
         LOG_MESSAGE("ExecuteTerminalCommandTool: Command is empty");
-        return QtFuture::makeReadyFuture(QString("Error: Command parameter is required."));
+        return QtFuture::makeReadyFuture(ToolResult::error("Error: Command parameter is required."));
     }
 
     if (command.length() > MAX_COMMAND_LENGTH) {
         LOG_MESSAGE(QString("ExecuteTerminalCommandTool: Command too long (%1 chars)")
                         .arg(command.length()));
         return QtFuture::makeReadyFuture(
-            QString("Error: Command exceeds maximum length of %1 characters.")
-                .arg(MAX_COMMAND_LENGTH));
+            ToolResult::error(QString("Error: Command exceeds maximum length of %1 characters.")
+                .arg(MAX_COMMAND_LENGTH)));
     }
 
     if (args.length() > MAX_ARGS_LENGTH) {
         LOG_MESSAGE(QString("ExecuteTerminalCommandTool: Arguments too long (%1 chars)")
                         .arg(args.length()));
         return QtFuture::makeReadyFuture(
-            QString("Error: Arguments exceed maximum length of %1 characters.")
-                .arg(MAX_ARGS_LENGTH));
+            ToolResult::error(QString("Error: Arguments exceed maximum length of %1 characters.")
+                .arg(MAX_ARGS_LENGTH)));
     }
 
     if (!isCommandAllowed(command)) {
@@ -112,9 +98,9 @@ QFuture<QString> ExecuteTerminalCommandTool::executeAsync(const QJsonObject &inp
         const QStringList allowed = getAllowedCommands();
         const QString allowedList = allowed.isEmpty() ? "none" : allowed.join(", ");
         return QtFuture::makeReadyFuture(
-            QString("Error: Command '%1' is not in the allowed list. Allowed commands: %2")
+            ToolResult::error(QString("Error: Command '%1' is not in the allowed list. Allowed commands: %2")
                 .arg(command)
-                .arg(allowedList));
+                .arg(allowedList)));
     }
 
     if (!isCommandSafe(command)) {
@@ -127,18 +113,18 @@ QFuture<QString> ExecuteTerminalCommandTool::executeAsync(const QJsonObject &inp
         const QString allowedChars = "alphanumeric characters, hyphens, underscores, dots, and slashes";
 #endif
         return QtFuture::makeReadyFuture(
-            QString("Error: Command '%1' contains potentially dangerous characters. "
+            ToolResult::error(QString("Error: Command '%1' contains potentially dangerous characters. "
                     "Only %2 are allowed.")
                 .arg(command)
-                .arg(allowedChars));
+                .arg(allowedChars)));
     }
 
     if (!args.isEmpty() && !areArgumentsSafe(args)) {
         LOG_MESSAGE(QString("ExecuteTerminalCommandTool: Arguments contain unsafe patterns: '%1'")
                         .arg(args));
         return QtFuture::makeReadyFuture(
-            QString("Error: Arguments contain potentially dangerous patterns (command chaining, "
-                    "redirection, or pipe operators)."));
+            ToolResult::error(QString("Error: Arguments contain potentially dangerous patterns (command chaining, "
+                    "redirection, or pipe operators).")));
     }
 
     auto *project = ProjectExplorer::ProjectManager::startupProject();
@@ -159,8 +145,8 @@ QFuture<QString> ExecuteTerminalCommandTool::executeAsync(const QJsonObject &inp
             QString("ExecuteTerminalCommandTool: Working directory '%1' is not accessible")
                 .arg(workingDir));
         return QtFuture::makeReadyFuture(
-            QString("Error: Working directory '%1' does not exist or is not accessible.")
-                .arg(workingDir));
+            ToolResult::error(QString("Error: Working directory '%1' does not exist or is not accessible.")
+                .arg(workingDir)));
     }
 
     LOG_MESSAGE(QString("ExecuteTerminalCommandTool: Executing command '%1' with args '%2' in '%3'")
@@ -168,8 +154,8 @@ QFuture<QString> ExecuteTerminalCommandTool::executeAsync(const QJsonObject &inp
                     .arg(args.isEmpty() ? "(no args)" : args)
                     .arg(workingDir));
 
-    auto promise = QSharedPointer<QPromise<QString>>::create();
-    QFuture<QString> future = promise->future();
+    auto promise = QSharedPointer<QPromise<ToolResult>>::create();
+    QFuture<ToolResult> future = promise->future();
     promise->start();
 
     auto resolved = std::make_shared<std::atomic<bool>>(false);
@@ -206,11 +192,11 @@ QFuture<QString> ExecuteTerminalCommandTool::executeAsync(const QJsonObject &inp
             process->deleteLater();
         });
 
-        promise->addResult(QString("Error: Command '%1 %2' timed out after %3 seconds. "
+        promise->addResult(ToolResult::error(QString("Error: Command '%1 %2' timed out after %3 seconds. "
                                    "The process has been terminated.")
                                .arg(command)
                                .arg(args.isEmpty() ? "" : args)
-                               .arg(timeoutMs / 1000));
+                               .arg(timeoutMs / 1000)));
         promise->finish();
         timeoutTimer->deleteLater();
     });
@@ -241,21 +227,21 @@ QFuture<QString> ExecuteTerminalCommandTool::executeAsync(const QJsonObject &inp
                                         "successfully (output size: %2 bytes)")
                                     .arg(fullCommand)
                                     .arg(outputSize));
-                    promise->addResult(
+                    promise->addResult(ToolResult::text(
                         QString("Command '%1' executed successfully.\n\nOutput:\n%2")
                             .arg(fullCommand)
-                            .arg(output.isEmpty() ? "(no output)" : output));
+                            .arg(output.isEmpty() ? "(no output)" : output)));
                 } else {
                     LOG_MESSAGE(QString("ExecuteTerminalCommandTool: Command '%1' failed with "
                                         "exit code %2 (output size: %3 bytes)")
                                     .arg(fullCommand)
                                     .arg(exitCode)
                                     .arg(outputSize));
-                    promise->addResult(
+                    promise->addResult(ToolResult::error(
                         QString("Command '%1' failed with exit code %2.\n\nOutput:\n%3")
                             .arg(fullCommand)
                             .arg(exitCode)
-                            .arg(output.isEmpty() ? "(no output)" : output));
+                            .arg(output.isEmpty() ? "(no output)" : output)));
                 }
             } else {
                 LOG_MESSAGE(QString("ExecuteTerminalCommandTool: Command '%1' crashed or was "
@@ -263,11 +249,11 @@ QFuture<QString> ExecuteTerminalCommandTool::executeAsync(const QJsonObject &inp
                                 .arg(fullCommand)
                                 .arg(outputSize));
                 const QString error = process->errorString();
-                promise->addResult(
+                promise->addResult(ToolResult::error(
                     QString("Command '%1' crashed or was terminated.\n\nError: %2\n\nOutput:\n%3")
                         .arg(fullCommand)
                         .arg(error)
-                        .arg(output.isEmpty() ? "(no output)" : output));
+                        .arg(output.isEmpty() ? "(no output)" : output)));
             }
 
             promise->finish();
@@ -317,7 +303,7 @@ QFuture<QString> ExecuteTerminalCommandTool::executeAsync(const QJsonObject &inp
             break;
         }
 
-        promise->addResult(QString("Error: %1").arg(errorMessage));
+        promise->addResult(ToolResult::error(QString("Error: %1").arg(errorMessage)));
         promise->finish();
         process->deleteLater();
     });

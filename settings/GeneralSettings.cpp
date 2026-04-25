@@ -1,21 +1,5 @@
-/* 
- * Copyright (C) 2024-2025 Petr Mironychev
- *
- * This file is part of QodeAssist.
- *
- * QodeAssist is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * QodeAssist is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with QodeAssist. If not, see <https://www.gnu.org/licenses/>.
- */
+// Copyright (C) 2024-2026 Petr Mironychev
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "GeneralSettings.hpp"
 
@@ -45,6 +29,7 @@
 #include "ConfigurationManager.hpp"
 #include "Logger.hpp"
 #include "SettingOptionsPage.h"
+#include "ProviderNameMigration.hpp"
 #include "SettingsConstants.hpp"
 #include "SettingsDialog.hpp"
 #include "SettingsTr.hpp"
@@ -120,7 +105,7 @@ GeneralSettings::GeneralSettings()
     qrConfigureApiKey.m_buttonText = Tr::tr("Configure API Key");
     qrConfigureApiKey.m_tooltip = Tr::tr("Open Provider Settings to configure API keys");
 
-    initStringAspect(ccProvider, Constants::CC_PROVIDER, Tr::tr(TrConstants::PROVIDER), "Ollama");
+    initStringAspect(ccProvider, Constants::CC_PROVIDER, Tr::tr(TrConstants::PROVIDER), "Ollama (Native)");
     ccProvider.setReadOnly(true);
     ccSelectProvider.m_buttonText = Tr::tr(TrConstants::SELECT);
 
@@ -133,18 +118,12 @@ GeneralSettings::GeneralSettings()
     ccSelectTemplate.m_buttonText = Tr::tr(TrConstants::SELECT);
 
     initStringAspect(ccUrl, Constants::CC_URL, Tr::tr(TrConstants::URL), "http://localhost:11434");
-    ccUrl.setHistoryCompleter(Constants::CC_CUSTOM_ENDPOINT_HISTORY);
+    ccUrl.setHistoryCompleter(Constants::CC_URL_HISTORY);
     ccSetUrl.m_buttonText = Tr::tr(TrConstants::SELECT);
 
-    ccEndpointMode.setSettingsKey(Constants::CC_ENDPOINT_MODE);
-    ccEndpointMode.setDisplayStyle(Utils::SelectionAspect::DisplayStyle::ComboBox);
-    ccEndpointMode.addOption("Auto");
-    ccEndpointMode.addOption("Custom");
-    ccEndpointMode.addOption("FIM");
-    ccEndpointMode.addOption("Chat");
-    ccEndpointMode.setDefaultValue("Auto");
 
-    initStringAspect(ccCustomEndpoint, Constants::CC_CUSTOM_ENDPOINT, Tr::tr(TrConstants::ENDPOINT_MODE), "");
+    initStringAspect(ccCustomEndpoint, Constants::CC_CUSTOM_ENDPOINT, Tr::tr(TrConstants::CUSTOM_ENDPOINT), "");
+
     ccCustomEndpoint.setHistoryCompleter(Constants::CC_CUSTOM_ENDPOINT_HISTORY);
 
     ccStatus.setDisplayStyle(Utils::StringAspect::LabelDisplay);
@@ -176,7 +155,10 @@ GeneralSettings::GeneralSettings()
     preset1Language.addOption("python");
 
     initStringAspect(
-        ccPreset1Provider, Constants::CC_PRESET1_PROVIDER, Tr::tr(TrConstants::PROVIDER), "Ollama");
+        ccPreset1Provider,
+        Constants::CC_PRESET1_PROVIDER,
+        Tr::tr(TrConstants::PROVIDER),
+        "Ollama (Native)");
     ccPreset1Provider.setReadOnly(true);
     ccPreset1SelectProvider.m_buttonText = Tr::tr(TrConstants::SELECT);
 
@@ -185,18 +167,10 @@ GeneralSettings::GeneralSettings()
     ccPreset1Url.setHistoryCompleter(Constants::CC_PRESET1_URL_HISTORY);
     ccPreset1SetUrl.m_buttonText = Tr::tr(TrConstants::SELECT);
 
-    ccPreset1EndpointMode.setSettingsKey(Constants::CC_PRESET1_ENDPOINT_MODE);
-    ccPreset1EndpointMode.setDisplayStyle(Utils::SelectionAspect::DisplayStyle::ComboBox);
-    ccPreset1EndpointMode.addOption("Auto");
-    ccPreset1EndpointMode.addOption("Custom");
-    ccPreset1EndpointMode.addOption("FIM");
-    ccPreset1EndpointMode.addOption("Chat");
-    ccPreset1EndpointMode.setDefaultValue("Auto");
-
     initStringAspect(
         ccPreset1CustomEndpoint,
         Constants::CC_PRESET1_CUSTOM_ENDPOINT,
-        Tr::tr(TrConstants::ENDPOINT_MODE),
+        Tr::tr(TrConstants::CUSTOM_ENDPOINT),
         "");
     ccPreset1CustomEndpoint.setHistoryCompleter(Constants::CC_PRESET1_CUSTOM_ENDPOINT_HISTORY);
 
@@ -211,11 +185,13 @@ GeneralSettings::GeneralSettings()
     ccPreset1SelectTemplate.m_buttonText = Tr::tr(TrConstants::SELECT);
 
     // chat assistance
-    initStringAspect(caProvider, Constants::CA_PROVIDER, Tr::tr(TrConstants::PROVIDER), "Ollama");
+    initStringAspect(caProvider, Constants::CA_PROVIDER, Tr::tr(TrConstants::PROVIDER), "Ollama (Native)");
+
     caProvider.setReadOnly(true);
     caSelectProvider.m_buttonText = Tr::tr(TrConstants::SELECT);
 
-    initStringAspect(caModel, Constants::CA_MODEL, Tr::tr(TrConstants::MODEL), "qwen2.5-coder:7b");
+    initStringAspect(caModel, Constants::CA_MODEL, Tr::tr(TrConstants::MODEL), "qwen3.5:9b");
+
     caModel.setHistoryCompleter(Constants::CA_MODEL_HISTORY);
     caSelectModel.m_buttonText = Tr::tr(TrConstants::SELECT);
 
@@ -228,15 +204,8 @@ GeneralSettings::GeneralSettings()
     caUrl.setHistoryCompleter(Constants::CA_URL_HISTORY);
     caSetUrl.m_buttonText = Tr::tr(TrConstants::SELECT);
 
-    caEndpointMode.setSettingsKey(Constants::CA_ENDPOINT_MODE);
-    caEndpointMode.setDisplayStyle(Utils::SelectionAspect::DisplayStyle::ComboBox);
-    caEndpointMode.addOption("Auto");
-    caEndpointMode.addOption("Custom");
-    caEndpointMode.addOption("FIM");
-    caEndpointMode.addOption("Chat");
-    caEndpointMode.setDefaultValue("Auto");
+    initStringAspect(caCustomEndpoint, Constants::CA_CUSTOM_ENDPOINT, Tr::tr(TrConstants::CUSTOM_ENDPOINT), "");
 
-    initStringAspect(caCustomEndpoint, Constants::CA_CUSTOM_ENDPOINT, Tr::tr(TrConstants::ENDPOINT_MODE), "");
     caCustomEndpoint.setHistoryCompleter(Constants::CA_CUSTOM_ENDPOINT_HISTORY);
 
     caStatus.setDisplayStyle(Utils::StringAspect::LabelDisplay);
@@ -256,11 +225,12 @@ GeneralSettings::GeneralSettings()
     caOpenConfigFolder.m_isCompact = true;
 
     // quick refactor settings
-    initStringAspect(qrProvider, Constants::QR_PROVIDER, Tr::tr(TrConstants::PROVIDER), "Ollama");
+    initStringAspect(qrProvider, Constants::QR_PROVIDER, Tr::tr(TrConstants::PROVIDER), "Ollama (Native)");
     qrProvider.setReadOnly(true);
     qrSelectProvider.m_buttonText = Tr::tr(TrConstants::SELECT);
 
-    initStringAspect(qrModel, Constants::QR_MODEL, Tr::tr(TrConstants::MODEL), "qwen2.5-coder:7b");
+    initStringAspect(qrModel, Constants::QR_MODEL, Tr::tr(TrConstants::MODEL), "qwen3.5:9b");
+
     qrModel.setHistoryCompleter(Constants::QR_MODEL_HISTORY);
     qrSelectModel.m_buttonText = Tr::tr(TrConstants::SELECT);
 
@@ -273,15 +243,7 @@ GeneralSettings::GeneralSettings()
     qrUrl.setHistoryCompleter(Constants::QR_URL_HISTORY);
     qrSetUrl.m_buttonText = Tr::tr(TrConstants::SELECT);
 
-    qrEndpointMode.setSettingsKey(Constants::QR_ENDPOINT_MODE);
-    qrEndpointMode.setDisplayStyle(Utils::SelectionAspect::DisplayStyle::ComboBox);
-    qrEndpointMode.addOption("Auto");
-    qrEndpointMode.addOption("Custom");
-    qrEndpointMode.addOption("FIM");
-    qrEndpointMode.addOption("Chat");
-    qrEndpointMode.setDefaultValue("Auto");
-
-    initStringAspect(qrCustomEndpoint, Constants::QR_CUSTOM_ENDPOINT, Tr::tr(TrConstants::ENDPOINT_MODE), "");
+    initStringAspect(qrCustomEndpoint, Constants::QR_CUSTOM_ENDPOINT, Tr::tr(TrConstants::CUSTOM_ENDPOINT), "");
     qrCustomEndpoint.setHistoryCompleter(Constants::QR_CUSTOM_ENDPOINT_HISTORY);
 
     qrStatus.setDisplayStyle(Utils::StringAspect::LabelDisplay);
@@ -314,15 +276,22 @@ GeneralSettings::GeneralSettings()
 
     readSettings();
 
+    auto migrateProviderAspect = [](Utils::StringAspect &aspect) {
+        const QString migrated = migrateProviderName(aspect.value());
+        if (migrated != aspect.value())
+            aspect.setValue(migrated);
+    };
+    migrateProviderAspect(ccProvider);
+    migrateProviderAspect(ccPreset1Provider);
+    migrateProviderAspect(caProvider);
+    migrateProviderAspect(qrProvider);
+    writeSettings();
+
     Logger::instance().setLoggingEnabled(enableLogging());
 
     setupConnections();
 
     updatePreset1Visiblity(specifyPreset1.value());
-    ccCustomEndpoint.setEnabled(ccEndpointMode.stringValue() == "Custom");
-    ccPreset1CustomEndpoint.setEnabled(ccPreset1EndpointMode.stringValue() == "Custom");
-    caCustomEndpoint.setEnabled(caEndpointMode.stringValue() == "Custom");
-    qrCustomEndpoint.setEnabled(qrEndpointMode.stringValue() == "Custom");
 
     setLayouter([this]() {
         using namespace Layouting;
@@ -330,28 +299,28 @@ GeneralSettings::GeneralSettings()
         auto ccGrid = Grid{};
         ccGrid.addRow({ccProvider, ccSelectProvider});
         ccGrid.addRow({ccUrl, ccSetUrl});
-        ccGrid.addRow({ccCustomEndpoint, ccEndpointMode});
+        ccGrid.addRow({ccCustomEndpoint});
         ccGrid.addRow({ccModel, ccSelectModel});
         ccGrid.addRow({ccTemplate, ccSelectTemplate, ccShowTemplateInfo});
 
         auto ccPreset1Grid = Grid{};
         ccPreset1Grid.addRow({ccPreset1Provider, ccPreset1SelectProvider});
         ccPreset1Grid.addRow({ccPreset1Url, ccPreset1SetUrl});
-        ccPreset1Grid.addRow({ccPreset1CustomEndpoint, ccPreset1EndpointMode});
+        ccPreset1Grid.addRow({ccPreset1CustomEndpoint});
         ccPreset1Grid.addRow({ccPreset1Model, ccPreset1SelectModel});
         ccPreset1Grid.addRow({ccPreset1Template, ccPreset1SelectTemplate});
 
         auto caGrid = Grid{};
         caGrid.addRow({caProvider, caSelectProvider});
         caGrid.addRow({caUrl, caSetUrl});
-        caGrid.addRow({caCustomEndpoint, caEndpointMode});
+        caGrid.addRow({caCustomEndpoint});
         caGrid.addRow({caModel, caSelectModel});
         caGrid.addRow({caTemplate, caSelectTemplate, caShowTemplateInfo});
 
         auto qrGrid = Grid{};
         qrGrid.addRow({qrProvider, qrSelectProvider});
         qrGrid.addRow({qrUrl, qrSetUrl});
-        qrGrid.addRow({qrCustomEndpoint, qrEndpointMode});
+        qrGrid.addRow({qrCustomEndpoint});
         qrGrid.addRow({qrModel, qrSelectModel});
         qrGrid.addRow({qrTemplate, qrSelectTemplate, qrShowTemplateInfo});
 
@@ -599,7 +568,6 @@ void GeneralSettings::updatePreset1Visiblity(bool state)
     ccPreset1SelectModel.updateVisibility(specifyPreset1.volatileValue());
     ccPreset1Template.setVisible(specifyPreset1.volatileValue());
     ccPreset1SelectTemplate.updateVisibility(specifyPreset1.volatileValue());
-    ccPreset1EndpointMode.setVisible(specifyPreset1.volatileValue());
     ccPreset1CustomEndpoint.setVisible(specifyPreset1.volatileValue());
 }
 
@@ -643,24 +611,6 @@ void GeneralSettings::setupConnections()
     connect(&specifyPreset1, &Utils::BoolAspect::volatileValueChanged, this, [this]() {
         updatePreset1Visiblity(specifyPreset1.volatileValue());
     });
-    connect(&ccEndpointMode, &Utils::BaseAspect::volatileValueChanged, this, [this]() {
-        ccCustomEndpoint.setEnabled(
-            ccEndpointMode.volatileValue() == ccEndpointMode.indexForDisplay("Custom"));
-    });
-    connect(&ccPreset1EndpointMode, &Utils::BaseAspect::volatileValueChanged, this, [this]() {
-        ccPreset1CustomEndpoint.setEnabled(
-            ccPreset1EndpointMode.volatileValue()
-            == ccPreset1EndpointMode.indexForDisplay("Custom"));
-    });
-    connect(&caEndpointMode, &Utils::BaseAspect::volatileValueChanged, this, [this]() {
-        caCustomEndpoint.setEnabled(
-            caEndpointMode.volatileValue() == caEndpointMode.indexForDisplay("Custom"));
-    });
-    connect(&qrEndpointMode, &Utils::BaseAspect::volatileValueChanged, this, [this]() {
-        qrCustomEndpoint.setEnabled(
-            qrEndpointMode.volatileValue() == qrEndpointMode.indexForDisplay("Custom"));
-    });
-
     connect(&ccShowTemplateInfo, &ButtonAspect::clicked, this, [this]() {
         showTemplateInfoDialog(ccTemplateDescription, ccTemplate.value());
     });
@@ -756,17 +706,13 @@ void GeneralSettings::resetPageToDefaults()
         resetAspect(ccPreset1Model);
         resetAspect(ccPreset1Template);
         resetAspect(ccPreset1Url);
-        resetAspect(ccEndpointMode);
         resetAspect(ccCustomEndpoint);
-        resetAspect(ccPreset1EndpointMode);
         resetAspect(ccPreset1CustomEndpoint);
-        resetAspect(caEndpointMode);
         resetAspect(caCustomEndpoint);
         resetAspect(qrProvider);
         resetAspect(qrModel);
         resetAspect(qrTemplate);
         resetAspect(qrUrl);
-        resetAspect(qrEndpointMode);
         resetAspect(qrCustomEndpoint);
         writeSettings();
     }
@@ -796,7 +742,6 @@ void GeneralSettings::onSaveConfiguration(const QString &prefix)
         config.model = ccModel.value();
         config.templateName = ccTemplate.value();
         config.url = ccUrl.value();
-        config.endpointMode = ccEndpointMode.stringValue();
         config.customEndpoint = ccCustomEndpoint.value();
         config.type = ConfigurationType::CodeCompletion;
     } else if (prefix == "ca") {
@@ -804,7 +749,6 @@ void GeneralSettings::onSaveConfiguration(const QString &prefix)
         config.model = caModel.value();
         config.templateName = caTemplate.value();
         config.url = caUrl.value();
-        config.endpointMode = caEndpointMode.stringValue();
         config.customEndpoint = caCustomEndpoint.value();
         config.type = ConfigurationType::Chat;
     } else if (prefix == "qr") {
@@ -812,7 +756,6 @@ void GeneralSettings::onSaveConfiguration(const QString &prefix)
         config.model = qrModel.value();
         config.templateName = qrTemplate.value();
         config.url = qrUrl.value();
-        config.endpointMode = qrEndpointMode.stringValue();
         config.customEndpoint = qrCustomEndpoint.value();
         config.type = ConfigurationType::QuickRefactor;
     }
@@ -949,21 +892,18 @@ void GeneralSettings::onLoadConfiguration(const QString &prefix)
                 ccModel.setValue(config.model);
                 ccTemplate.setValue(config.templateName);
                 ccUrl.setValue(config.url);
-                ccEndpointMode.setValue(ccEndpointMode.indexForDisplay(config.endpointMode));
                 ccCustomEndpoint.setValue(config.customEndpoint);
             } else if (prefix == "ca") {
                 caProvider.setValue(config.provider);
                 caModel.setValue(config.model);
                 caTemplate.setValue(config.templateName);
                 caUrl.setValue(config.url);
-                caEndpointMode.setValue(caEndpointMode.indexForDisplay(config.endpointMode));
                 caCustomEndpoint.setValue(config.customEndpoint);
             } else if (prefix == "qr") {
                 qrProvider.setValue(config.provider);
                 qrModel.setValue(config.model);
                 qrTemplate.setValue(config.templateName);
                 qrUrl.setValue(config.url);
-                qrEndpointMode.setValue(qrEndpointMode.indexForDisplay(config.endpointMode));
                 qrCustomEndpoint.setValue(config.customEndpoint);
             }
 
@@ -1031,21 +971,18 @@ void GeneralSettings::applyPresetConfiguration(int index, ConfigurationType type
         ccModel.setValue(config.model);
         ccTemplate.setValue(config.templateName);
         ccUrl.setValue(config.url);
-        ccEndpointMode.setValue(ccEndpointMode.indexForDisplay(config.endpointMode));
         ccCustomEndpoint.setValue(config.customEndpoint);
     } else if (type == ConfigurationType::Chat) {
         caProvider.setValue(config.provider);
         caModel.setValue(config.model);
         caTemplate.setValue(config.templateName);
         caUrl.setValue(config.url);
-        caEndpointMode.setValue(caEndpointMode.indexForDisplay(config.endpointMode));
         caCustomEndpoint.setValue(config.customEndpoint);
     } else if (type == ConfigurationType::QuickRefactor) {
         qrProvider.setValue(config.provider);
         qrModel.setValue(config.model);
         qrTemplate.setValue(config.templateName);
         qrUrl.setValue(config.url);
-        qrEndpointMode.setValue(qrEndpointMode.indexForDisplay(config.endpointMode));
         qrCustomEndpoint.setValue(config.customEndpoint);
     }
     

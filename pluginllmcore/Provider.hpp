@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2024-2025 Petr Mironychev
- *
- * This file is part of QodeAssist.
- *
- * QodeAssist is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * QodeAssist is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with QodeAssist. If not, see <https://www.gnu.org/licenses/>.
- */
+// Copyright (C) 2024-2026 Petr Mironychev
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #pragma once
 
@@ -26,11 +10,10 @@
 #include <utils/environment.h>
 
 #include "ContextData.hpp"
-#include "IToolsManager.hpp"
 #include "PromptTemplate.hpp"
 #include "RequestType.hpp"
 
-namespace LLMCore {
+namespace LLMQore {
 class BaseClient;
 class ToolsManager;
 }
@@ -58,8 +41,6 @@ public:
 
     virtual QString name() const = 0;
     virtual QString url() const = 0;
-    virtual QString completionEndpoint() const = 0;
-    virtual QString chatEndpoint() const = 0;
     virtual void prepareRequest(
         QJsonObject &request,
         PluginLLMCore::PromptTemplate *prompt,
@@ -72,12 +53,13 @@ public:
     virtual ProviderID providerID() const = 0;
     virtual ProviderCapabilities capabilities() const { return {}; }
 
-    virtual ::LLMCore::BaseClient *client() const = 0;
+    virtual ::LLMQore::BaseClient *client() const = 0;
     virtual QString apiKey() const = 0;
 
-    RequestID sendRequest(const QUrl &url, const QJsonObject &payload);
+    virtual RequestID sendRequest(
+        const QUrl &url, const QJsonObject &payload, const QString &endpoint);
     void cancelRequest(const RequestID &requestId);
-    ::LLMCore::ToolsManager *toolsManager() const;
+    ::LLMQore::ToolsManager *toolsManager() const;
 };
 
 } // namespace QodeAssist::PluginLLMCore

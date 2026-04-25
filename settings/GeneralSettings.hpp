@@ -1,21 +1,5 @@
-/* 
- * Copyright (C) 2024-2025 Petr Mironychev
- *
- * This file is part of QodeAssist.
- *
- * QodeAssist is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * QodeAssist is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with QodeAssist. If not, see <https://www.gnu.org/licenses/>.
- */
+// Copyright (C) 2024-2026 Petr Mironychev
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #pragma once
 
@@ -66,7 +50,6 @@ public:
     Utils::StringAspect ccUrl{this};
     ButtonAspect ccSetUrl{this};
 
-    Utils::SelectionAspect ccEndpointMode{this};
     Utils::StringAspect ccCustomEndpoint{this};
 
     Utils::StringAspect ccStatus{this};
@@ -89,7 +72,6 @@ public:
     Utils::StringAspect ccPreset1Url{this};
     ButtonAspect ccPreset1SetUrl{this};
 
-    Utils::SelectionAspect ccPreset1EndpointMode{this};
     Utils::StringAspect ccPreset1CustomEndpoint{this};
 
     Utils::StringAspect ccPreset1Model{this};
@@ -114,7 +96,6 @@ public:
     Utils::StringAspect caUrl{this};
     ButtonAspect caSetUrl{this};
 
-    Utils::SelectionAspect caEndpointMode{this};
     Utils::StringAspect caCustomEndpoint{this};
 
     Utils::StringAspect caStatus{this};
@@ -142,7 +123,6 @@ public:
     Utils::StringAspect qrUrl{this};
     ButtonAspect qrSetUrl{this};
 
-    Utils::SelectionAspect qrEndpointMode{this};
     Utils::StringAspect qrCustomEndpoint{this};
 
     Utils::StringAspect qrStatus{this};

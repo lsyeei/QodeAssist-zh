@@ -1,26 +1,12 @@
-/*
- * Copyright (C) 2024-2025 Petr Mironychev
- *
- * This file is part of QodeAssist.
- *
- * QodeAssist is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * QodeAssist is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with QodeAssist. If not, see <https://www.gnu.org/licenses/>.
- */
+// Copyright (C) 2024-2026 Petr Mironychev
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "Provider.hpp"
 
-#include <LLMCore/BaseClient.hpp>
-#include <LLMCore/ToolsManager.hpp>
+#include <LLMQore/BaseClient.hpp>
+#include <LLMQore/ToolsManager.hpp>
+
+#include <QJsonDocument>
 
 #include <Logger.hpp>
 
@@ -30,19 +16,21 @@ Provider::Provider(QObject *parent)
     : QObject(parent)
 {}
 
-RequestID Provider::sendRequest(const QUrl &url, const QJsonObject &payload)
+RequestID Provider::sendRequest(
+    const QUrl &url, const QJsonObject &payload, const QString &endpoint)
 {
     auto *c = client();
 
-    QUrl baseUrl(url);
-    baseUrl.setPath("");
-    c->setUrl(baseUrl.toString());
+    c->setUrl(url.toString());
     c->setApiKey(apiKey());
 
-    auto requestId = c->sendMessage(payload);
+    auto requestId = c->sendMessage(payload, endpoint);
 
     LOG_MESSAGE(
-        QString("%1: Sending request %2 to %3").arg(name(), requestId, url.toString()));
+        QString("%1: Sending request %2 to %3%4").arg(name(), requestId, url.toString(), endpoint));
+    LOG_MESSAGE(
+        QString("%1: Payload:\n%2")
+            .arg(name(), QString::fromUtf8(QJsonDocument(payload).toJson(QJsonDocument::Indented))));
 
     return requestId;
 }
@@ -53,7 +41,7 @@ void Provider::cancelRequest(const RequestID &requestId)
     client()->cancelRequest(requestId);
 }
 
-::LLMCore::ToolsManager *Provider::toolsManager() const
+::LLMQore::ToolsManager *Provider::toolsManager() const
 {
     return client()->tools();
 }

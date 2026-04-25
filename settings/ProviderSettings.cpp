@@ -1,21 +1,5 @@
-/* 
- * Copyright (C) 2024-2025 Petr Mironychev
- *
- * This file is part of QodeAssist.
- *
- * QodeAssist is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * QodeAssist is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with QodeAssist. If not, see <https://www.gnu.org/licenses/>.
- */
+// Copyright (C) 2024-2026 Petr Mironychev
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "ProviderSettings.hpp"
 
@@ -114,7 +98,16 @@ ProviderSettings::ProviderSettings()
     ollamaBasicAuthApiKey.setDefaultValue("");
     ollamaBasicAuthApiKey.setAutoApply(true);
 
-    resetToDefaults.m_buttonText = Tr::tr("Reset Page to Defaults");
+    // llama.cpp Settings
+    llamaCppApiKey.setSettingsKey(Constants::LLAMA_CPP_API_KEY);
+    llamaCppApiKey.setLabelText(Tr::tr("llama.cpp API Key:"));
+    llamaCppApiKey.setDisplayStyle(Utils::StringAspect::LineEditDisplay);
+    llamaCppApiKey.setPlaceHolderText(Tr::tr("Enter your API key here"));
+    llamaCppApiKey.setHistoryCompleter(Constants::LLAMA_CPP_API_KEY_HISTORY);
+    llamaCppApiKey.setDefaultValue("");
+    llamaCppApiKey.setAutoApply(true);
+
+    resetToDefaults.m_buttonText = Tr::tr(TrConstants::RESET_TO_DEFAULTS);
 
     readSettings();
 
@@ -139,6 +132,8 @@ ProviderSettings::ProviderSettings()
             Group{title(Tr::tr("Google AI Settings")), Column{googleAiApiKey}},
             Space{8},
             Group{title(Tr::tr("Ollama Settings")), Column{ollamaBasicAuthApiKey}},
+            Space{8},
+            Group{title(Tr::tr("llama.cpp Settings")), Column{llamaCppApiKey}},
             Stretch{1}};
     });
 }
@@ -167,6 +162,9 @@ void ProviderSettings::setupConnections()
     connect(&ollamaBasicAuthApiKey, &ButtonAspect::changed, this, [this]() {
         ollamaBasicAuthApiKey.writeSettings();
     });
+    connect(&llamaCppApiKey, &ButtonAspect::changed, this, [this]() {
+        llamaCppApiKey.writeSettings();
+    });
 }
 
 void ProviderSettings::resetSettingsToDefaults()
@@ -186,6 +184,7 @@ void ProviderSettings::resetSettingsToDefaults()
         resetAspect(mistralAiApiKey);
         resetAspect(googleAiApiKey);
         resetAspect(ollamaBasicAuthApiKey);
+        resetAspect(llamaCppApiKey);
         writeSettings();
     }
 }

@@ -1,25 +1,9 @@
-/*
- * Copyright (C) 2024-2025 Petr Mironychev
- *
- * This file is part of QodeAssist.
- *
- * QodeAssist is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * QodeAssist is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with QodeAssist. If not, see <https://www.gnu.org/licenses/>.
- */
+// Copyright (C) 2024-2026 Petr Mironychev
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #pragma once
 
-#include <LLMCore/OpenAIClient.hpp>
+#include <LLMQore/OpenAIClient.hpp>
 #include <pluginllmcore/Provider.hpp>
 
 namespace QodeAssist::Providers {
@@ -32,8 +16,6 @@ public:
 
     QString name() const override;
     QString url() const override;
-    QString completionEndpoint() const override;
-    QString chatEndpoint() const override;
     void prepareRequest(
         QJsonObject &request,
         PluginLLMCore::PromptTemplate *prompt,
@@ -45,11 +27,11 @@ public:
     PluginLLMCore::ProviderID providerID() const override;
     PluginLLMCore::ProviderCapabilities capabilities() const override;
 
-    ::LLMCore::BaseClient *client() const override;
+    ::LLMQore::BaseClient *client() const override;
     QString apiKey() const override;
 
 private:
-    ::LLMCore::OpenAIClient *m_client;
+    ::LLMQore::OpenAIClient *m_client;
 };
 
 } // namespace QodeAssist::Providers

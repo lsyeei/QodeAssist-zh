@@ -1,24 +1,9 @@
-/*
- * Copyright (C) 2024-2025 Petr Mironychev
- *
- * This file is part of QodeAssist.
- *
- * QodeAssist is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * QodeAssist is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with QodeAssist. If not, see <https://www.gnu.org/licenses/>.
- */
+// Copyright (C) 2024-2026 Petr Mironychev
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "TodoTool.hpp"
-#include "ToolExceptions.hpp"
+
+#include <LLMQore/ToolExceptions.hpp>
 
 #include <QJsonArray>
 #include <QJsonObject>
@@ -100,9 +85,9 @@ QJsonObject TodoTool::parametersSchema() const
     return definition;
 }
 
-QFuture<QString> TodoTool::executeAsync(const QJsonObject &input)
+QFuture<LLMQore::ToolResult> TodoTool::executeAsync(const QJsonObject &input)
 {
-    return QtConcurrent::run([this, input]() -> QString {
+    return QtConcurrent::run([this, input]() -> LLMQore::ToolResult {
         QMutexLocker sessionLocker(&m_mutex);
         QString sessionId = m_currentSessionId.isEmpty() ? "current" : m_currentSessionId;
         sessionLocker.unlock();
@@ -111,14 +96,14 @@ QFuture<QString> TodoTool::executeAsync(const QJsonObject &input)
 
         if (operation == "add") {
             if (!input.contains("tasks") || !input.value("tasks").isArray()) {
-                throw ToolRuntimeError(
+                throw LLMQore::ToolRuntimeError(
                     tr("Error: 'tasks' parameter (array) is required for 'add' operation. "
                        "Example: {\"operation\": \"add\", \"tasks\": [\"Task 1\", \"Task 2\"]}"));
             }
 
             const QJsonArray tasksArray = input.value("tasks").toArray();
             if (tasksArray.isEmpty()) {
-                throw ToolRuntimeError(
+                throw LLMQore::ToolRuntimeError(
                     tr("Error: 'tasks' array cannot be empty. Provide at least one task."));
             }
 
@@ -131,22 +116,22 @@ QFuture<QString> TodoTool::executeAsync(const QJsonObject &input)
             }
 
             if (tasks.isEmpty()) {
-                throw ToolRuntimeError(
+                throw LLMQore::ToolRuntimeError(
                     tr("Error: All tasks in 'tasks' array are empty strings."));
             }
 
-            return addTodos(sessionId, tasks);
+            return LLMQore::ToolResult::text(addTodos(sessionId, tasks));
 
         } else if (operation == "complete") {
             if (!input.contains("todo_ids") || !input.value("todo_ids").isArray()) {
-                throw ToolRuntimeError(
+                throw LLMQore::ToolRuntimeError(
                     tr("Error: 'todo_ids' parameter (array) is required for 'complete' operation. "
                        "Example: {\"operation\": \"complete\", \"todo_ids\": [1, 2, 3]}"));
             }
 
             const QJsonArray idsArray = input.value("todo_ids").toArray();
             if (idsArray.isEmpty()) {
-                throw ToolRuntimeError(
+                throw LLMQore::ToolRuntimeError(
                     tr("Error: 'todo_ids' array cannot be empty. Provide at least one ID."));
             }
 
@@ -159,18 +144,18 @@ QFuture<QString> TodoTool::executeAsync(const QJsonObject &input)
             }
 
             if (ids.isEmpty()) {
-                throw ToolRuntimeError(
+                throw LLMQore::ToolRuntimeError(
                     tr("Error: All IDs in 'todo_ids' array are invalid. IDs must be positive "
                        "integers."));
             }
 
-            return completeTodos(sessionId, ids);
+            return LLMQore::ToolResult::text(completeTodos(sessionId, ids));
 
         } else if (operation == "list") {
-            return listTodos(sessionId);
+            return LLMQore::ToolResult::text(listTodos(sessionId));
 
         } else {
-            throw ToolRuntimeError(
+            throw LLMQore::ToolRuntimeError(
                 tr("Error: Unknown operation '%1'. Valid operations: 'add', 'complete', 'list'")
                     .arg(operation));
         }
@@ -215,7 +200,7 @@ QString TodoTool::completeTodos(const QString &sessionId, const QList<int> &todo
     QMutexLocker locker(&m_mutex);
 
     if (!m_sessionTodos.contains(sessionId)) {
-        throw ToolRuntimeError(tr("Error: No todos found in this session"));
+        throw LLMQore::ToolRuntimeError(tr("Error: No todos found in this session"));
     }
 
     auto &todos = m_sessionTodos[sessionId];
