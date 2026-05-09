@@ -56,6 +56,7 @@ private:
     QString m_accumulatedSummary;
     PluginLLMCore::Provider *m_provider = nullptr;
     ChatModel *m_chatModel = nullptr;
+    int m_splitIndex = 0;
 
     QList<QMetaObject::Connection> m_connections;
 };

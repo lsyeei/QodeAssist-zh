@@ -174,9 +174,26 @@ void ChatCompressor::buildRequestPayload(
         "You are a helpful assistant that creates concise summaries of conversations. "
         "Your summaries preserve key information, technical details, and the flow of discussion.");
 
+    auto history = m_chatModel->getChatHistory();
+
+    // Find split point: keep the last 2 user messages (and their corresponding responses)
+    m_splitIndex = 0;
+    int userCount = 0;
+    for (int i = history.size() - 1; i >= 0; --i) {
+        if (history[i].role == ChatModel::ChatRole::User) {
+            userCount++;
+            if (userCount == 2) {
+                m_splitIndex = i;
+                break;
+            }
+        }
+    }
+
+    // Only send messages before the split point to LLM for compression
     QVector<PluginLLMCore::Message> messages;
-    for (const auto &msg : m_chatModel->getChatHistory()) {
-        if (msg.role == ChatModel::ChatRole::Tool 
+    for (int i = 0; i < m_splitIndex; ++i) {
+        const auto &msg = history[i];
+        if (msg.role == ChatModel::ChatRole::Tool
             || msg.role == ChatModel::ChatRole::FileEdit
             || msg.role == ChatModel::ChatRole::Thinking)
             continue;
@@ -227,7 +244,18 @@ bool ChatCompressor::createCompressedChatFile(
     summaryMessage["attachments"] = QJsonArray();
     summaryMessage["images"] = QJsonArray();
 
-    root["messages"] = QJsonArray{summaryMessage};
+    QJsonArray newMessages;
+    newMessages.append(summaryMessage);
+
+    // Keep recent messages (last 2 rounds) from the original chat
+    if (m_splitIndex > 0) {
+        QJsonArray originalMessages = root["messages"].toArray();
+        for (int i = m_splitIndex; i < originalMessages.size(); ++i) {
+            newMessages.append(originalMessages[i].toObject());
+        }
+    }
+
+    root["messages"] = newMessages;
 
     if (QFile::exists(destPath))
         QFile::remove(destPath);
@@ -285,6 +313,7 @@ void ChatCompressor::cleanupState()
     m_accumulatedSummary.clear();
     m_chatModel = nullptr;
     m_provider = nullptr;
+    m_splitIndex = 0;
 }
 
 } // namespace QodeAssist::Chat

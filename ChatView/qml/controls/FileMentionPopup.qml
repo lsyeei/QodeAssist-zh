@@ -4,6 +4,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtQuick.Controls.Basic as QQC
 
 FileMentionItem {
     id: root
@@ -36,7 +37,7 @@ FileMentionItem {
         currentIndex: root.currentIndex
         clip: true
 
-        ScrollBar.vertical: ScrollBar {
+        ScrollBar.vertical: QQC.ScrollBar {
             policy: ScrollBar.AsNeeded
         }
 
@@ -115,24 +116,31 @@ FileMentionItem {
                     font.bold: true
                     font.italic: delegateItem.isProject
                     elide: Text.ElideRight
+                    ToolTip: {
+                        visible: root.currentIndex === delegateItem.index
+                        timeout: 1000
+                        text: delegateItem.isProject
+                              ? "→"
+                              : (delegateItem.modelData.projectName + " / " + delegateItem.modelData.relativePath)
+                    }
                 }
 
-                Text {
-                    Layout.fillWidth: true
-                    text: delegateItem.isProject
-                          ? "→"
-                          : (delegateItem.modelData.projectName + " / " + delegateItem.modelData.relativePath)
-                    color: delegateItem.index === root.currentIndex
-                           ? (delegateItem.isProject
-                              ? palette.highlightedText
-                              : Qt.rgba(palette.highlightedText.r,
-                                        palette.highlightedText.g,
-                                        palette.highlightedText.b, 0.7))
-                           : palette.mid
-                    font.pixelSize: delegateItem.isProject ? 12 : 11
-                    elide: Text.ElideLeft
-                    horizontalAlignment: delegateItem.isProject ? Text.AlignLeft : Text.AlignRight
-                }
+                // Text {
+                //     Layout.fillWidth: true
+                //     text: delegateItem.isProject
+                //           ? "→"
+                //           : (delegateItem.modelData.projectName + " / " + delegateItem.modelData.relativePath)
+                //     color: delegateItem.index === root.currentIndex
+                //            ? (delegateItem.isProject
+                //               ? palette.highlightedText
+                //               : Qt.rgba(palette.highlightedText.r,
+                //                         palette.highlightedText.g,
+                //                         palette.highlightedText.b, 0.7))
+                //            : palette.mid
+                //     font.pixelSize: delegateItem.isProject ? 12 : 11
+                //     elide: Text.ElideLeft
+                //     horizontalAlignment: delegateItem.isProject ? Text.AlignLeft : Text.AlignRight
+                // }
             }
 
             MouseArea {

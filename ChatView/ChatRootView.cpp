@@ -6,6 +6,7 @@
 #include <QClipboard>
 #include <QDesktopServices>
 #include <QDir>
+#include <QEventLoop>
 #include <QFile>
 #include <QFileDialog>
 #include <QFileInfo>
@@ -276,19 +277,57 @@ ChatModel *ChatRootView::chatModel() const
 
 void ChatRootView::sendMessage(const QString &message)
 {
-    if (m_inputTokensCount > m_chatModel->tokensThreshold()) {
-        QMessageBox::StandardButton reply = QMessageBox::question(
-            Core::ICore::dialogParent(),
-            tr("Token Limit Exceeded"),
-            tr("The chat history has exceeded the token limit.\n"
-               "Would you like to create new chat?"),
-            QMessageBox::Yes | QMessageBox::No);
+    updateInputTokensCount();
 
-        if (reply == QMessageBox::Yes) {
-            autosave();
-            m_chatModel->clear();
-            setRecentFilePath(QString{});
-            return;
+    if (m_inputTokensCount > m_chatModel->tokensThreshold()) {
+        // Save current chat to file for compression
+        QString filePath = m_recentFilePath;
+        if (filePath.isEmpty()) {
+            filePath = getAutosaveFilePath(message, m_attachmentFiles);
+        }
+        if (filePath.isEmpty()) {
+            filePath = getAutosaveFilePath();
+        }
+
+        if (!filePath.isEmpty()) {
+            // Force save the chat regardless of autosave setting
+            ChatSerializer::saveToFile(m_chatModel, filePath);
+            setRecentFilePath(filePath);
+
+            // Synchronously wait for compression to complete
+            QEventLoop loop;
+            bool compressionSuccess = false;
+
+            QMetaObject::Connection connCompleted = connect(
+                m_chatCompressor, &ChatCompressor::compressionCompleted,
+                this, [&](const QString &) {
+                    compressionSuccess = true;
+                    loop.quit();
+                });
+
+            QMetaObject::Connection connFailed = connect(
+                m_chatCompressor, &ChatCompressor::compressionFailed,
+                this, [&](const QString &) {
+                    loop.quit();
+                });
+
+            m_chatCompressor->startCompression(filePath, m_chatModel);
+
+            if (m_chatCompressor->isCompressing()) {
+                loop.exec();
+            }
+
+            disconnect(connCompleted);
+            disconnect(connFailed);
+
+            if (compressionSuccess) {
+                // loadHistory was already called by the existing compressionCompleted
+                // handler, recalculate token count after compression
+                updateInputTokensCount();
+            } else {
+                LOG_MESSAGE("Token threshold exceeded but compression failed, "
+                            "proceeding with original chat");
+            }
         }
     }
 
