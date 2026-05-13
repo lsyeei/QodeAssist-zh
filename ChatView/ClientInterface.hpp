@@ -9,6 +9,7 @@
 #include <QVector>
 
 #include "ChatModel.hpp"
+#include "ChatCompressor.hpp"
 #include "Provider.hpp"
 #include "pluginllmcore/IPromptProvider.hpp"
 #include <context/ContextManager.hpp>
@@ -42,6 +43,8 @@ signals:
     void errorOccurred(const QString &error);
     void messageReceivedCompletely();
     void requestStarted(const QString &requestId);
+    void tokenThresholdExceeded(const QString &chatFilePath);
+    void tokenCount(int count);
 
 private slots:
     void handlePartialResponse(const QString &requestId, const QString &partialText);
@@ -77,6 +80,7 @@ private:
     ChatModel *m_chatModel;
     Context::ContextManager *m_contextManager;
     QString m_chatFilePath;
+    ChatCompressor *m_compressor = nullptr;
 
     QHash<QString, RequestContext> m_activeRequests;
     QHash<QString, QString> m_accumulatedResponses;

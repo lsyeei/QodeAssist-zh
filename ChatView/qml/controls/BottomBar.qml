@@ -19,6 +19,8 @@ Rectangle {
     property alias cancelCompressButton: cancelCompressButtonId
 
     property bool isCompressing: false
+    property alias providerSelector: providerCombo
+    property alias modelSelector: modelCombo
 
     color: palette.window.hslLightness > 0.5 ?
                Qt.darker(palette.window, 1.1) :
@@ -83,6 +85,26 @@ Rectangle {
 
             ToolTip.visible: syncOpenFilesId.hovered
             ToolTip.text: qsTr("Automatically synchronize currently opened files with the model context")
+        }
+
+        QoAComboBox {
+            id: providerCombo
+
+            model: []
+            currentIndex: 0
+            ToolTip.visible: hovered
+            ToolTip.delay: 250
+            ToolTip.text: qsTr("Select LLM provider")
+        }
+
+        QoAComboBox {
+            id: modelCombo
+
+            model: []
+            currentIndex: 0
+            ToolTip.visible: hovered
+            ToolTip.delay: 250
+            ToolTip.text: qsTr("Select LLM model")
         }
 
         Item {

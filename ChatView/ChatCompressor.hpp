@@ -25,9 +25,14 @@ public:
     explicit ChatCompressor(QObject *parent = nullptr);
 
     void startCompression(const QString &chatFilePath, ChatModel *chatModel);
+    
+    // 同步压缩历史对话（排除最后2轮），返回摘要文本
+    QString compressHistorySync(ChatModel *chatModel);
 
     bool isCompressing() const;
     void cancelCompression();
+
+    int splitIndex() const { return m_splitIndex; }
 
 signals:
     void compressionStarted();

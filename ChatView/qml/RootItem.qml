@@ -390,7 +390,7 @@ ChatRootView {
                 }
 
                 onTextChanged: {
-                    root.calculateMessageTokensCount(messageInput.text)
+                    // root.calculateMessageTokensCount(messageInput.text)
                     var cursorPos = messageInput.cursorPosition
                     var textBefore = messageInput.text.substring(0, cursorPos)
                     var atIndex = textBefore.lastIndexOf('@')
@@ -527,6 +527,54 @@ ChatRootView {
             attachFiles.onClicked: root.showAttachFilesDialog()
             attachImages.onClicked: root.showAddImageDialog()
             linkFiles.onClicked: root.showLinkFilesDialog()
+            providerSelector {
+                model: root.providerNames
+                displayText: root.caProvider
+                onActivated: function(index) {
+                    root.caProvider = root.providerNames[index];
+                }
+            }
+            modelSelector {
+                model: root.modelNames
+                displayText: root.caModel
+                onActivated: function(index) {
+                    root.caModel = root.modelNames[index];
+                }
+            }
+        }
+    }
+
+    Connections {
+        target: root
+        function onCaProviderChanged() {
+            var cb = bottomBar.providerSelector;
+            if (!cb || cb.currentText === root.caProvider) return;
+            for (var i = 0; i < cb.count; i++) {
+                if (cb.textAt(i) === root.caProvider) {
+                    cb.currentIndex = i;
+                    return;
+                }
+            }
+        }
+        function onModelNamesChanged() {
+            var cb = bottomBar.modelSelector;
+            if (!cb) return;
+            for (var i = 0; i < cb.count; i++) {
+                if (cb.textAt(i) === root.caModel) {
+                    cb.currentIndex = i;
+                    return;
+                }
+            }
+        }
+        function onCaModelChanged() {
+            var cb = bottomBar.modelSelector;
+            if (!cb || cb.currentText === root.caModel) return;
+            for (var i = 0; i < cb.count; i++) {
+                if (cb.textAt(i) === root.caModel) {
+                    cb.currentIndex = i;
+                    return;
+                }
+            }
         }
     }
 

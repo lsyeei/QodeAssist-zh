@@ -116,7 +116,7 @@ FileMentionItem {
                     font.bold: true
                     font.italic: delegateItem.isProject
                     elide: Text.ElideRight
-                    ToolTip: {
+                    ToolTip {
                         visible: root.currentIndex === delegateItem.index
                         timeout: 1000
                         text: delegateItem.isProject

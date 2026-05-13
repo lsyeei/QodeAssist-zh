@@ -32,7 +32,6 @@
 #include "Logger.hpp"
 #include "ProjectSettings.hpp"
 #include "ProvidersManager.hpp"
-#include "ToolsSettings.hpp"
 #include "context/ChangesManager.h"
 #include "context/ContextManager.hpp"
 #include "context/TokenUtils.hpp"
@@ -171,6 +170,10 @@ ChatRootView::ChatRootView(QQuickItem *parent)
         LOG_MESSAGE(QString("New message request started: %1").arg(requestId));
         updateCurrentMessageEditsStats();
     });
+    connect(m_clientInterface, &ClientInterface::tokenCount, this, [this](int count){
+        m_inputTokensCount = count;
+        emit inputTokensCountChanged();
+    });
 
     connect(
         &Context::ChangesManager::instance(),
@@ -268,6 +271,29 @@ ChatRootView::ChatRootView(QQuickItem *parent)
         emit lastErrorMessageChanged();
         emit compressionFailed(error);
     });
+
+    // Initialize provider and model data (migrated from BottomBarBridge)
+    m_providerNames = PluginLLMCore::ProvidersManager::instance().providersNames();
+
+    m_modelWatcher = new QFutureWatcher<QList<QString>>(this);
+    connect(m_modelWatcher, &QFutureWatcher<QList<QString>>::finished,
+            this, &ChatRootView::onModelsLoaded);
+
+    connect(&Settings::generalSettings().caProvider,
+            &Utils::BaseAspect::changed,
+            this, [this]() {
+                emit caProviderChanged();
+                loadModelsForProvider(caProvider());
+            });
+
+    connect(&Settings::generalSettings().caModel,
+            &Utils::BaseAspect::changed,
+            this, [this]() {
+                emit caModelChanged();
+            });
+
+    // Load models for the initial provider
+    loadModelsForProvider(caProvider());
 }
 
 ChatModel *ChatRootView::chatModel() const
@@ -277,59 +303,59 @@ ChatModel *ChatRootView::chatModel() const
 
 void ChatRootView::sendMessage(const QString &message)
 {
-    updateInputTokensCount();
+    // updateInputTokensCount();
 
-    if (m_inputTokensCount > m_chatModel->tokensThreshold()) {
-        // Save current chat to file for compression
-        QString filePath = m_recentFilePath;
-        if (filePath.isEmpty()) {
-            filePath = getAutosaveFilePath(message, m_attachmentFiles);
-        }
-        if (filePath.isEmpty()) {
-            filePath = getAutosaveFilePath();
-        }
+    // if (m_inputTokensCount > m_chatModel->tokensThreshold()) {
+    //     // Save current chat to file for compression
+    //     QString filePath = m_recentFilePath;
+    //     if (filePath.isEmpty()) {
+    //         filePath = getAutosaveFilePath(message, m_attachmentFiles);
+    //     }
+    //     if (filePath.isEmpty()) {
+    //         filePath = getAutosaveFilePath();
+    //     }
 
-        if (!filePath.isEmpty()) {
-            // Force save the chat regardless of autosave setting
-            ChatSerializer::saveToFile(m_chatModel, filePath);
-            setRecentFilePath(filePath);
+    //     if (!filePath.isEmpty()) {
+    //         // Force save the chat regardless of autosave setting
+    //         ChatSerializer::saveToFile(m_chatModel, filePath);
+    //         setRecentFilePath(filePath);
 
-            // Synchronously wait for compression to complete
-            QEventLoop loop;
-            bool compressionSuccess = false;
+    //         // Synchronously wait for compression to complete
+    //         QEventLoop loop;
+    //         bool compressionSuccess = false;
 
-            QMetaObject::Connection connCompleted = connect(
-                m_chatCompressor, &ChatCompressor::compressionCompleted,
-                this, [&](const QString &) {
-                    compressionSuccess = true;
-                    loop.quit();
-                });
+    //         QMetaObject::Connection connCompleted = connect(
+    //             m_chatCompressor, &ChatCompressor::compressionCompleted,
+    //             this, [&](const QString &) {
+    //                 compressionSuccess = true;
+    //                 loop.quit();
+    //             });
 
-            QMetaObject::Connection connFailed = connect(
-                m_chatCompressor, &ChatCompressor::compressionFailed,
-                this, [&](const QString &) {
-                    loop.quit();
-                });
+    //         QMetaObject::Connection connFailed = connect(
+    //             m_chatCompressor, &ChatCompressor::compressionFailed,
+    //             this, [&](const QString &) {
+    //                 loop.quit();
+    //             });
 
-            m_chatCompressor->startCompression(filePath, m_chatModel);
+    //         m_chatCompressor->startCompression(filePath, m_chatModel);
 
-            if (m_chatCompressor->isCompressing()) {
-                loop.exec();
-            }
+    //         if (m_chatCompressor->isCompressing()) {
+    //             loop.exec();
+    //         }
 
-            disconnect(connCompleted);
-            disconnect(connFailed);
+    //         disconnect(connCompleted);
+    //         disconnect(connFailed);
 
-            if (compressionSuccess) {
-                // loadHistory was already called by the existing compressionCompleted
-                // handler, recalculate token count after compression
-                updateInputTokensCount();
-            } else {
-                LOG_MESSAGE("Token threshold exceeded but compression failed, "
-                            "proceeding with original chat");
-            }
-        }
-    }
+    //         if (compressionSuccess) {
+    //             // loadHistory was already called by the existing compressionCompleted
+    //             // handler, recalculate token count after compression
+    //             updateInputTokensCount();
+    //         } else {
+    //             LOG_MESSAGE("Token threshold exceeded but compression failed, "
+    //                         "proceeding with original chat");
+    //         }
+    //     }
+    // }
 
     if (m_recentFilePath.isEmpty()) {
         QString filePath = getAutosaveFilePath(message, m_attachmentFiles);
@@ -1569,6 +1595,73 @@ void ChatRootView::cancelCompression()
 bool ChatRootView::isCompressing() const
 {
     return m_chatCompressor->isCompressing();
+}
+
+QStringList ChatRootView::providerNames() const
+{
+    return m_providerNames;
+}
+
+QStringList ChatRootView::modelNames() const
+{
+    return m_modelNames;
+}
+
+QString ChatRootView::caProvider() const
+{
+    return Settings::generalSettings().caProvider();
+}
+
+void ChatRootView::setCaProvider(const QString &provider)
+{
+    if (provider == caProvider())
+        return;
+    Settings::generalSettings().caProvider.setValue(provider);
+}
+
+QString ChatRootView::caModel() const
+{
+    return Settings::generalSettings().caModel();
+}
+
+void ChatRootView::setCaModel(const QString &model)
+{
+    if (model == caModel())
+        return;
+    Settings::generalSettings().caModel.setValue(model);
+}
+
+void ChatRootView::loadModelsForProvider(const QString &providerName)
+{
+    auto *provider = PluginLLMCore::ProvidersManager::instance().getProviderByName(providerName);
+    if (!provider) {
+        m_modelNames.clear();
+        emit modelNamesChanged();
+        return;
+    }
+
+    if (!provider->capabilities().testFlag(PluginLLMCore::ProviderCapability::ModelListing)) {
+        m_modelNames.clear();
+        emit modelNamesChanged();
+        return;
+    }
+
+    const QString url = Settings::generalSettings().caUrl();
+    m_modelWatcher->setFuture(provider->getInstalledModels(url));
+}
+
+void ChatRootView::onModelsLoaded()
+{
+    m_modelNames.clear();
+    for (const QString &model : m_modelWatcher->result()) {
+        m_modelNames.append(model);
+    }//qDebug() << __FUNCTION__ << "模型列表更新：" << m_modelNames;
+    emit modelNamesChanged();
+    if (m_modelNames.isEmpty()){
+        setCaModel("");
+    }else if (!m_modelNames.contains(caModel())) {
+        setCaModel(m_modelNames[0]);
+    }
 }
 
 } // namespace QodeAssist::Chat

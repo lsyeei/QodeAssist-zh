@@ -28,9 +28,9 @@ RequestID Provider::sendRequest(
 
     LOG_MESSAGE(
         QString("%1: Sending request %2 to %3%4").arg(name(), requestId, url.toString(), endpoint));
-    LOG_MESSAGE(
-        QString("%1: Payload:\n%2")
-            .arg(name(), QString::fromUtf8(QJsonDocument(payload).toJson(QJsonDocument::Indented))));
+    // LOG_MESSAGE(
+    //     QString("%1: Payload:\n%2")
+    //         .arg(name(), QString::fromUtf8(QJsonDocument(payload).toJson(QJsonDocument::Indented))));
 
     return requestId;
 }

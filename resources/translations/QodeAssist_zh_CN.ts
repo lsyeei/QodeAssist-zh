@@ -349,13 +349,13 @@ Create .md files in .qodeassist/rules/common/ or .qodeassist/rules/chat/</source
         <location filename="../../build/ChatView/qml/chatparts/FileEditBlock.qml" line="77"/>
         <location filename="../../ChatView/qml/chatparts/FileEditBlock.qml" line="77"/>
         <source>APPLIED</source>
-        <translation>应用</translation>
+        <translation>已应用</translation>
     </message>
     <message>
         <location filename="../../build/ChatView/qml/chatparts/FileEditBlock.qml" line="78"/>
         <location filename="../../ChatView/qml/chatparts/FileEditBlock.qml" line="78"/>
         <source>REJECTED</source>
-        <translation>拒绝</translation>
+        <translation>已拒绝</translation>
     </message>
     <message>
         <location filename="../../build/ChatView/qml/chatparts/FileEditBlock.qml" line="79"/>
@@ -448,7 +448,7 @@ Create .md files in .qodeassist/rules/common/ or .qodeassist/rules/chat/</source
         <location filename="../../build/ChatView/qml/controls/FileEditsActionBar.qml" line="99"/>
         <location filename="../../ChatView/qml/controls/FileEditsActionBar.qml" line="99"/>
         <source>%1 rejected</source>
-        <translation>%1 拒绝</translation>
+        <translation>%1 已拒绝</translation>
     </message>
     <message>
         <location filename="../../build/ChatView/qml/controls/FileEditsActionBar.qml" line="118"/>

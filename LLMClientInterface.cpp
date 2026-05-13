@@ -7,6 +7,7 @@
 #include <QJsonDocument>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include <settings/ToolsSettings.hpp>
 
 #include "CodeHandler.hpp"
 #include "context/DocumentContextReader.hpp"
@@ -273,10 +274,16 @@ void LLMClientInterface::handleCompletion(const QJsonObject &request)
             = PluginLLMCore::RulesLoader::loadRulesForProject(project, PluginLLMCore::RulesContext::Completions);
 
         if (!projectRules.isEmpty()) {
-            systemPrompt += "\n\n# Project Rules\n\n" + projectRules;
+            systemPrompt += tr("\n\n# Project Rules\n\n") + projectRules;
             LOG_MESSAGE("Loaded project rules for completion");
         }
     }
+    // 添加工具调用限制
+    systemPrompt.append(tr("\n\n# calling tools rules \n\n"));
+    systemPrompt.append(QString(tr("- No more than %1 tool calls allowed\n"))
+                            .arg(Settings::toolsSettings().maxToolContinuations.value()));
+    systemPrompt.append(tr("- Every tool call must explicitly specify its calling reason\n"));
+    systemPrompt.append(tr("- If no more tools are needed, please answer directly\n"));
 
     if (updatedContext.fileContext.has_value())
         systemPrompt.append(updatedContext.fileContext.value());

@@ -72,6 +72,7 @@ public:
     QString lastMessageId() const;
 
     Q_INVOKABLE void resetModelTo(int index);
+    Q_INVOKABLE void removeLastMessage();
 
     void addToolExecutionStatus(
         const QString &requestId, const QString &toolId, const QString &toolName);
@@ -90,6 +91,9 @@ public:
     
     void setChatFilePath(const QString &filePath);
     QString chatFilePath() const;
+
+    // 压缩历史对话后替换内存中的消息（会通知视图更新）
+    void applyCompression(const Message &summaryMessage, int splitIndex);
 
 signals:
     void tokensThresholdChanged();

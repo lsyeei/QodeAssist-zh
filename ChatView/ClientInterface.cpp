@@ -16,6 +16,8 @@
 #include <QMimeDatabase>
 #include <QUuid>
 
+#include <context/TokenUtils.hpp>
+
 #include <coreplugin/editormanager/editormanager.h>
 #include <coreplugin/editormanager/ieditor.h>
 #include <coreplugin/idocument.h>
@@ -47,6 +49,7 @@ ClientInterface::ClientInterface(
     , m_chatModel(chatModel)
     , m_promptProvider(promptProvider)
     , m_contextManager(new Context::ContextManager(this))
+    , m_compressor(new ChatCompressor(this))
 {}
 
 ClientInterface::~ClientInterface()
@@ -245,6 +248,72 @@ void ClientInterface::sendMessage(
     provider->client()->setMaxToolContinuations(
         Settings::toolsSettings().maxToolContinuations());
 
+    // 准确计算token数量，判断是否超出阈值
+    QString payloadStr = QString::fromUtf8(QJsonDocument(payload).toJson(QJsonDocument::Compact));
+    int accurateTokens = Context::TokenUtils::estimateTokens(payloadStr);
+    emit tokenCount(accurateTokens);
+    qDebug() << __FUNCTION__ << "字符数量：" << payloadStr.length()
+             << "计算的token数量：" << accurateTokens
+             << ";token 阈值：" << m_chatModel->tokensThreshold();
+    if (accurateTokens > m_chatModel->tokensThreshold()) {
+        LOG_MESSAGE(QString("Accurate token check: %1 exceeds threshold %2, starting compression")
+                        .arg(accurateTokens)
+                        .arg(m_chatModel->tokensThreshold()));
+
+        // 使用ChatCompressor同步压缩历史对话（排除最后2轮）
+        QString summary = m_compressor->compressHistorySync(m_chatModel);
+        if (!summary.isEmpty()) {
+            int splitIndex = m_compressor->splitIndex();
+
+            // 创建摘要消息
+            ChatModel::Message summaryMessage;
+            summaryMessage.role = ChatModel::ChatRole::System;
+            summaryMessage.content = summary;
+            summaryMessage.id = QUuid::createUuid().toString(QUuid::WithoutBraces);
+
+            // 替换内存中的消息（会通知视图更新）
+            m_chatModel->applyCompression(summaryMessage, splitIndex);
+
+            LOG_MESSAGE(QString("Compression applied, replaced %1 messages with summary, length: %2")
+                            .arg(splitIndex)
+                            .arg(summary.length()));
+
+            // 不在此保存文件，由调用方（ChatRootView）在适当时机保存
+            // 重建context.history和payload（因为模型已更新）
+            context.history.reset();
+            QList<PluginLLMCore::Message> newMessages;
+            for (const auto &msg : m_chatModel->getChatHistory()) {
+                if (msg.role == ChatModel::ChatRole::Tool || msg.role == ChatModel::ChatRole::FileEdit) {
+                    continue;
+                }
+                PluginLLMCore::Message apiMessage;
+                apiMessage.role = msg.role == ChatModel::ChatRole::User ? "user" : "assistant";
+                apiMessage.content = msg.content;
+                apiMessage.isThinking = (msg.role == ChatModel::ChatRole::Thinking);
+                apiMessage.isRedacted = msg.isRedacted;
+                apiMessage.signature = msg.signature;
+                newMessages.append(apiMessage);
+            }
+            context.history = newMessages;
+
+            // 重建payload
+            payload = QJsonObject{{"model", Settings::generalSettings().caModel()}, {"stream", true}};
+            provider->prepareRequest(
+                payload,
+                promptTemplate,
+                context,
+                PluginLLMCore::RequestType::Chat,
+                useTools,
+                useThinking);
+
+            LOG_MESSAGE("Payload rebuilt after compression");
+        } else {
+            LOG_MESSAGE("Compression failed or skipped, proceeding with current messages");
+        }
+
+        // 压缩完成后继续请求（不return）
+    }
+
     connect(
         provider->client(),
         &::LLMQore::BaseClient::chunkReceived,
@@ -292,7 +361,7 @@ void ClientInterface::sendMessage(
     m_activeRequests[requestId] = {request, provider};
 
     emit requestStarted(requestId);
-    
+
     if (provider->capabilities().testFlag(PluginLLMCore::ProviderCapability::Tools)
         && provider->toolsManager()) {
         if (auto *todoTool = qobject_cast<QodeAssist::Tools::TodoTool *>(
@@ -323,8 +392,9 @@ void ClientInterface::cancelRequest()
 {
     QSet<PluginLLMCore::Provider *> providers;
     for (auto it = m_activeRequests.begin(); it != m_activeRequests.end(); ++it) {
-        if (it.value().provider) {
-            providers.insert(it.value().provider);
+        const auto &value = it.value();
+        if (value.provider) {
+            providers.insert(value.provider);
         }
     }
 
@@ -332,10 +402,10 @@ void ClientInterface::cancelRequest()
         disconnect(provider->client(), nullptr, this, nullptr);
     }
 
-    for (auto it = m_activeRequests.begin(); it != m_activeRequests.end(); ++it) {
-        const RequestContext &ctx = it.value();
-        if (ctx.provider) {
-            ctx.provider->cancelRequest(it.key());
+    for (const auto &key : m_activeRequests.keys()) {
+        const auto &value = m_activeRequests.value(key);
+        if (value.provider) {
+            value.provider->cancelRequest(key);
         }
     }
 
@@ -562,7 +632,7 @@ QVector<PluginLLMCore::ImageAttachment> ClientInterface::loadImagesFromStorage(
 {
     QVector<PluginLLMCore::ImageAttachment> apiImages;
 
-    for (const auto &storedImage : storedImages) {
+    for (const auto &storedImage : std::as_const(storedImages)) {
         QString base64Data
             = ChatSerializer::loadContentFromStorage(m_chatFilePath, storedImage.storedPath);
         if (base64Data.isEmpty()) {

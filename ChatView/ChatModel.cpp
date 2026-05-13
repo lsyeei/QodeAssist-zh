@@ -233,6 +233,10 @@ QList<MessagePart> ChatModel::processMessageContent(const QString &content) cons
         codePart.type = MessagePartType::Code;
         codePart.text = match.captured(2).trimmed();
         codePart.language = match.captured(1);
+        if (codePart.language.isNull() || codePart.language.isEmpty()) {
+            codePart.type = MessagePartType::Text;
+            codePart.text = "```" + codePart.text;
+        }
         parts.append(codePart);
 
         lastIndex = match.capturedEnd();
@@ -257,6 +261,10 @@ QList<MessagePart> ChatModel::processMessageContent(const QString &content) cons
             codePart.type = MessagePartType::Code;
             codePart.text = unclosedMatch.captured(2).trimmed();
             codePart.language = unclosedMatch.captured(1);
+            if (codePart.language.isNull() || codePart.language.isEmpty()) {
+                codePart.type = MessagePartType::Text;
+                codePart.text = "```" + codePart.text;
+            }
             parts.append(codePart);
         } else if (!remainingText.isEmpty()) {
             MessagePart part;
@@ -331,6 +339,32 @@ void ChatModel::resetModelTo(int index)
         m_messages.remove(index, m_messages.size() - index);
         endRemoveRows();
     }
+}
+
+void ChatModel::removeLastMessage()
+{
+    if (m_messages.isEmpty())
+        return;
+
+    beginRemoveRows(QModelIndex(), m_messages.size() - 1, m_messages.size() - 1);
+    m_messages.removeLast();
+    endRemoveRows();
+}
+
+void ChatModel::applyCompression(const Message &summaryMessage, int splitIndex)
+{
+    if (splitIndex <= 0 || splitIndex > m_messages.size())
+        return;
+
+    // 通知视图移除被压缩的早期对话
+    beginRemoveRows(QModelIndex(), 0, splitIndex - 1);
+    m_messages.remove(0, splitIndex);
+    endRemoveRows();
+    
+    // 通知视图在开头插入摘要消息
+    beginInsertRows(QModelIndex(), 0, 0);
+    m_messages.prepend(summaryMessage);
+    endInsertRows();
 }
 
 void ChatModel::addToolExecutionStatus(

@@ -11,6 +11,7 @@
 #include "logger/Logger.hpp"
 
 #include <QDateTime>
+#include <QEventLoop>
 #include <QFile>
 #include <QFileInfo>
 #include <QJsonArray>
@@ -78,6 +79,120 @@ void ChatCompressor::startCompression(const QString &chatFilePath, ChatModel *ch
     m_currentRequestId = m_provider->sendRequest(
         QUrl(Settings::generalSettings().caUrl()), payload, endpoint);
     LOG_MESSAGE(QString("Starting compression request: %1").arg(m_currentRequestId));
+}
+
+QString ChatCompressor::compressHistorySync(ChatModel *chatModel)
+{
+    if (m_isCompressing) {
+        LOG_MESSAGE("Compression already in progress");
+        return {};
+    }
+
+    if (!chatModel || chatModel->rowCount() == 0) {
+        LOG_MESSAGE("Chat is empty, nothing to compress");
+        return {};
+    }
+
+    auto providerName = Settings::generalSettings().caProvider();
+    m_provider = PluginLLMCore::ProvidersManager::instance().getProviderByName(providerName);
+
+    if (!m_provider) {
+        LOG_MESSAGE("No provider available for compression");
+        return {};
+    }
+
+    auto templateName = Settings::generalSettings().caTemplate();
+    auto promptTemplate = PluginLLMCore::PromptTemplateManager::instance().getChatTemplateByName(
+        templateName);
+
+    if (!promptTemplate) {
+        LOG_MESSAGE("No template available for compression");
+        return {};
+    }
+
+    m_isCompressing = true;
+    m_chatModel = chatModel;
+    m_accumulatedSummary.clear();
+
+    QJsonObject payload{
+        {"model", Settings::generalSettings().caModel()}, {"stream", true}};
+
+    buildRequestPayload(payload, promptTemplate);
+
+    const QString customEndpoint = Settings::generalSettings().caCustomEndpoint();
+    const QString endpoint = !customEndpoint.isEmpty() ? customEndpoint
+                                                       : promptTemplate->endpoint();
+    qDebug() << __FUNCTION__ << "压缩内容：" << payload;
+    // 同步等待压缩完成
+    bool success = false;
+    QEventLoop loop;
+
+    auto *client = m_provider->client();
+
+    QMetaObject::Connection chunkConn = connect(
+        client,
+        &::LLMQore::BaseClient::chunkReceived,
+        this,
+        [this](const QString &requestId, const QString &partialText) {
+            if (requestId == m_currentRequestId)
+                m_accumulatedSummary += partialText;
+        });
+
+    QMetaObject::Connection doneConn = connect(
+        client,
+        &::LLMQore::BaseClient::requestCompleted,
+        this,
+        [&](const QString &requestId, const QString &) {
+            if (requestId == m_currentRequestId) {
+                success = true;
+                loop.quit();
+            }
+        });
+
+    QMetaObject::Connection failConn = connect(
+        client,
+        &::LLMQore::BaseClient::requestFailed,
+        this,
+        [&](const QString &requestId, const QString &) {
+            if (requestId == m_currentRequestId)
+                loop.quit();
+        });
+
+    m_currentRequestId = m_provider->sendRequest(
+        QUrl(Settings::generalSettings().caUrl()), payload, endpoint);
+
+    if (m_currentRequestId.isEmpty()) {
+        disconnect(chunkConn);
+        disconnect(doneConn);
+        disconnect(failConn);
+        cleanupState();
+        LOG_MESSAGE("Failed to send compression request");
+        return {};
+    }
+
+    LOG_MESSAGE(QString("Sync compression started, requestId: %1").arg(m_currentRequestId));
+
+    // 阻塞等待压缩完成（事件循环会处理网络回调）
+    loop.exec();
+
+    disconnect(chunkConn);
+    disconnect(doneConn);
+    disconnect(failConn);
+
+    QString summary = m_accumulatedSummary;
+    int splitIdx = m_splitIndex;
+    cleanupState();
+
+    if (!success || summary.isEmpty()) {
+        LOG_MESSAGE("Sync compression failed or returned empty summary");
+        return {};
+    }
+
+    // 设置回splitIndex供调用方使用
+    m_splitIndex = splitIdx;
+
+    LOG_MESSAGE(QString("Sync compression completed, summary length: %1").arg(summary.length()));
+    return summary;
 }
 
 bool ChatCompressor::isCompressing() const

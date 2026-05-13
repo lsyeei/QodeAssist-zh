@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <QFutureWatcher>
 #include <QQuickItem>
 #include <QVariantList>
 
@@ -19,6 +20,11 @@ class ChatCompressor;
 class ChatRootView : public QQuickItem
 {
     Q_OBJECT
+    Q_PROPERTY(QStringList providerNames READ providerNames NOTIFY providerNamesChanged FINAL)
+    Q_PROPERTY(QStringList modelNames READ modelNames NOTIFY modelNamesChanged FINAL)
+    Q_PROPERTY(QString caProvider READ caProvider WRITE setCaProvider NOTIFY caProviderChanged FINAL)
+    Q_PROPERTY(QString caModel READ caModel WRITE setCaModel NOTIFY caModelChanged FINAL)
+
     Q_PROPERTY(QodeAssist::Chat::ChatModel *chatModel READ chatModel NOTIFY chatModelChanged FINAL)
     Q_PROPERTY(QString currentTemplate READ currentTemplate NOTIFY currentTemplateChanged FINAL)
     Q_PROPERTY(bool isSyncOpenFiles READ isSyncOpenFiles NOTIFY isSyncOpenFilesChanged FINAL)
@@ -57,6 +63,15 @@ class ChatRootView : public QQuickItem
 
 public:
     ChatRootView(QQuickItem *parent = nullptr);
+
+    QStringList providerNames() const;
+    QStringList modelNames() const;
+
+    QString caProvider() const;
+    void setCaProvider(const QString &provider);
+
+    QString caModel() const;
+    void setCaModel(const QString &model);
 
     ChatModel *chatModel() const;
     QString currentTemplate() const;
@@ -173,6 +188,11 @@ public slots:
     void clearMessages();
 
 signals:
+    void caProviderChanged();
+    void caModelChanged();
+    void providerNamesChanged();
+    void modelNamesChanged();
+
     void chatModelChanged();
     void currentTemplateChanged();
     void attachmentFilesChanged();
@@ -248,6 +268,15 @@ private:
     QString m_currentAgentRole;
 
     ChatCompressor *m_chatCompressor;
+
+    void loadModelsForProvider(const QString &providerName);
+
+    QStringList m_providerNames;
+    QStringList m_modelNames;
+    QFutureWatcher<QList<QString>> *m_modelWatcher = nullptr;
+
+private slots:
+    void onModelsLoaded();
 };
 
 } // namespace QodeAssist::Chat
