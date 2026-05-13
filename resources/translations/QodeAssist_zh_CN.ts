@@ -4,62 +4,74 @@
 <context>
     <name>BottomBar</name>
     <message>
-        <location filename="../../build/ChatView/qml/controls/BottomBar.qml" line="50"/>
-        <location filename="../../ChatView/qml/controls/BottomBar.qml" line="50"/>
+        <location filename="../../build/ChatView/qml/controls/BottomBar.qml" line="52"/>
+        <location filename="../../ChatView/qml/controls/BottomBar.qml" line="52"/>
         <source>Attach file to message</source>
         <translation>附加文件</translation>
     </message>
     <message>
-        <location filename="../../build/ChatView/qml/controls/BottomBar.qml" line="63"/>
-        <location filename="../../ChatView/qml/controls/BottomBar.qml" line="63"/>
+        <location filename="../../build/ChatView/qml/controls/BottomBar.qml" line="65"/>
+        <location filename="../../ChatView/qml/controls/BottomBar.qml" line="65"/>
         <source>Attach image to message</source>
         <translation>附加图像</translation>
     </message>
     <message>
-        <location filename="../../build/ChatView/qml/controls/BottomBar.qml" line="76"/>
-        <location filename="../../ChatView/qml/controls/BottomBar.qml" line="76"/>
+        <location filename="../../build/ChatView/qml/controls/BottomBar.qml" line="78"/>
+        <location filename="../../ChatView/qml/controls/BottomBar.qml" line="78"/>
         <source>Link file to context</source>
         <translation>将文件链接到上下文</translation>
     </message>
     <message>
-        <location filename="../../build/ChatView/qml/controls/BottomBar.qml" line="82"/>
-        <location filename="../../ChatView/qml/controls/BottomBar.qml" line="82"/>
+        <location filename="../../build/ChatView/qml/controls/BottomBar.qml" line="84"/>
+        <location filename="../../ChatView/qml/controls/BottomBar.qml" line="84"/>
         <source>Sync open files</source>
         <translation>同步文件</translation>
     </message>
     <message>
-        <location filename="../../build/ChatView/qml/controls/BottomBar.qml" line="85"/>
-        <location filename="../../ChatView/qml/controls/BottomBar.qml" line="85"/>
+        <location filename="../../build/ChatView/qml/controls/BottomBar.qml" line="87"/>
+        <location filename="../../ChatView/qml/controls/BottomBar.qml" line="87"/>
         <source>Automatically synchronize currently opened files with the model context</source>
         <translation>当前打开的文件自动与模型上下文同步</translation>
     </message>
     <message>
-        <location filename="../../build/ChatView/qml/controls/BottomBar.qml" line="108"/>
-        <location filename="../../ChatView/qml/controls/BottomBar.qml" line="108"/>
-        <source>Compressing...</source>
-        <translation>压缩...</translation>
+        <location filename="../../build/ChatView/qml/controls/BottomBar.qml" line="97"/>
+        <location filename="../../ChatView/qml/controls/BottomBar.qml" line="97"/>
+        <source>Select LLM provider</source>
+        <translation>选择 LLM 提供商</translation>
     </message>
     <message>
-        <location filename="../../build/ChatView/qml/controls/BottomBar.qml" line="118"/>
-        <location filename="../../ChatView/qml/controls/BottomBar.qml" line="118"/>
-        <source>Cancel</source>
-        <translation>取消</translation>
-    </message>
-    <message>
-        <location filename="../../build/ChatView/qml/controls/BottomBar.qml" line="122"/>
-        <location filename="../../ChatView/qml/controls/BottomBar.qml" line="122"/>
-        <source>Cancel compression</source>
-        <translation>取消压缩</translation>
+        <location filename="../../build/ChatView/qml/controls/BottomBar.qml" line="107"/>
+        <location filename="../../ChatView/qml/controls/BottomBar.qml" line="107"/>
+        <source>Select LLM model</source>
+        <translation>选择 LLM 模型</translation>
     </message>
     <message>
         <location filename="../../build/ChatView/qml/controls/BottomBar.qml" line="130"/>
         <location filename="../../ChatView/qml/controls/BottomBar.qml" line="130"/>
+        <source>Compressing...</source>
+        <translation>压缩...</translation>
+    </message>
+    <message>
+        <location filename="../../build/ChatView/qml/controls/BottomBar.qml" line="140"/>
+        <location filename="../../ChatView/qml/controls/BottomBar.qml" line="140"/>
+        <source>Cancel</source>
+        <translation>取消</translation>
+    </message>
+    <message>
+        <location filename="../../build/ChatView/qml/controls/BottomBar.qml" line="144"/>
+        <location filename="../../ChatView/qml/controls/BottomBar.qml" line="144"/>
+        <source>Cancel compression</source>
+        <translation>取消压缩</translation>
+    </message>
+    <message>
+        <location filename="../../build/ChatView/qml/controls/BottomBar.qml" line="152"/>
+        <location filename="../../ChatView/qml/controls/BottomBar.qml" line="152"/>
         <source>Compress</source>
         <translation>压缩</translation>
     </message>
     <message>
-        <location filename="../../build/ChatView/qml/controls/BottomBar.qml" line="139"/>
-        <location filename="../../ChatView/qml/controls/BottomBar.qml" line="139"/>
+        <location filename="../../build/ChatView/qml/controls/BottomBar.qml" line="161"/>
+        <location filename="../../ChatView/qml/controls/BottomBar.qml" line="161"/>
         <source>Compress chat (create summarized copy using LLM)</source>
         <translation>压缩对话（使用 LLM 创建概要副本）</translation>
     </message>
@@ -566,8 +578,8 @@ Create .md files in .qodeassist/rules/common/ or .qodeassist/rules/chat/</source
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../ChatView/ChatRootView.cpp" line="1354"/>
-        <location filename="../../ChatView/ChatRootView.cpp" line="1371"/>
+        <location filename="../../ChatView/ChatRootView.cpp" line="1419"/>
+        <location filename="../../ChatView/ChatRootView.cpp" line="1436"/>
         <source>Current Settings</source>
         <translation>当前配置</translation>
     </message>
@@ -588,42 +600,42 @@ Create .md files in .qodeassist/rules/common/ or .qodeassist/rules/chat/</source
 <context>
     <name>QodeAssist::Chat::ChatCompressor</name>
     <message>
-        <location filename="../../ChatView/ChatCompressor.cpp" line="30"/>
+        <location filename="../../ChatView/ChatCompressor.cpp" line="31"/>
         <source>Compression already in progress</source>
         <translation>正在压缩中</translation>
     </message>
     <message>
-        <location filename="../../ChatView/ChatCompressor.cpp" line="35"/>
+        <location filename="../../ChatView/ChatCompressor.cpp" line="36"/>
         <source>No chat file to compress</source>
         <translation>没有对话文件需要压缩</translation>
     </message>
     <message>
-        <location filename="../../ChatView/ChatCompressor.cpp" line="40"/>
+        <location filename="../../ChatView/ChatCompressor.cpp" line="41"/>
         <source>Chat is empty, nothing to compress</source>
         <translation>对话内容为空，没有需要压缩的内容</translation>
     </message>
     <message>
-        <location filename="../../ChatView/ChatCompressor.cpp" line="48"/>
+        <location filename="../../ChatView/ChatCompressor.cpp" line="49"/>
         <source>No provider available</source>
         <translation>没有可用的模型提供商</translation>
     </message>
     <message>
-        <location filename="../../ChatView/ChatCompressor.cpp" line="57"/>
+        <location filename="../../ChatView/ChatCompressor.cpp" line="58"/>
         <source>No template available</source>
         <translation>没有可用的模板</translation>
     </message>
     <message>
-        <location filename="../../ChatView/ChatCompressor.cpp" line="99"/>
+        <location filename="../../ChatView/ChatCompressor.cpp" line="214"/>
         <source>Compression cancelled</source>
         <translation>压缩已取消</translation>
     </message>
     <message>
-        <location filename="../../ChatView/ChatCompressor.cpp" line="122"/>
+        <location filename="../../ChatView/ChatCompressor.cpp" line="237"/>
         <source>Failed to save compressed chat</source>
         <translation>压缩后的对话保存失败</translation>
     </message>
     <message>
-        <location filename="../../ChatView/ChatCompressor.cpp" line="137"/>
+        <location filename="../../ChatView/ChatCompressor.cpp" line="252"/>
         <source>Compression failed: %1</source>
         <translation>压缩失败： %1</translation>
     </message>
@@ -644,68 +656,66 @@ Create .md files in .qodeassist/rules/common/ or .qodeassist/rules/chat/</source
 <context>
     <name>QodeAssist::Chat::ChatRootView</name>
     <message>
-        <location filename="../../ChatView/ChatRootView.cpp" line="257"/>
+        <location filename="../../ChatView/ChatRootView.cpp" line="261"/>
         <source>Chat compressed successfully!</source>
         <translation>对话压缩成功！</translation>
     </message>
     <message>
-        <location filename="../../ChatView/ChatRootView.cpp" line="282"/>
         <source>Token Limit Exceeded</source>
-        <translation>超出 Token 限制</translation>
+        <translation type="vanished">超出 Token 限制</translation>
     </message>
     <message>
-        <location filename="../../ChatView/ChatRootView.cpp" line="283"/>
         <source>The chat history has exceeded the token limit.
 Would you like to create new chat?</source>
-        <translation>对话历史超出 Token 限制。
+        <translation type="vanished">对话历史超出 Token 限制。
 是否开启新对话？</translation>
     </message>
     <message>
-        <location filename="../../ChatView/ChatRootView.cpp" line="410"/>
+        <location filename="../../ChatView/ChatRootView.cpp" line="475"/>
         <source>Save Chat History</source>
         <translation>保存对话历史</translation>
     </message>
     <message>
-        <location filename="../../ChatView/ChatRootView.cpp" line="413"/>
-        <location filename="../../ChatView/ChatRootView.cpp" line="440"/>
+        <location filename="../../ChatView/ChatRootView.cpp" line="478"/>
+        <location filename="../../ChatView/ChatRootView.cpp" line="505"/>
         <source>JSON files (*.json)</source>
         <translation>JSON 文件 (*.json)</translation>
     </message>
     <message>
-        <location filename="../../ChatView/ChatRootView.cpp" line="437"/>
+        <location filename="../../ChatView/ChatRootView.cpp" line="502"/>
         <source>Load Chat History</source>
         <translation>加载对话历史</translation>
     </message>
     <message>
-        <location filename="../../ChatView/ChatRootView.cpp" line="540"/>
-        <location filename="../../ChatView/ChatRootView.cpp" line="588"/>
+        <location filename="../../ChatView/ChatRootView.cpp" line="605"/>
+        <location filename="../../ChatView/ChatRootView.cpp" line="653"/>
         <source>Select Files to Attach</source>
         <translation>选择附加的文件</translation>
     </message>
     <message numerus="yes">
-        <location filename="../../ChatView/ChatRootView.cpp" line="624"/>
+        <location filename="../../ChatView/ChatRootView.cpp" line="689"/>
         <source>Images automatically moved to Attach zone (%n file(s))</source>
         <translation>
             <numerusform>自动将图像放在附加位置（%n个文件）</numerusform>
         </translation>
     </message>
     <message>
-        <location filename="../../ChatView/ChatRootView.cpp" line="648"/>
+        <location filename="../../ChatView/ChatRootView.cpp" line="713"/>
         <source>Select Images to Attach</source>
         <translation>选择附加图像</translation>
     </message>
     <message>
-        <location filename="../../ChatView/ChatRootView.cpp" line="650"/>
+        <location filename="../../ChatView/ChatRootView.cpp" line="715"/>
         <source>Images (*.png *.jpg *.jpeg *.gif *.bmp *.webp)</source>
         <translation>图像 (*.png *.jpg *.jpeg *.gif *.bmp *.webp)</translation>
     </message>
     <message>
-        <location filename="../../ChatView/ChatRootView.cpp" line="1509"/>
+        <location filename="../../ChatView/ChatRootView.cpp" line="1574"/>
         <source>Compression is already in progress</source>
         <translation>正在压缩中</translation>
     </message>
     <message>
-        <location filename="../../ChatView/ChatRootView.cpp" line="1515"/>
+        <location filename="../../ChatView/ChatRootView.cpp" line="1580"/>
         <source>No chat file to compress. Please save the chat first.</source>
         <translation>没有对话文件需要压缩。请先保存对话。</translation>
     </message>
@@ -724,6 +734,56 @@ Would you like to create new chat?</source>
         <location filename="../../widgets/EditorChatButton.cpp" line="48"/>
         <source>Open QodeAssist Chat</source>
         <translation>打开 QodeAssist 对话</translation>
+    </message>
+</context>
+<context>
+    <name>QodeAssist::LLMClientInterface</name>
+    <message>
+        <location filename="../../LLMClientInterface.cpp" line="277"/>
+        <source>
+
+# Project Rules
+
+</source>
+        <translation>
+
+# 项目规则
+
+</translation>
+    </message>
+    <message>
+        <location filename="../../LLMClientInterface.cpp" line="282"/>
+        <source>
+
+# calling tools rules 
+
+</source>
+        <translation>
+
+# 工具调用规则 
+
+</translation>
+    </message>
+    <message>
+        <location filename="../../LLMClientInterface.cpp" line="283"/>
+        <source>- No more than %1 tool calls allowed
+</source>
+        <translation>- 最多调用工具 %1 次
+</translation>
+    </message>
+    <message>
+        <location filename="../../LLMClientInterface.cpp" line="285"/>
+        <source>- Every tool call must explicitly specify its calling reason
+</source>
+        <translation>- 每次调用工具必须给出理由
+</translation>
+    </message>
+    <message>
+        <location filename="../../LLMClientInterface.cpp" line="286"/>
+        <source>- If no more tools are needed, please answer directly
+</source>
+        <translation>- 如果不需要调用工具，请直接回答问题
+</translation>
     </message>
 </context>
 <context>
@@ -1233,34 +1293,34 @@ developers write better code. If you find it useful, please</source>
         <translation>模板：</translation>
     </message>
     <message>
-        <location filename="../../qodeassist.cpp" line="139"/>
+        <location filename="../../qodeassist.cpp" line="177"/>
         <source>Generate QodeAssist suggestion at the current cursor position.</source>
         <translation>在光标位置使用 QodeAssist 生成代码。</translation>
     </message>
     <message>
-        <location filename="../../qodeassist.cpp" line="140"/>
+        <location filename="../../qodeassist.cpp" line="178"/>
         <source>Request QodeAssist Suggestion</source>
         <translation>使用 QodeAssist 生成代码</translation>
     </message>
     <message>
-        <location filename="../../qodeassist.cpp" line="184"/>
+        <location filename="../../qodeassist.cpp" line="222"/>
         <source>Refactor code using QodeAssist</source>
         <translation>使用 QodeAssist 重构代码</translation>
     </message>
     <message>
-        <location filename="../../qodeassist.cpp" line="185"/>
+        <location filename="../../qodeassist.cpp" line="223"/>
         <source>Quick Refactor with QodeAssist</source>
         <translation>使用 QodeAssist 快速重构</translation>
     </message>
     <message>
-        <location filename="../../qodeassist.cpp" line="210"/>
-        <location filename="../../qodeassist.cpp" line="211"/>
+        <location filename="../../qodeassist.cpp" line="248"/>
+        <location filename="../../qodeassist.cpp" line="249"/>
         <source>Show QodeAssist Chat</source>
         <translation>显示 QodeAssist 对话</translation>
     </message>
     <message>
-        <location filename="../../qodeassist.cpp" line="230"/>
-        <location filename="../../qodeassist.cpp" line="231"/>
+        <location filename="../../qodeassist.cpp" line="268"/>
+        <location filename="../../qodeassist.cpp" line="269"/>
         <source>Close QodeAssist Chat</source>
         <translation>关闭 QodeAssist 对话</translation>
     </message>
@@ -3298,14 +3358,14 @@ Please ensure the selected URL is accessible and the service is running.</source
         <translation>压缩对话中...</translation>
     </message>
     <message>
-        <location filename="../../build/ChatView/qml/RootItem.qml" line="572"/>
-        <location filename="../../ChatView/qml/RootItem.qml" line="572"/>
+        <location filename="../../build/ChatView/qml/RootItem.qml" line="620"/>
+        <location filename="../../ChatView/qml/RootItem.qml" line="620"/>
         <source>Compress Chat</source>
         <translation>压缩对话</translation>
     </message>
     <message>
-        <location filename="../../build/ChatView/qml/RootItem.qml" line="577"/>
-        <location filename="../../ChatView/qml/RootItem.qml" line="577"/>
+        <location filename="../../build/ChatView/qml/RootItem.qml" line="625"/>
+        <location filename="../../ChatView/qml/RootItem.qml" line="625"/>
         <source>Create a summarized copy of this chat?
 
 The summary will be generated by LLM and saved as a new chat file.</source>
