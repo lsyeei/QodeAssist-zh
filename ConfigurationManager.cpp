@@ -3,7 +3,9 @@
 
 #include "ConfigurationManager.hpp"
 
+#include <coreplugin/icore.h>
 #include <settings/ButtonAspect.hpp>
+#include <QInputDialog>
 #include <QTimer>
 
 #include "QodeAssisttr.h"
@@ -128,9 +130,42 @@ void ConfigurationManager::selectProvider()
                                ? m_generalSettings.qrProvider
                                : m_generalSettings.caProvider;
 
-    QTimer::singleShot(0, this, [this, providersList, &targetSettings] {
-        m_generalSettings.showSelectionDialog(
-            providersList, targetSettings, Tr::tr("Select LLM Provider"), Tr::tr("Providers:"));
+    // Determine the corresponding URL aspect for this provider button
+    auto *targetUrl = (settingsButton == &m_generalSettings.ccSelectProvider)
+                          ? &m_generalSettings.ccUrl
+                      : settingsButton == &m_generalSettings.ccPreset1SelectProvider
+                          ? &m_generalSettings.ccPreset1Url
+                      : settingsButton == &m_generalSettings.qrSelectProvider
+                          ? &m_generalSettings.qrUrl
+                          : &m_generalSettings.caUrl;
+
+    QTimer::singleShot(0, this, [this, providersList, &targetSettings, targetUrl] {
+        if (providersList.isEmpty())
+            return;
+
+        QInputDialog dialog(Core::ICore::dialogParent());
+        dialog.setWindowTitle(Tr::tr("Select LLM Provider"));
+        dialog.setLabelText(Tr::tr("Providers:"));
+        dialog.setComboBoxItems(providersList);
+        dialog.setComboBoxEditable(false);
+        dialog.setFixedSize(400, 150);
+
+        if (dialog.exec() != QDialog::Accepted)
+            return;
+
+        const QString selectedProvider = dialog.textValue();
+        if (selectedProvider.isEmpty())
+            return;
+
+        // IMPORTANT: Set URL FIRST, then provider.
+        // This ensures that when caProvider.changed signal triggers model loading
+        // (via ChatRootView), the URL is already correct for the new provider.
+        if (auto provider = m_providersManager.getProviderByName(selectedProvider)) {
+            targetUrl->setValue(provider->url());
+        }
+
+        targetSettings.setValue(selectedProvider);
+        m_generalSettings.writeSettings();
     });
 }
 

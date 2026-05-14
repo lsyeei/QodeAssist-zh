@@ -159,6 +159,13 @@ void ClientInterface::sendMessage(
                 systemPrompt = systemPrompt + "\n\n" + role.systemPrompt;
         }
 
+        // 添加工具调用限制
+        systemPrompt.append(tr("\n\n# calling tools rules \n\n"));
+        systemPrompt.append(QString(tr("- No more than %1 tool calls allowed\n"))
+                                .arg(Settings::toolsSettings().maxToolContinuations.value()));
+        systemPrompt.append(tr("- Every tool call must explicitly specify its calling reason\n"));
+        systemPrompt.append(tr("- If no more tools are needed, please answer directly\n"));
+
         auto project = PluginLLMCore::RulesLoader::getActiveProject();
 
         if (project) {
@@ -252,9 +259,9 @@ void ClientInterface::sendMessage(
     QString payloadStr = QString::fromUtf8(QJsonDocument(payload).toJson(QJsonDocument::Compact));
     int accurateTokens = Context::TokenUtils::estimateTokens(payloadStr);
     emit tokenCount(accurateTokens);
-    qDebug() << __FUNCTION__ << "字符数量：" << payloadStr.length()
-             << "计算的token数量：" << accurateTokens
-             << ";token 阈值：" << m_chatModel->tokensThreshold();
+    // qDebug() << __FUNCTION__ << "字符数量：" << payloadStr.length()
+    //          << "计算的token数量：" << accurateTokens
+    //          << ";token 阈值：" << m_chatModel->tokensThreshold();
     if (accurateTokens > m_chatModel->tokensThreshold()) {
         LOG_MESSAGE(QString("Accurate token check: %1 exceeds threshold %2, starting compression")
                         .arg(accurateTokens)
@@ -526,6 +533,9 @@ void ClientInterface::handleRequestFailed(const QString &requestId, const QStrin
         return;
 
     LOG_MESSAGE(QString("Chat request %1 failed: %2").arg(requestId, error));
+    qDebug() << "Chat request " << requestId
+             << "failed: " << error
+             << "\n original Request:" << it.value().originalRequest;
     emit errorOccurred(error);
 
     m_activeRequests.erase(it);

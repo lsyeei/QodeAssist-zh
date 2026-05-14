@@ -122,7 +122,7 @@ QString ChatCompressor::compressHistorySync(ChatModel *chatModel)
     const QString customEndpoint = Settings::generalSettings().caCustomEndpoint();
     const QString endpoint = !customEndpoint.isEmpty() ? customEndpoint
                                                        : promptTemplate->endpoint();
-    qDebug() << __FUNCTION__ << "压缩内容：" << payload;
+    // qDebug() << __FUNCTION__ << "压缩内容：" << payload;
     // 同步等待压缩完成
     bool success = false;
     QEventLoop loop;

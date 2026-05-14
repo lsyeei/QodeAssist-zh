@@ -107,6 +107,15 @@ ProviderSettings::ProviderSettings()
     llamaCppApiKey.setDefaultValue("");
     llamaCppApiKey.setAutoApply(true);
 
+    // DeepSeek Settings
+    deepSeekApiKey.setSettingsKey(Constants::DEEP_SEEK_API_KEY);
+    deepSeekApiKey.setLabelText(Tr::tr("DeepSeek API Key:"));
+    deepSeekApiKey.setDisplayStyle(Utils::StringAspect::LineEditDisplay);
+    deepSeekApiKey.setPlaceHolderText(Tr::tr("Enter your API key here"));
+    deepSeekApiKey.setHistoryCompleter(Constants::DEEP_SEEK_API_KEY_HISTORY);
+    deepSeekApiKey.setDefaultValue("");
+    deepSeekApiKey.setAutoApply(true);
+
     resetToDefaults.m_buttonText = Tr::tr(TrConstants::RESET_TO_DEFAULTS);
 
     readSettings();
@@ -134,6 +143,8 @@ ProviderSettings::ProviderSettings()
             Group{title(Tr::tr("Ollama Settings")), Column{ollamaBasicAuthApiKey}},
             Space{8},
             Group{title(Tr::tr("llama.cpp Settings")), Column{llamaCppApiKey}},
+            Space{8},
+            Group{title(Tr::tr("DeepSeek Settings")), Column{deepSeekApiKey}},
             Stretch{1}};
     });
 }
@@ -165,6 +176,9 @@ void ProviderSettings::setupConnections()
     connect(&llamaCppApiKey, &ButtonAspect::changed, this, [this]() {
         llamaCppApiKey.writeSettings();
     });
+    connect(&deepSeekApiKey, &ButtonAspect::changed, this, [this]() {
+        deepSeekApiKey.writeSettings();
+    });
 }
 
 void ProviderSettings::resetSettingsToDefaults()
@@ -185,6 +199,7 @@ void ProviderSettings::resetSettingsToDefaults()
         resetAspect(googleAiApiKey);
         resetAspect(ollamaBasicAuthApiKey);
         resetAspect(llamaCppApiKey);
+        resetAspect(deepSeekApiKey);
         writeSettings();
     }
 }

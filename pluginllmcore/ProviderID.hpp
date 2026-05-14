@@ -14,6 +14,7 @@ enum class ProviderID {
     MistralAI,
     OpenRouter,
     GoogleAI,
+    DeepSeek,
     LlamaCpp
 };
 }
