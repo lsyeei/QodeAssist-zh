@@ -346,8 +346,7 @@ QJsonObject ToolsManager::wrapDefinition(const BaseTool *tool) const
     }
     }
 
-    Q_UNREACHABLE();
-    return {};
+    Q_UNREACHABLE_RETURN({});
 }
 
 QJsonArray ToolsManager::buildToolsDefinitions() const

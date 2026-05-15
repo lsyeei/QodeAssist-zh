@@ -153,6 +153,8 @@ const char DEEP_SEEK_API_KEY[] = "QodeAssist.deepSeekApiKey";
 const char DEEP_SEEK_API_KEY_HISTORY[] = "QodeAssist.deepSeekApiKeyHistory";
 const char GLM_API_KEY[] = "QodeAssist.glmApiKey";
 const char GLM_API_KEY_HISTORY[] = "QodeAssist.glmApiKeyHistory";
+const char VOLC_API_KEY[] = "QodeAssist.volcApiKey";
+const char VOLC_API_KEY_HISTORY[] = "QodeAssist.volcApiKeyHistory";
 
 // context settings
 const char CC_READ_FULL_FILE[] = "QodeAssist.ccReadFullFile";

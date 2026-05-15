@@ -10,6 +10,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
+if(MSVC)
+    add_compile_options(/FS)
+endif()
+
 find_package(QtCreator REQUIRED COMPONENTS Core)
 find_package(Qt6 COMPONENTS Core Gui Quick Widgets Network Svg Test LinguistTools REQUIRED)
 find_package(GTest)
@@ -108,6 +112,7 @@ add_qtc_plugin(QodeAssist
     providers/OpenAIResponsesProvider.hpp providers/OpenAIResponsesProvider.cpp
     providers/DeepSeekProvider.hpp providers/DeepSeekProvider.cpp
     providers/GLMProvider.hpp providers/GLMProvider.cpp
+    providers/VolcProvider.hpp providers/VolcProvider.cpp
     QodeAssist.qrc
     LSPCompletion.hpp
     LLMSuggestion.hpp LLMSuggestion.cpp

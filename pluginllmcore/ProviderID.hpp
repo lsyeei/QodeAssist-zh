@@ -16,6 +16,7 @@ enum class ProviderID {
     GoogleAI,
     DeepSeek,
     GLM,
-    LlamaCpp
+    LlamaCpp,
+    Volc
 };
 }

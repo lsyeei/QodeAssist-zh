@@ -1,7 +1,7 @@
 // Copyright (C) 2026 Petr Mironychev
 // SPDX-License-Identifier: MIT
 
-#include <LLMQore/GLMClient.hpp>
+#include <LLMQore/VolcClient.hpp>
 
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -12,16 +12,16 @@
 
 namespace LLMQore {
 
-GLMClient::GLMClient(QObject *parent)
-    : GLMClient({}, {}, {}, parent)
+VolcClient::VolcClient(QObject *parent)
+    : VolcClient({}, {}, {}, parent)
 {}
 
-GLMClient::GLMClient(
+VolcClient::VolcClient(
     const QString &url, const QString &apiKey, const QString &model, QObject *parent)
     : OpenAIClient(url, apiKey, model, parent)
 {}
 
-RequestID GLMClient::sendMessage(
+RequestID VolcClient::sendMessage(
     const QJsonObject &payload, const QString &endpoint, RequestMode mode)
 {
     QJsonObject request = payload;
@@ -30,35 +30,49 @@ RequestID GLMClient::sendMessage(
     const RequestID id = createRequest();
     const QString resolved = endpoint.isEmpty() ? QStringLiteral("/chat/completions") : endpoint;
 
-    qCDebug(llmGLMLog).noquote()
+    qCDebug(llmVolcLog).noquote()
         << QString("Sending request %1 to %2%3").arg(id, m_url, resolved);
 
     sendRequest(id, QUrl(m_url + resolved), request, mode);
     return id;
 }
 
-QFuture<QList<QString>> GLMClient::listModels()
+QFuture<QList<QString>> VolcClient::listModels()
 {
-    // Zhipu API does not support listing models via /models endpoint.
-    // Return a well-known list of supported GLM models.
-    QList<QString> models = {
-        QStringLiteral("glm-4-plus"),
-        QStringLiteral("glm-4-0520"),
-        QStringLiteral("glm-4-air"),
-        QStringLiteral("glm-4-airx"),
-        QStringLiteral("glm-4-long"),
-        QStringLiteral("glm-4-flash"),
-        QStringLiteral("glm-4-flashx"),
-    };
-    return QtFuture::makeReadyValueFuture(models);
+    QUrl url(m_url + "/models");
+    QNetworkRequest request = prepareNetworkRequest(url);
+
+    return httpClient()
+        ->send(request, QByteArrayView("GET"))
+        .then(this, [](const HttpResponse &response) {
+            QList<QString> models;
+            if (!response.isSuccess())
+                return models;
+
+            const QJsonObject json = QJsonDocument::fromJson(response.body).object();
+            if (json.contains("data")) {
+                const QJsonArray modelArray = json["data"].toArray();
+                for (const QJsonValue &value : modelArray) {
+                    const QJsonObject modelObject = value.toObject();
+                    if (modelObject.contains("id"))
+                        models.append(modelObject["id"].toString());
+                }
+            }
+            return models;
+        })
+        .onFailed(this, [](const std::exception &) { return QList<QString>{}; });
 }
 
-void GLMClient::cleanupDerivedData(const RequestID &id)
+void VolcClient::cleanupDerivedData(const RequestID &id)
 {
+    // Emit any pending thinking blocks before the message is destroyed.
+    // This ensures the full accumulated reasoning content reaches the UI
+    // even if the final stream chunk(s) carried no reasoning delta.
+    notifyPendingThinkingBlocks(id);
     OpenAIClient::cleanupDerivedData(id);
 }
 
-void GLMClient::processStreamChunk(const RequestID &id, const QJsonObject &chunk)
+void VolcClient::processStreamChunk(const RequestID &id, const QJsonObject &chunk)
 {
     QJsonArray choices = chunk["choices"].toArray();
     if (choices.isEmpty())
@@ -72,12 +86,28 @@ void GLMClient::processStreamChunk(const RequestID &id, const QJsonObject &chunk
     if (!message) {
         message = new OpenAIMessage(this);
         m_messages[id] = message;
-        qCDebug(llmGLMLog).noquote()
+        qCDebug(llmVolcLog).noquote()
             << QString("Created OpenAIMessage for request %1").arg(id);
     } else if (message->state() == MessageState::RequiresToolExecution) {
         message->startNewContinuation();
-        qCDebug(llmGLMLog).noquote()
+        qCDebug(llmVolcLog).noquote()
             << QString("Starting continuation for request %1").arg(id);
+    }
+
+    // Handle reasoning_content (Volc-specific field for models like Doubao)
+    // Volc sends incremental deltas in each streaming chunk, so we must
+    // accumulate them via handleReasoningDelta() and then emit the FULL
+    // accumulated content from the message object — not just the raw delta.
+    if (delta.contains("reasoning_content") && !delta["reasoning_content"].isNull()) {
+        QString reasoning = delta["reasoning_content"].toString();
+        if (!reasoning.isEmpty()) {
+            message->handleReasoningDelta(reasoning);
+            auto thinkingBlocks = message->getCurrentThinkingContent();
+            QString fullReasoning;
+            for (auto *block : thinkingBlocks)
+                fullReasoning += block->thinking();
+            emit thinkingBlockReceived(id, fullReasoning, "");
+        }
     }
 
     if (delta.contains("content") && !delta["content"].isNull()) {
@@ -114,7 +144,7 @@ void GLMClient::processStreamChunk(const RequestID &id, const QJsonObject &chunk
     }
 }
 
-void GLMClient::processBufferedResponse(const RequestID &id, const QByteArray &data)
+void VolcClient::processBufferedResponse(const RequestID &id, const QByteArray &data)
 {
     QJsonDocument doc = QJsonDocument::fromJson(data);
     if (!doc.isObject()) {
@@ -142,6 +172,16 @@ void GLMClient::processBufferedResponse(const RequestID &id, const QByteArray &d
 
     auto *message = new OpenAIMessage(this);
     m_messages[id] = message;
+
+    // Handle reasoning_content (Volc-specific field for models like Doubao)
+    if (messageObj.contains("reasoning_content") && !messageObj["reasoning_content"].isNull()) {
+        QString reasoning = messageObj["reasoning_content"].toString();
+        if (!reasoning.isEmpty()) {
+            message->handleReasoningDelta(reasoning);
+            // Non-streaming: the full reasoning is available in one shot
+            emit thinkingBlockReceived(id, reasoning, "");
+        }
+    }
 
     QString content = messageObj["content"].toString();
     if (!content.isEmpty()) {

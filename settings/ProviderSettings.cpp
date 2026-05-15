@@ -125,6 +125,15 @@ ProviderSettings::ProviderSettings()
     glmApiKey.setDefaultValue("");
     glmApiKey.setAutoApply(true);
 
+    // volc Settings
+    volcApiKey.setSettingsKey(Constants::VOLC_API_KEY);
+    volcApiKey.setLabelText(Tr::tr("Volc (火山方舟) API Key:"));
+    volcApiKey.setDisplayStyle(Utils::StringAspect::LineEditDisplay);
+    volcApiKey.setPlaceHolderText(Tr::tr("Enter your API key here"));
+    volcApiKey.setHistoryCompleter(Constants::VOLC_API_KEY_HISTORY);
+    volcApiKey.setDefaultValue("");
+    volcApiKey.setAutoApply(true);
+
     resetToDefaults.m_buttonText = Tr::tr(TrConstants::RESET_TO_DEFAULTS);
 
     readSettings();
@@ -156,6 +165,8 @@ ProviderSettings::ProviderSettings()
             Group{title(Tr::tr("DeepSeek Settings")), Column{deepSeekApiKey}},
             Space{8},
             Group{title(Tr::tr("GLM (智谱) Settings")), Column{glmApiKey}},
+            Space{8},
+            Group{title(Tr::tr("Volc (火山方舟) Settings")), Column{volcApiKey}},
             Stretch{1}};
     });
 }
@@ -190,6 +201,12 @@ void ProviderSettings::setupConnections()
     connect(&deepSeekApiKey, &ButtonAspect::changed, this, [this]() {
         deepSeekApiKey.writeSettings();
     });
+    connect(&glmApiKey, &ButtonAspect::changed, this, [this]() {
+        glmApiKey.writeSettings();
+    });
+    connect(&volcApiKey, &ButtonAspect::changed, this, [this]() {
+        volcApiKey.writeSettings();
+    });
 }
 
 void ProviderSettings::resetSettingsToDefaults()
@@ -211,6 +228,8 @@ void ProviderSettings::resetSettingsToDefaults()
         resetAspect(ollamaBasicAuthApiKey);
         resetAspect(llamaCppApiKey);
         resetAspect(deepSeekApiKey);
+        resetAspect(glmApiKey);
+        resetAspect(volcApiKey);
         writeSettings();
     }
 }

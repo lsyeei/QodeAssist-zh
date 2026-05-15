@@ -28,6 +28,7 @@ public:
     Utils::StringAspect llamaCppApiKey{this};
     Utils::StringAspect deepSeekApiKey{this};
     Utils::StringAspect glmApiKey{this};
+    Utils::StringAspect volcApiKey{this};
 
 private:
     void setupConnections();

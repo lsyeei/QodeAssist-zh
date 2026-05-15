@@ -17,7 +17,7 @@ AgentRoleDialog::AgentRoleDialog(Action action, QWidget *parent)
     : QDialog{parent}
     , m_action{action}
 {
-    auto getTitle = [](Action action) {
+    auto getTitle = [](Action action) -> QString {
         switch(action)
         {
         case Action::Add:
@@ -27,6 +27,7 @@ AgentRoleDialog::AgentRoleDialog(Action action, QWidget *parent)
         case Action::Edit:
             return tr("Edit Agent Role");
         }
+        return {};
     };
 
     setWindowTitle(getTitle(action));

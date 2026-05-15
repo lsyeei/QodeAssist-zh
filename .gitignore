@@ -80,3 +80,13 @@ CMakeLists.txt.user*
 .qtc_clangd/compile_commands.json
 CLAUDE.md
 /.claude
+
+sources/external/llmcore/
+.atomcode/
+.qt/
+CmakeFiles/
+.lupdate/
+**.rcc/
+**debug/
+build_**/
+*.cmake

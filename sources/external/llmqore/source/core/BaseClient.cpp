@@ -184,9 +184,9 @@ void BaseClient::startHttpRequest(
             });
         return;
     }
-    qDebug() << __FILE__ << __LINE__ << __FUNCTION__
-             << "send message,url=" << request.url()
-             << "\n ****http body*****: \n" << body;
+    // qDebug() << __FILE__ << __LINE__ << __FUNCTION__
+    //          << "send message,url=" << request.url()
+    //          << "\n ****http body*****: \n" << body;
 
     HttpStream *stream = m_httpClient->openStream(request, QByteArrayView("POST"), body);
     it->stream = stream;

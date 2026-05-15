@@ -187,7 +187,7 @@ void OpenAIClient::processStreamChunk(const RequestID &id, const QJsonObject &ch
     }
 
     if (delta.contains("tool_calls")) {
-        qDebug() << __FILE__ << __LINE__ << __FUNCTION__ << "receive tool call:\n" << chunk;
+        // qDebug() << __FILE__ << __LINE__ << __FUNCTION__ << "receive tool call:\n" << chunk;
         QJsonArray toolCalls = delta["tool_calls"].toArray();
         for (const auto &toolCallValue : toolCalls) {
             QJsonObject toolCall = toolCallValue.toObject();
