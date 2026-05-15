@@ -1,0 +1,130 @@
+# LLMQore
+
+[![Build and Test](https://github.com/Palm1r/llmqore/actions/workflows/build_and_test.yml/badge.svg?branch=main)](https://github.com/Palm1r/llmqore/actions/workflows/build_and_test.yml)
+![GitHub Tag](https://img.shields.io/github/v/tag/Palm1r/llmqore)
+
+Qt/C++ library for working with cloud and local LLM providers, create MCP servers and clients, download and using library MCP Bridge.
+
+**LLM clients** — unified streaming API across all providers:
+
+```cpp
+auto *client = new LLMQore::ClaudeClient(url, apiKey, model, this);
+client->ask("What is Qt?", cb);
+```
+
+**MCP server** — expose tools, resources and prompts over stdio or HTTP:
+
+```cpp
+// stdio (stdin/stdout, e.g. for Claude Desktop)
+auto *transport = new LLMQore::McpStdioServerTransport(&app);
+
+// or Streamable HTTP
+auto *transport = new LLMQore::McpHttpServerTransport({.port = 8080, .path = "/mcp"}, &app);
+
+auto *server = new LLMQore::McpServer(transport, cfg, &app);
+server->addTool(new MyTool(server));
+server->start();
+```
+
+**MCP client** — connect to MCP servers and bind their tools into LLM clients:
+
+```cpp
+// Add servers one by one
+client->tools()->addMcpServer({.name = "filesystem", .command = "npx",
+    .arguments = {"-y", "@modelcontextprotocol/server-filesystem", "/home/user"}});
+
+// Or load from a JSON config
+client->tools()->loadMcpServers(QJsonDocument::fromJson(configData).object());
+```
+
+`loadMcpServers` accepts:
+
+```json
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/home/user"]
+    }
+  }
+}
+```
+<img width="912" height="740" alt="Screenshot 2026-04-13 at 18 48 18" src="https://github.com/user-attachments/assets/2fb1ea83-1d2d-4016-9c87-56180dbf3301" />
+
+See [Quick Start](docs/quick-start.md) for complete examples.
+
+## MCP Bridge
+
+A standalone CLI tool built on llmqore that aggregates multiple MCP servers (stdio or SSE) and re-exposes them either behind a single HTTP/SSE endpoint or as one stdio server — useful when the upstreams and the client disagree on transport.
+
+```bash
+mcp-bridge bridge.json              # HTTP endpoint
+mcp-bridge --stdio bridge.json      # stdio (for Claude Desktop and friends)
+```
+
+Config uses the familiar `mcpServers` schema:
+
+```json
+{
+  "port": 8808,
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/home/user"]
+    }
+  }
+}
+```
+
+Prebuilt binaries for Linux/macOS/Windows (with Qt runtime bundled) are published to [GitHub Releases](https://github.com/Palm1r/llmqore/releases). See [MCP Bridge docs](docs/mcp-bridge.md) for full usage, config reference, and build instructions.
+
+## Supported Providers
+
+| Provider | Client class | Streaming | Tools | Thinking |
+|---|---|---|---|---|
+| Anthropic Claude | `ClaudeClient` | ✓ | ✓ | ✓ |
+| OpenAI (Chat Completions) | `OpenAIClient` | ✓ | ✓ | — |
+| OpenAI (Responses API) | `OpenAIResponsesClient` | ✓ | ✓ | ✓ |
+| Ollama | `OllamaClient` | ✓ | ✓ | ✓ |
+| Google AI | `GoogleAIClient` | ✓ | ✓ | ✓ |
+| Mistral | `MistralClient` | ✓ | ✓ | — |
+| llama.cpp | `LlamaCppClient` | ✓ | ✓ | ✓ |
+
+## MCP (Model Context Protocol)
+
+Client and server implementation of the MCP 2025-11-25 spec:
+
+- **Transports**: stdio, Streamable HTTP
+- **Server**: tools, resources, resource templates, prompts, completions, sampling, elicitation
+- **Client**: tools, resources, prompts, completions, sampling, elicitation, roots
+
+See [MCP Protocol Coverage](docs/mcp/mcp_protocol_coverage.md) for the full spec-conformance matrix.
+
+## Requirements
+
+- C++20
+- Qt 6.5+
+- CMake 3.21+
+
+## Documentation
+
+- [Quick Start](docs/quick-start.md) — examples for LLM clients, tools, MCP server and client
+- [Integration](docs/integration.md) — FetchContent and installed setup
+- [MCP Bridge](docs/mcp-bridge.md) — aggregate stdio MCP servers behind one HTTP/SSE endpoint
+- [MCP Protocol Coverage](docs/mcp/mcp_protocol_coverage.md) — spec-conformance matrix
+- [Architecture](docs/architecture.md) — internals, for contributors
+
+## Support
+
+- **Report Issues**: [open an issue](https://github.com/Palm1r/llmqore/issues) on GitHub
+- **Contribute**: pull requests with bug fixes or new features are welcome
+- **Spread the Word**: star the repository and share with fellow developers
+- **Financial Support**:
+   - Bitcoin (BTC): `bc1qndq7f0mpnlya48vk7kugvyqj5w89xrg4wzg68t`
+   - Ethereum (ETH): `0xA5e8c37c94b24e25F9f1f292a01AF55F03099D8D`
+   - Litecoin (LTC): `ltc1qlrxnk30s2pcjchzx4qrxvdjt5gzuervy5mv0vy`
+   - USDT (TRC20): `THdZrE7d6epW6ry98GA3MLXRjha1DjKtUx`
+
+## License
+
+MIT — see [LICENSE](LICENSE).

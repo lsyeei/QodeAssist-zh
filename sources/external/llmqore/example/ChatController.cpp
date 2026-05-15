@@ -1,0 +1,263 @@
+// Copyright (C) 2026 Petr Mironychev
+// SPDX-License-Identifier: MIT
+
+#include "ChatController.hpp"
+#include "ExampleTools.hpp"
+
+#include <QFile>
+#include <QFutureWatcher>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QProcessEnvironment>
+#include <QUrl>
+#include <QtDebug>
+
+#include <LLMQore/Clients>
+#include <LLMQore/Tools>
+
+ChatController::ChatController(QObject *parent)
+    : QObject(parent)
+{}
+
+void ChatController::setupProvider(const QString &provider, const QString &url, const QString &apiKey)
+{
+    clearChat();
+    createClient(provider, url, apiKey);
+    fetchModels();
+}
+
+void ChatController::send(const QString &text, const QString &model)
+{
+    QString trimmed = text.trimmed();
+    if (trimmed.isEmpty() || m_busy || !m_client)
+        return;
+
+    m_messages.append("user", trimmed);
+    setBusy(true);
+    setStatus("Waiting for response...");
+
+    m_history.append(QJsonObject{{"role", "user"}, {"content", trimmed}});
+
+    QJsonObject payload;
+    payload["model"] = model;
+    payload["stream"] = true;
+    payload["messages"] = m_history;
+
+    if (m_currentProvider == "Claude")
+        payload["max_tokens"] = 20000;
+
+    QJsonArray toolsDefs = m_client->tools()->getToolsDefinitions();
+    if (!toolsDefs.isEmpty())
+        payload["tools"] = toolsDefs;
+
+    m_currentRequest = m_client->sendMessage(payload);
+}
+
+void ChatController::stopGeneration()
+{
+    if (!m_busy || !m_client || m_currentRequest.isEmpty())
+        return;
+
+    m_client->cancelRequest(m_currentRequest);
+    m_currentRequest.clear();
+}
+
+QString ChatController::envApiKey(const QString &provider) const
+{
+    static const QHash<QString, QString> envMap = {
+        {"Claude",    "CLAUDE_API_KEY"},
+        {"OpenAI",    "OPENAI_API_KEY"},
+        {"Google AI", "GOOGLE_API_KEY"},
+    };
+    const QString var = envMap.value(provider);
+    if (var.isEmpty())
+        return {};
+    return QProcessEnvironment::systemEnvironment().value(var);
+}
+
+void ChatController::clearChat()
+{
+    m_messages.clear();
+    m_history = QJsonArray();
+}
+
+void ChatController::cancelPendingFetch()
+{
+    if (m_modelWatcher) {
+        m_modelWatcher->disconnect(this);
+        m_modelWatcher->cancel();
+        m_modelWatcher->deleteLater();
+        m_modelWatcher = nullptr;
+    }
+    setLoadingModels(false);
+}
+
+void ChatController::createClient(const QString &provider, const QString &url, const QString &apiKey)
+{
+    m_currentProvider = provider;
+    cancelPendingFetch();
+    if (m_client) {
+        m_client->deleteLater();
+        m_client = nullptr;
+    }
+
+    if (provider == "Claude")
+        m_client = new LLMQore::ClaudeClient(url, apiKey, QString(), this);
+    else if (provider == "OpenAI")
+        m_client = new LLMQore::OpenAIClient(url, apiKey, QString(), this);
+    else if (provider == "Ollama")
+        m_client = new LLMQore::OllamaClient(url, apiKey, QString(), this);
+    else if (provider == "Google AI")
+        m_client = new LLMQore::GoogleAIClient(url, apiKey, QString(), this);
+    else if (provider == "LlamaCpp")
+        m_client = new LLMQore::LlamaCppClient(url, apiKey, QString(), this);
+
+    if (!m_client)
+        return;
+
+    registerTools();
+
+    connect(m_client->tools(), &LLMQore::ToolRegistry::toolsChanged,
+            this, &ChatController::refreshToolListUi);
+
+    // Route BaseClient signals to UI state mutations. AutoConnection is fine
+    // — sender and receiver both live on this thread, so calls are direct
+    // without queueing.
+    connect(m_client, &LLMQore::BaseClient::chunkReceived, this,
+            [this](const LLMQore::RequestID &, const QString &chunk) {
+                m_messages.appendOrCreate("assistant", chunk);
+            });
+    connect(m_client, &LLMQore::BaseClient::toolStarted, this,
+            [this](const LLMQore::RequestID &, const QString &, const QString &toolName) {
+                setStatus(QString("Tool: %1 ...").arg(toolName));
+            });
+    connect(m_client, &LLMQore::BaseClient::toolResultReady, this,
+            [this](const LLMQore::RequestID &,
+                   const QString &,
+                   const QString &toolName,
+                   const QString &result) {
+                m_messages.append("tool", QString("[%1]: %2").arg(toolName, result));
+            });
+    connect(m_client, &LLMQore::BaseClient::requestCompleted, this,
+            [this](const LLMQore::RequestID &, const QString &fullText) {
+                m_history.append(QJsonObject{{"role", "assistant"}, {"content", fullText}});
+                setBusy(false);
+                setStatus("Ready");
+            });
+    connect(m_client, &LLMQore::BaseClient::requestFailed, this,
+            [this](const LLMQore::RequestID &, const QString &error) {
+                m_messages.append("error", error);
+                setBusy(false);
+                setStatus("Request failed");
+            });
+}
+
+void ChatController::fetchModels()
+{
+    if (!m_client)
+        return;
+
+    cancelPendingFetch();
+
+    m_modelList.clear();
+    emit modelListChanged();
+    setLoadingModels(true);
+    setStatus("Fetching models...");
+
+    auto *watcher = new QFutureWatcher<QList<QString>>(this);
+    m_modelWatcher = watcher;
+
+    connect(watcher, &QFutureWatcher<QList<QString>>::finished, this, [this, watcher]() {
+        if (m_modelWatcher != watcher)
+            return;
+        m_modelWatcher = nullptr;
+
+        m_modelList = QStringList(watcher->result().cbegin(), watcher->result().cend());
+        emit modelListChanged();
+        setLoadingModels(false);
+        setStatus(
+            m_modelList.isEmpty() ? "No models found"
+                                  : QString("Loaded %1 models").arg(m_modelList.size()));
+        watcher->deleteLater();
+    });
+    watcher->setFuture(m_client->listModels());
+}
+
+void ChatController::registerTools()
+{
+    if (!m_client)
+        return;
+
+    auto *tools = m_client->tools();
+
+    // Built-in example tools.
+    tools->addTool(new Example::DateTimeTool);
+    tools->addTool(new Example::CalculatorTool);
+    tools->addTool(new Example::SystemInfoTool);
+
+    // MCP servers: from LLMQORE_MCP_CONFIG env var, or hardcoded fallback.
+    const QString mcpConfigPath = QString::fromLocal8Bit(qgetenv("LLMQORE_MCP_CONFIG"));
+    if (!mcpConfigPath.isEmpty()) {
+        loadMcpConfig(mcpConfigPath);
+    } else {
+        tools->addMcpServer({
+            .name = "qtcreator",
+            .url = QUrl("http://127.0.0.1:3001/sse"),
+            .httpSpec = "2024-11-05",
+        });
+    }
+
+    refreshToolListUi();
+}
+
+void ChatController::refreshToolListUi()
+{
+    m_toolNames.clear();
+    if (!m_client)
+        return;
+    for (const auto &snap : m_client->tools()->toolsSnapshot())
+        m_toolNames.append(QString("%1 - %2").arg(snap.displayName, snap.description));
+    emit toolNamesChanged();
+}
+
+void ChatController::loadMcpConfig(const QString &path)
+{
+    QFile f(path);
+    if (!f.open(QIODevice::ReadOnly)) {
+        qWarning().noquote() << "ChatController: cannot open" << path << ":" << f.errorString();
+        return;
+    }
+    QJsonParseError err{};
+    const QJsonDocument doc = QJsonDocument::fromJson(f.readAll(), &err);
+    if (err.error != QJsonParseError::NoError || !doc.isObject()) {
+        qWarning().noquote() << "ChatController: cannot parse" << path << ":" << err.errorString();
+        return;
+    }
+
+    m_client->tools()->loadMcpServers(doc.object());
+}
+
+void ChatController::setBusy(bool busy)
+{
+    if (m_busy == busy)
+        return;
+    m_busy = busy;
+    emit busyChanged();
+}
+
+void ChatController::setLoadingModels(bool loading)
+{
+    if (m_loadingModels == loading)
+        return;
+    m_loadingModels = loading;
+    emit loadingModelsChanged();
+}
+
+void ChatController::setStatus(const QString &status)
+{
+    if (m_status == status)
+        return;
+    m_status = status;
+    emit statusChanged();
+}
