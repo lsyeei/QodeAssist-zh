@@ -157,7 +157,6 @@ void BaseClient::startHttpRequest(
     if (it == m_requests.end())
         return;
 
-    // qDebug() << __FUNCTION__ << "before send,url=" << request.url();
     const QByteArray body = QJsonDocument(payload).toJson(QJsonDocument::Compact);
 
     if (mode == RequestMode::Buffered) {
@@ -185,6 +184,9 @@ void BaseClient::startHttpRequest(
             });
         return;
     }
+    qDebug() << __FILE__ << __LINE__ << __FUNCTION__
+             << "send message,url=" << request.url()
+             << "\n ****http body*****: \n" << body;
 
     HttpStream *stream = m_httpClient->openStream(request, QByteArrayView("POST"), body);
     it->stream = stream;
@@ -221,8 +223,8 @@ void BaseClient::startHttpRequest(
         if (!guardedStream) {
             return;
         }
-        qDebug() << __FILE__ << __LINE__ << __FUNCTION__
-                 << "HttpStream::finished,content=" << responseContent(id);
+        // qDebug() << __FILE__ << __LINE__ << __FUNCTION__
+        //          << "HttpStream::finished,content=" << responseContent(id);
         auto it = m_requests.find(id);
         if (it == m_requests.end() || it->stream != guardedStream) {
             guardedStream->deleteLater();
@@ -398,7 +400,7 @@ void BaseClient::handleToolContinuation(
     }
 
     QJsonObject payload = buildContinuationPayload(it->originalPayload, message, toolResults);
-    qDebug() << __FILE__ << __LINE__ << __FUNCTION__ << "payload: \n" << payload;
+    // qDebug() << __FILE__ << __LINE__ << __FUNCTION__ << "payload: \n" << payload;
 
     sendRequest(id, it->url, payload, it->mode);
 }

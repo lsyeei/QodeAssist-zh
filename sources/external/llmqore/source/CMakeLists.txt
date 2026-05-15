@@ -51,6 +51,9 @@ target_sources(LLMQore PRIVATE
     ${PROJECT_SOURCE_DIR}/include/LLMQore/DeepSeekClient.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/clients/deepseek/DeepSeekClient.cpp
 
+    ${PROJECT_SOURCE_DIR}/include/LLMQore/GLMClient.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/clients/glm/GLMClient.cpp
+
     ${PROJECT_SOURCE_DIR}/include/LLMQore/GoogleAIClient.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/clients/google/GoogleAIClient.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/clients/google/GoogleMessage.hpp

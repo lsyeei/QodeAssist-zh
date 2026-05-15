@@ -107,6 +107,7 @@ add_qtc_plugin(QodeAssist
     providers/CodestralProvider.hpp providers/CodestralProvider.cpp
     providers/OpenAIResponsesProvider.hpp providers/OpenAIResponsesProvider.cpp
     providers/DeepSeekProvider.hpp providers/DeepSeekProvider.cpp
+    providers/GLMProvider.hpp providers/GLMProvider.cpp
     QodeAssist.qrc
     LSPCompletion.hpp
     LLMSuggestion.hpp LLMSuggestion.cpp

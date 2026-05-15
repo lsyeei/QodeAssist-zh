@@ -15,6 +15,7 @@ enum class ProviderID {
     OpenRouter,
     GoogleAI,
     DeepSeek,
+    GLM,
     LlamaCpp
 };
 }

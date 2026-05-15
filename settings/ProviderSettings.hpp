@@ -27,6 +27,7 @@ public:
     Utils::StringAspect ollamaBasicAuthApiKey{this};
     Utils::StringAspect llamaCppApiKey{this};
     Utils::StringAspect deepSeekApiKey{this};
+    Utils::StringAspect glmApiKey{this};
 
 private:
     void setupConnections();

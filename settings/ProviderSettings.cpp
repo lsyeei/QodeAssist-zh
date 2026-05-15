@@ -116,6 +116,15 @@ ProviderSettings::ProviderSettings()
     deepSeekApiKey.setDefaultValue("");
     deepSeekApiKey.setAutoApply(true);
 
+    // GLM Settings
+    glmApiKey.setSettingsKey(Constants::GLM_API_KEY);
+    glmApiKey.setLabelText(Tr::tr("GLM (智谱) API Key:"));
+    glmApiKey.setDisplayStyle(Utils::StringAspect::LineEditDisplay);
+    glmApiKey.setPlaceHolderText(Tr::tr("Enter your API key here"));
+    glmApiKey.setHistoryCompleter(Constants::GLM_API_KEY_HISTORY);
+    glmApiKey.setDefaultValue("");
+    glmApiKey.setAutoApply(true);
+
     resetToDefaults.m_buttonText = Tr::tr(TrConstants::RESET_TO_DEFAULTS);
 
     readSettings();
@@ -145,6 +154,8 @@ ProviderSettings::ProviderSettings()
             Group{title(Tr::tr("llama.cpp Settings")), Column{llamaCppApiKey}},
             Space{8},
             Group{title(Tr::tr("DeepSeek Settings")), Column{deepSeekApiKey}},
+            Space{8},
+            Group{title(Tr::tr("GLM (智谱) Settings")), Column{glmApiKey}},
             Stretch{1}};
     });
 }
