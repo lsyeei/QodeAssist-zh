@@ -61,7 +61,20 @@ QFuture<QList<QString>> TencentClient::listModels()
             }
             return models;
         })
-        .onFailed(this, [](const std::exception &) { return QList<QString>{}; });
+        .onFailed(this, [](const std::exception &) {
+            QList<QString> models;
+            models << "hy3-preview"<< "hunyuan-2.0-thinking-20251109"
+                   << "hunyuan-2.0-instruct-20251111"<< "hunyuan-role-latest"
+                   << "deepseek-v4-flash"<< "deepseek-v4-pro"<< "deepseek-v3.2"
+                   << "deepseek-v3.1-terminus"<< "deepseek-r1-0528"
+                   << "deepseek-v3-0324"<< "glm-5.1"<< "glm-5v-turbo"
+                   << "glm-5-turbo"<< "glm-5"<< "kimi-k2.6"<< "kimi-k2.5"
+                   << "minimax-m2.7"<< "minimax-m2.5"<< "HY-Image-V3.0"
+                   << "HY-Image-Lite"<< "HY-Video-1.5"<< "YT-Video-2.0"
+                   << "YT-Video-HumanActor"<< "YT-Video-FX"<< "HY-3D-3.0"
+                   << "HY-3D-3.1"<< "HY-3D-Express"<< "youtu-vita";
+            return models;
+        });
 }
 
 void TencentClient::cleanupDerivedData(const RequestID &id)
