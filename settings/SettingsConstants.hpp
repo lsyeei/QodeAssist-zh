@@ -155,6 +155,8 @@ const char GLM_API_KEY[] = "QodeAssist.glmApiKey";
 const char GLM_API_KEY_HISTORY[] = "QodeAssist.glmApiKeyHistory";
 const char VOLC_API_KEY[] = "QodeAssist.volcApiKey";
 const char VOLC_API_KEY_HISTORY[] = "QodeAssist.volcApiKeyHistory";
+const char TENCENT_API_KEY[] = "QodeAssist.tencentApiKey";
+const char TENCENT_API_KEY_HISTORY[] = "QodeAssist.tencentApiKeyHistory";
 
 // context settings
 const char CC_READ_FULL_FILE[] = "QodeAssist.ccReadFullFile";

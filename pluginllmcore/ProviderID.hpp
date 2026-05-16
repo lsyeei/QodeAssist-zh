@@ -17,6 +17,7 @@ enum class ProviderID {
     DeepSeek,
     GLM,
     LlamaCpp,
-    Volc
+    Volc,
+    Tencent
 };
 }

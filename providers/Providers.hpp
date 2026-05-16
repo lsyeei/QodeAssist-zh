@@ -20,6 +20,7 @@
 #include "providers/GLMProvider.hpp"
 #include "providers/OpenRouterAIProvider.hpp"
 #include "providers/VolcProvider.hpp"
+#include "providers/TencentProvider.hpp"
 
 namespace QodeAssist::Providers {
 
@@ -42,6 +43,7 @@ inline void registerProviders()
     providerManager.registerProvider<DeepSeekProvider>();
     providerManager.registerProvider<GLMProvider>();
     providerManager.registerProvider<VolcProvider>();
+    providerManager.registerProvider<TencentProvider>();
 }
 
 } // namespace QodeAssist::Providers

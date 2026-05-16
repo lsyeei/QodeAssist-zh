@@ -134,6 +134,15 @@ ProviderSettings::ProviderSettings()
     volcApiKey.setDefaultValue("");
     volcApiKey.setAutoApply(true);
 
+    // Tencent Settings
+    tencentApiKey.setSettingsKey(Constants::TENCENT_API_KEY);
+    tencentApiKey.setLabelText(Tr::tr("Tencent TokenHub API Key:"));
+    tencentApiKey.setDisplayStyle(Utils::StringAspect::LineEditDisplay);
+    tencentApiKey.setPlaceHolderText(Tr::tr("Enter your API key here"));
+    tencentApiKey.setHistoryCompleter(Constants::TENCENT_API_KEY_HISTORY);
+    tencentApiKey.setDefaultValue("");
+    tencentApiKey.setAutoApply(true);
+
     resetToDefaults.m_buttonText = Tr::tr(TrConstants::RESET_TO_DEFAULTS);
 
     readSettings();
@@ -167,6 +176,8 @@ ProviderSettings::ProviderSettings()
             Group{title(Tr::tr("GLM (智谱) Settings")), Column{glmApiKey}},
             Space{8},
             Group{title(Tr::tr("Volc (火山方舟) Settings")), Column{volcApiKey}},
+            Space{8},
+            Group{title(Tr::tr("Tencent TokenHub Settings")), Column{tencentApiKey}},
             Stretch{1}};
     });
 }
@@ -207,6 +218,9 @@ void ProviderSettings::setupConnections()
     connect(&volcApiKey, &ButtonAspect::changed, this, [this]() {
         volcApiKey.writeSettings();
     });
+    connect(&tencentApiKey, &ButtonAspect::changed, this, [this]() {
+        tencentApiKey.writeSettings();
+    });
 }
 
 void ProviderSettings::resetSettingsToDefaults()
@@ -230,6 +244,7 @@ void ProviderSettings::resetSettingsToDefaults()
         resetAspect(deepSeekApiKey);
         resetAspect(glmApiKey);
         resetAspect(volcApiKey);
+        resetAspect(tencentApiKey);
         writeSettings();
     }
 }

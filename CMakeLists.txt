@@ -113,6 +113,7 @@ add_qtc_plugin(QodeAssist
     providers/DeepSeekProvider.hpp providers/DeepSeekProvider.cpp
     providers/GLMProvider.hpp providers/GLMProvider.cpp
     providers/VolcProvider.hpp providers/VolcProvider.cpp
+    providers/TencentProvider.hpp providers/TencentProvider.cpp
     QodeAssist.qrc
     LSPCompletion.hpp
     LLMSuggestion.hpp LLMSuggestion.cpp

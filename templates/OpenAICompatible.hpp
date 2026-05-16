@@ -76,6 +76,10 @@ public:
         case PluginLLMCore::ProviderID::OpenRouter:
         case PluginLLMCore::ProviderID::LMStudio:
         case PluginLLMCore::ProviderID::LlamaCpp:
+        case PluginLLMCore::ProviderID::DeepSeek:
+        case PluginLLMCore::ProviderID::GLM:
+        case PluginLLMCore::ProviderID::Volc:
+        case PluginLLMCore::ProviderID::Tencent:
             return true;
         default:
             return false;

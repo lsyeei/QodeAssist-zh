@@ -57,6 +57,9 @@ target_sources(LLMQore PRIVATE
     ${PROJECT_SOURCE_DIR}/include/LLMQore/VolcClient.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/clients/volc/VolcClient.cpp
 
+    ${PROJECT_SOURCE_DIR}/include/LLMQore/TencentClient.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/clients/tencent/TencentClient.cpp
+
     ${PROJECT_SOURCE_DIR}/include/LLMQore/GoogleAIClient.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/clients/google/GoogleAIClient.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/clients/google/GoogleMessage.hpp

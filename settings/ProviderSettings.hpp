@@ -29,6 +29,7 @@ public:
     Utils::StringAspect deepSeekApiKey{this};
     Utils::StringAspect glmApiKey{this};
     Utils::StringAspect volcApiKey{this};
+    Utils::StringAspect tencentApiKey{this};
 
 private:
     void setupConnections();
