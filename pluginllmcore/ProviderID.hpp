@@ -18,6 +18,7 @@ enum class ProviderID {
     GLM,
     LlamaCpp,
     Volc,
-    Tencent
+    Tencent,
+    Alibaba
 };
 }

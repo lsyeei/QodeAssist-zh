@@ -114,6 +114,7 @@ add_qtc_plugin(QodeAssist
     providers/GLMProvider.hpp providers/GLMProvider.cpp
     providers/VolcProvider.hpp providers/VolcProvider.cpp
     providers/TencentProvider.hpp providers/TencentProvider.cpp
+    providers/AlibabaProvider.hpp providers/AlibabaProvider.cpp
     QodeAssist.qrc
     LSPCompletion.hpp
     LLMSuggestion.hpp LLMSuggestion.cpp

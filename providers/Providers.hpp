@@ -21,6 +21,7 @@
 #include "providers/OpenRouterAIProvider.hpp"
 #include "providers/VolcProvider.hpp"
 #include "providers/TencentProvider.hpp"
+#include "providers/AlibabaProvider.hpp"
 
 namespace QodeAssist::Providers {
 
@@ -44,6 +45,7 @@ inline void registerProviders()
     providerManager.registerProvider<GLMProvider>();
     providerManager.registerProvider<VolcProvider>();
     providerManager.registerProvider<TencentProvider>();
+    providerManager.registerProvider<AlibabaProvider>();
 }
 
 } // namespace QodeAssist::Providers

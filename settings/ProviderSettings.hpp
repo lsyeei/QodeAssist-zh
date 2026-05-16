@@ -30,6 +30,7 @@ public:
     Utils::StringAspect glmApiKey{this};
     Utils::StringAspect volcApiKey{this};
     Utils::StringAspect tencentApiKey{this};
+    Utils::StringAspect alibabaApiKey{this};
 
 private:
     void setupConnections();

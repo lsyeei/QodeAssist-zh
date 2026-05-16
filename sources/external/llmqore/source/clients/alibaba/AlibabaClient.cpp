@@ -1,8 +1,7 @@
-
 // Copyright (C) 2026 Petr Mironychev
 // SPDX-License-Identifier: MIT
 
-#include <LLMQore/TencentClient.hpp>
+#include <LLMQore/AlibabaClient.hpp>
 
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -13,58 +12,47 @@
 
 namespace LLMQore {
 
-TencentClient::TencentClient(QObject *parent)
-    : TencentClient({}, {}, {}, parent)
+AlibabaClient::AlibabaClient(QObject *parent)
+    : AlibabaClient({}, {}, {}, parent)
 {}
 
-TencentClient::TencentClient(
+AlibabaClient::AlibabaClient(
     const QString &url, const QString &apiKey, const QString &model, QObject *parent)
     : OpenAIClient(url, apiKey, model, parent)
 {}
 
-RequestID TencentClient::sendMessage(
+RequestID AlibabaClient::sendMessage(
     const QJsonObject &payload, const QString &endpoint, RequestMode mode)
 {
     QJsonObject request = payload;
     request["stream"] = (mode == RequestMode::Streaming);
+    // 阿里百炼使用流方式时，工具调用返回参数为空
+    if(request.contains("tools")){
+        request["stream"] = false;
+        mode = RequestMode::Buffered;
+    }
 
     const RequestID id = createRequest();
     const QString resolved = endpoint.isEmpty() ? QStringLiteral("/chat/completions") : endpoint;
 
-    qCDebug(llmTencentLog).noquote()
-        << QString("Sending request %1 to %2%3").arg(id, m_url, resolved);
+    qCDebug(llmAlibabaLog).noquote()
+        << QString("****Sending request %1 to %2%3").arg(id, m_url, resolved);
 
     sendRequest(id, QUrl(m_url + resolved), request, mode);
     return id;
 }
 
-QList<QString> TencentClient::defaultModels()
-{
-    QList<QString> models;
-    models << "hy3-preview"<< "hunyuan-2.0-thinking-20251109"
-           << "hunyuan-2.0-instruct-20251111"<< "hunyuan-role-latest"
-           << "deepseek-v4-flash"<< "deepseek-v4-pro"<< "deepseek-v3.2"
-           << "deepseek-v3.1-terminus"<< "deepseek-r1-0528"
-           << "deepseek-v3-0324"<< "glm-5.1"<< "glm-5v-turbo"
-           << "glm-5-turbo"<< "glm-5"<< "kimi-k2.6"<< "kimi-k2.5"
-           << "minimax-m2.7"<< "minimax-m2.5"<< "HY-Image-V3.0"
-           << "HY-Image-Lite"<< "HY-Video-1.5"<< "YT-Video-2.0"
-           << "YT-Video-HumanActor"<< "YT-Video-FX"<< "HY-3D-3.0"
-           << "HY-3D-3.1"<< "HY-3D-Express"<< "youtu-vita";
-    return models;
-}
-
-QFuture<QList<QString>> TencentClient::listModels()
+QFuture<QList<QString>> AlibabaClient::listModels()
 {
     QUrl url(m_url + "/models");
     QNetworkRequest request = prepareNetworkRequest(url);
 
     return httpClient()
         ->send(request, QByteArrayView("GET"))
-        .then(this, [&](const HttpResponse &response) {
+        .then(this, [](const HttpResponse &response) {
             QList<QString> models;
             if (!response.isSuccess())
-                return this->defaultModels();
+                return models;
 
             const QJsonObject json = QJsonDocument::fromJson(response.body).object();
             if (json.contains("data")) {
@@ -77,19 +65,17 @@ QFuture<QList<QString>> TencentClient::listModels()
             }
             return models;
         })
-        .onFailed(this, [&](const std::exception &) {
-            return this->defaultModels();
-        });
+        .onFailed(this, [](const std::exception &) { return QList<QString>{}; });
 }
 
-void TencentClient::cleanupDerivedData(const RequestID &id)
+void AlibabaClient::cleanupDerivedData(const RequestID &id)
 {
     // Emit any pending thinking blocks before the message is destroyed.
     notifyPendingThinkingBlocks(id);
     OpenAIClient::cleanupDerivedData(id);
 }
 
-void TencentClient::processStreamChunk(const RequestID &id, const QJsonObject &chunk)
+void AlibabaClient::processStreamChunk(const RequestID &id, const QJsonObject &chunk)
 {
     QJsonArray choices = chunk["choices"].toArray();
     if (choices.isEmpty())
@@ -103,15 +89,15 @@ void TencentClient::processStreamChunk(const RequestID &id, const QJsonObject &c
     if (!message) {
         message = new OpenAIMessage(this);
         m_messages[id] = message;
-        qCDebug(llmTencentLog).noquote()
+        qCDebug(llmAlibabaLog).noquote()
             << QString("Created OpenAIMessage for request %1").arg(id);
     } else if (message->state() == MessageState::RequiresToolExecution) {
         message->startNewContinuation();
-        qCDebug(llmTencentLog).noquote()
+        qCDebug(llmAlibabaLog).noquote()
             << QString("Starting continuation for request %1").arg(id);
     }
 
-    // Handle reasoning_content (Tencent-specific field, if any)
+    // Handle reasoning_content (Alibaba-specific field, if any)
     if (delta.contains("reasoning_content") && !delta["reasoning_content"].isNull()) {
         QString reasoning = delta["reasoning_content"].toString();
         if (!reasoning.isEmpty()) {
@@ -131,6 +117,7 @@ void TencentClient::processStreamChunk(const RequestID &id, const QJsonObject &c
     }
 
     if (delta.contains("tool_calls")) {
+        // qDebug() << __FILE__ << __LINE__ << __FUNCTION__ << "工具调用：\n" << chunk;
         QJsonArray toolCalls = delta["tool_calls"].toArray();
         for (const auto &toolCallValue : toolCalls) {
             QJsonObject toolCall = toolCallValue.toObject();
@@ -158,7 +145,7 @@ void TencentClient::processStreamChunk(const RequestID &id, const QJsonObject &c
     }
 }
 
-void TencentClient::processBufferedResponse(const RequestID &id, const QByteArray &data)
+void AlibabaClient::processBufferedResponse(const RequestID &id, const QByteArray &data)
 {
     QJsonDocument doc = QJsonDocument::fromJson(data);
     if (!doc.isObject()) {
@@ -187,7 +174,7 @@ void TencentClient::processBufferedResponse(const RequestID &id, const QByteArra
     auto *message = new OpenAIMessage(this);
     m_messages[id] = message;
 
-    // Handle reasoning_content (Tencent-specific field, if any)
+    // Handle reasoning_content (Alibaba-specific field, if any)
     if (messageObj.contains("reasoning_content") && !messageObj["reasoning_content"].isNull()) {
         QString reasoning = messageObj["reasoning_content"].toString();
         if (!reasoning.isEmpty()) {

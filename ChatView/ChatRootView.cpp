@@ -283,6 +283,11 @@ ChatRootView::ChatRootView(QQuickItem *parent)
             &Utils::BaseAspect::changed,
             this, [this]() {
                 emit caProviderChanged();
+                auto provider = Settings::generalSettings().caProvider.value();
+                auto *providerObj = PluginLLMCore::ProvidersManager::instance().getProviderByName(provider);
+                if (providerObj) {
+                    Settings::generalSettings().caUrl.setValue(providerObj->url());
+                }
                 loadModelsForProvider(caProvider());
             });
 
@@ -1655,7 +1660,7 @@ void ChatRootView::onModelsLoaded()
     m_modelNames.clear();
     for (const QString &model : m_modelWatcher->result()) {
         m_modelNames.append(model);
-    }//qDebug() << __FUNCTION__ << "模型列表更新：" << m_modelNames;
+    }
     emit modelNamesChanged();
     if (m_modelNames.isEmpty()){
         setCaModel("");

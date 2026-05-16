@@ -157,6 +157,8 @@ const char VOLC_API_KEY[] = "QodeAssist.volcApiKey";
 const char VOLC_API_KEY_HISTORY[] = "QodeAssist.volcApiKeyHistory";
 const char TENCENT_API_KEY[] = "QodeAssist.tencentApiKey";
 const char TENCENT_API_KEY_HISTORY[] = "QodeAssist.tencentApiKeyHistory";
+const char ALIBABA_API_KEY[] = "QodeAssist.alibabaApiKey";
+const char ALIBABA_API_KEY_HISTORY[] = "QodeAssist.alibabaApiKeyHistory";
 
 // context settings
 const char CC_READ_FULL_FILE[] = "QodeAssist.ccReadFullFile";

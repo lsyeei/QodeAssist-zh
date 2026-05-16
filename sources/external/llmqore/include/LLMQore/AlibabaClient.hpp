@@ -1,4 +1,3 @@
-
 // Copyright (C) 2026 Petr Mironychev
 // SPDX-License-Identifier: MIT
 
@@ -8,12 +7,12 @@
 
 namespace LLMQore {
 
-class LLMQORE_EXPORT TencentClient : public OpenAIClient
+class LLMQORE_EXPORT AlibabaClient : public OpenAIClient
 {
     Q_OBJECT
 public:
-    explicit TencentClient(QObject *parent = nullptr);
-    explicit TencentClient(
+    explicit AlibabaClient(QObject *parent = nullptr);
+    explicit AlibabaClient(
         const QString &url, const QString &apiKey, const QString &model, QObject *parent = nullptr);
 
     RequestID sendMessage(
@@ -27,7 +26,6 @@ protected:
     void processStreamChunk(const RequestID &id, const QJsonObject &chunk) override;
     void processBufferedResponse(const RequestID &id, const QByteArray &data) override;
     void cleanupDerivedData(const RequestID &id) override;
-    QList<QString> defaultModels();
 };
 
 } // namespace LLMQore

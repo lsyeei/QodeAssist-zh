@@ -143,6 +143,15 @@ ProviderSettings::ProviderSettings()
     tencentApiKey.setDefaultValue("");
     tencentApiKey.setAutoApply(true);
 
+    // Alibaba Settings
+    alibabaApiKey.setSettingsKey(Constants::ALIBABA_API_KEY);
+    alibabaApiKey.setLabelText(Tr::tr("Alibaba (百炼) API Key:"));
+    alibabaApiKey.setDisplayStyle(Utils::StringAspect::LineEditDisplay);
+    alibabaApiKey.setPlaceHolderText(Tr::tr("Enter your API key here"));
+    alibabaApiKey.setHistoryCompleter(Constants::ALIBABA_API_KEY_HISTORY);
+    alibabaApiKey.setDefaultValue("");
+    alibabaApiKey.setAutoApply(true);
+
     resetToDefaults.m_buttonText = Tr::tr(TrConstants::RESET_TO_DEFAULTS);
 
     readSettings();
@@ -178,6 +187,8 @@ ProviderSettings::ProviderSettings()
             Group{title(Tr::tr("Volc (火山方舟) Settings")), Column{volcApiKey}},
             Space{8},
             Group{title(Tr::tr("Tencent TokenHub Settings")), Column{tencentApiKey}},
+            Space{8},
+            Group{title(Tr::tr("Alibaba (百炼) Settings")), Column{alibabaApiKey}},
             Stretch{1}};
     });
 }
@@ -221,6 +232,9 @@ void ProviderSettings::setupConnections()
     connect(&tencentApiKey, &ButtonAspect::changed, this, [this]() {
         tencentApiKey.writeSettings();
     });
+    connect(&alibabaApiKey, &ButtonAspect::changed, this, [this]() {
+        alibabaApiKey.writeSettings();
+    });
 }
 
 void ProviderSettings::resetSettingsToDefaults()
@@ -245,6 +259,7 @@ void ProviderSettings::resetSettingsToDefaults()
         resetAspect(glmApiKey);
         resetAspect(volcApiKey);
         resetAspect(tencentApiKey);
+        resetAspect(alibabaApiKey);
         writeSettings();
     }
 }
