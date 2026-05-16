@@ -578,8 +578,8 @@ Create .md files in .qodeassist/rules/common/ or .qodeassist/rules/chat/</source
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../ChatView/ChatRootView.cpp" line="1419"/>
-        <location filename="../../ChatView/ChatRootView.cpp" line="1436"/>
+        <location filename="../../ChatView/ChatRootView.cpp" line="1424"/>
+        <location filename="../../ChatView/ChatRootView.cpp" line="1441"/>
         <source>Current Settings</source>
         <translation>当前配置</translation>
     </message>
@@ -671,59 +671,96 @@ Would you like to create new chat?</source>
 是否开启新对话？</translation>
     </message>
     <message>
-        <location filename="../../ChatView/ChatRootView.cpp" line="475"/>
+        <location filename="../../ChatView/ChatRootView.cpp" line="480"/>
         <source>Save Chat History</source>
         <translation>保存对话历史</translation>
     </message>
     <message>
-        <location filename="../../ChatView/ChatRootView.cpp" line="478"/>
-        <location filename="../../ChatView/ChatRootView.cpp" line="505"/>
+        <location filename="../../ChatView/ChatRootView.cpp" line="483"/>
+        <location filename="../../ChatView/ChatRootView.cpp" line="510"/>
         <source>JSON files (*.json)</source>
         <translation>JSON 文件 (*.json)</translation>
     </message>
     <message>
-        <location filename="../../ChatView/ChatRootView.cpp" line="502"/>
+        <location filename="../../ChatView/ChatRootView.cpp" line="507"/>
         <source>Load Chat History</source>
         <translation>加载对话历史</translation>
     </message>
     <message>
-        <location filename="../../ChatView/ChatRootView.cpp" line="605"/>
-        <location filename="../../ChatView/ChatRootView.cpp" line="653"/>
+        <location filename="../../ChatView/ChatRootView.cpp" line="610"/>
+        <location filename="../../ChatView/ChatRootView.cpp" line="658"/>
         <source>Select Files to Attach</source>
         <translation>选择附加的文件</translation>
     </message>
     <message numerus="yes">
-        <location filename="../../ChatView/ChatRootView.cpp" line="689"/>
+        <location filename="../../ChatView/ChatRootView.cpp" line="694"/>
         <source>Images automatically moved to Attach zone (%n file(s))</source>
         <translation>
             <numerusform>自动将图像放在附加位置（%n个文件）</numerusform>
         </translation>
     </message>
     <message>
-        <location filename="../../ChatView/ChatRootView.cpp" line="713"/>
+        <location filename="../../ChatView/ChatRootView.cpp" line="718"/>
         <source>Select Images to Attach</source>
         <translation>选择附加图像</translation>
     </message>
     <message>
-        <location filename="../../ChatView/ChatRootView.cpp" line="715"/>
+        <location filename="../../ChatView/ChatRootView.cpp" line="720"/>
         <source>Images (*.png *.jpg *.jpeg *.gif *.bmp *.webp)</source>
         <translation>图像 (*.png *.jpg *.jpeg *.gif *.bmp *.webp)</translation>
     </message>
     <message>
-        <location filename="../../ChatView/ChatRootView.cpp" line="1574"/>
+        <location filename="../../ChatView/ChatRootView.cpp" line="1579"/>
         <source>Compression is already in progress</source>
         <translation>正在压缩中</translation>
     </message>
     <message>
-        <location filename="../../ChatView/ChatRootView.cpp" line="1580"/>
+        <location filename="../../ChatView/ChatRootView.cpp" line="1585"/>
         <source>No chat file to compress. Please save the chat first.</source>
         <translation>没有对话文件需要压缩。请先保存对话。</translation>
     </message>
 </context>
 <context>
+    <name>QodeAssist::Chat::ClientInterface</name>
+    <message>
+        <location filename="../../ChatView/ClientInterface.cpp" line="163"/>
+        <source>
+
+# calling tools rules 
+
+</source>
+        <translation>
+
+# 工具调用规则 
+
+</translation>
+    </message>
+    <message>
+        <location filename="../../ChatView/ClientInterface.cpp" line="164"/>
+        <source>- No more than %1 tool calls allowed
+</source>
+        <translation>- 最多调用工具 %1 次
+</translation>
+    </message>
+    <message>
+        <location filename="../../ChatView/ClientInterface.cpp" line="166"/>
+        <source>- Every tool call must explicitly specify its calling reason
+</source>
+        <translation>- 每次调用工具必须给出理由
+</translation>
+    </message>
+    <message>
+        <location filename="../../ChatView/ClientInterface.cpp" line="167"/>
+        <source>- If no more tools are needed, please answer directly
+</source>
+        <translation>- 如果不需要调用工具，请直接回答问题
+</translation>
+    </message>
+</context>
+<context>
     <name>QodeAssist::Chat::NavigationPanel</name>
     <message>
-        <location filename="../../chat/NavigationPanel.cpp" line="12"/>
+        <location filename="../../chat/NavigationPanel.cpp" line="13"/>
         <source>QodeAssist Chat</source>
         <translation>QodeAssist 对话</translation>
     </message>
@@ -858,42 +895,42 @@ Would you like to create new chat?</source>
         <translation>编辑角色</translation>
     </message>
     <message>
-        <location filename="../../settings/AgentRoleDialog.cpp" line="42"/>
+        <location filename="../../settings/AgentRoleDialog.cpp" line="43"/>
         <source>e.g., Developer, Code Reviewer</source>
         <translation>例：开发者、代码审查者</translation>
     </message>
     <message>
-        <location filename="../../settings/AgentRoleDialog.cpp" line="43"/>
+        <location filename="../../settings/AgentRoleDialog.cpp" line="44"/>
         <source>Name:</source>
         <translation>名称：</translation>
     </message>
     <message>
-        <location filename="../../settings/AgentRoleDialog.cpp" line="46"/>
+        <location filename="../../settings/AgentRoleDialog.cpp" line="47"/>
         <source>e.g., developer, code_reviewer</source>
         <translation>例：developer，code_reviewer</translation>
     </message>
     <message>
-        <location filename="../../settings/AgentRoleDialog.cpp" line="47"/>
+        <location filename="../../settings/AgentRoleDialog.cpp" line="48"/>
         <source>ID:</source>
         <translation>ID：</translation>
     </message>
     <message>
-        <location filename="../../settings/AgentRoleDialog.cpp" line="50"/>
+        <location filename="../../settings/AgentRoleDialog.cpp" line="51"/>
         <source>Brief description of this role...</source>
         <translation>角色的简短描述...</translation>
     </message>
     <message>
-        <location filename="../../settings/AgentRoleDialog.cpp" line="52"/>
+        <location filename="../../settings/AgentRoleDialog.cpp" line="53"/>
         <source>Description:</source>
         <translation>描述：</translation>
     </message>
     <message>
-        <location filename="../../settings/AgentRoleDialog.cpp" line="56"/>
+        <location filename="../../settings/AgentRoleDialog.cpp" line="57"/>
         <source>System Prompt:</source>
         <translation>系统提示词：</translation>
     </message>
     <message>
-        <location filename="../../settings/AgentRoleDialog.cpp" line="61"/>
+        <location filename="../../settings/AgentRoleDialog.cpp" line="62"/>
         <source>You are an expert in...
 
 Your role is to:
@@ -908,7 +945,7 @@ Your role is to:
 - 任务 3</translation>
     </message>
     <message>
-        <location filename="../../settings/AgentRoleDialog.cpp" line="75"/>
+        <location filename="../../settings/AgentRoleDialog.cpp" line="76"/>
         <source>ID cannot be changed for existing roles</source>
         <translation>已配置的角色不能修改ID</translation>
     </message>
@@ -1263,32 +1300,32 @@ developers write better code. If you find it useful, please</source>
         <translation>QodeAssist 对话</translation>
     </message>
     <message>
-        <location filename="../../ConfigurationManager.cpp" line="133"/>
+        <location filename="../../ConfigurationManager.cpp" line="147"/>
         <source>Select LLM Provider</source>
         <translation>选择 LLM 提供商</translation>
     </message>
     <message>
-        <location filename="../../ConfigurationManager.cpp" line="133"/>
+        <location filename="../../ConfigurationManager.cpp" line="148"/>
         <source>Providers:</source>
         <translation>提供商：</translation>
     </message>
     <message>
-        <location filename="../../ConfigurationManager.cpp" line="175"/>
+        <location filename="../../ConfigurationManager.cpp" line="210"/>
         <source>Select LLM Model</source>
         <translation>选择 LLM 模型</translation>
     </message>
     <message>
-        <location filename="../../ConfigurationManager.cpp" line="175"/>
+        <location filename="../../ConfigurationManager.cpp" line="210"/>
         <source>Models:</source>
         <translation>模型：</translation>
     </message>
     <message>
-        <location filename="../../ConfigurationManager.cpp" line="206"/>
+        <location filename="../../ConfigurationManager.cpp" line="241"/>
         <source>Select Template</source>
         <translation>选择模板</translation>
     </message>
     <message>
-        <location filename="../../ConfigurationManager.cpp" line="206"/>
+        <location filename="../../ConfigurationManager.cpp" line="241"/>
         <source>Templates:</source>
         <translation>模板：</translation>
     </message>
@@ -1303,24 +1340,24 @@ developers write better code. If you find it useful, please</source>
         <translation>使用 QodeAssist 生成代码</translation>
     </message>
     <message>
-        <location filename="../../qodeassist.cpp" line="222"/>
+        <location filename="../../qodeassist.cpp" line="224"/>
         <source>Refactor code using QodeAssist</source>
         <translation>使用 QodeAssist 重构代码</translation>
     </message>
     <message>
-        <location filename="../../qodeassist.cpp" line="223"/>
+        <location filename="../../qodeassist.cpp" line="225"/>
         <source>Quick Refactor with QodeAssist</source>
         <translation>使用 QodeAssist 快速重构</translation>
     </message>
     <message>
-        <location filename="../../qodeassist.cpp" line="248"/>
-        <location filename="../../qodeassist.cpp" line="249"/>
+        <location filename="../../qodeassist.cpp" line="250"/>
+        <location filename="../../qodeassist.cpp" line="251"/>
         <source>Show QodeAssist Chat</source>
         <translation>显示 QodeAssist 对话</translation>
     </message>
     <message>
-        <location filename="../../qodeassist.cpp" line="268"/>
-        <location filename="../../qodeassist.cpp" line="269"/>
+        <location filename="../../qodeassist.cpp" line="270"/>
+        <location filename="../../qodeassist.cpp" line="271"/>
         <source>Close QodeAssist Chat</source>
         <translation>关闭 QodeAssist 对话</translation>
     </message>
@@ -1692,7 +1729,7 @@ Note: Reducing effort = faster responses + fewer tokens</source>
     <message>
         <location filename="../../settings/ChatAssistantSettings.cpp" line="327"/>
         <location filename="../../settings/CodeCompletionSettings.cpp" line="434"/>
-        <location filename="../../settings/ProviderSettings.cpp" line="134"/>
+        <location filename="../../settings/ProviderSettings.cpp" line="179"/>
         <location filename="../../settings/QuickRefactorSettings.cpp" line="295"/>
         <source>Ollama Settings</source>
         <translation>Ollama 配置</translation>
@@ -1701,7 +1738,7 @@ Note: Reducing effort = faster responses + fewer tokens</source>
         <location filename="../../settings/ChatAssistantSettings.cpp" line="347"/>
         <location filename="../../settings/CodeCompletionSettings.cpp" line="467"/>
         <location filename="../../settings/McpSettings.cpp" line="149"/>
-        <location filename="../../settings/ProviderSettings.cpp" line="175"/>
+        <location filename="../../settings/ProviderSettings.cpp" line="245"/>
         <location filename="../../settings/QuickRefactorSettings.cpp" line="357"/>
         <location filename="../../settings/SettingsTr.hpp" line="36"/>
         <location filename="../../settings/ToolsSettings.cpp" line="213"/>
@@ -1712,7 +1749,7 @@ Note: Reducing effort = faster responses + fewer tokens</source>
         <location filename="../../settings/ChatAssistantSettings.cpp" line="348"/>
         <location filename="../../settings/CodeCompletionSettings.cpp" line="468"/>
         <location filename="../../settings/McpSettings.cpp" line="150"/>
-        <location filename="../../settings/ProviderSettings.cpp" line="176"/>
+        <location filename="../../settings/ProviderSettings.cpp" line="246"/>
         <location filename="../../settings/QuickRefactorSettings.cpp" line="358"/>
         <location filename="../../settings/SettingsTr.hpp" line="37"/>
         <location filename="../../settings/ToolsSettings.cpp" line="214"/>
@@ -2182,8 +2219,8 @@ Fields: language name, comment prefix, names from LLM (space-separated), file ex
     </message>
     <message>
         <location filename="../../settings/ProviderSettings.cpp" line="28"/>
-        <location filename="../../settings/ProviderSettings.cpp" line="198"/>
-        <location filename="../../settings/ProviderSettings.cpp" line="206"/>
+        <location filename="../../settings/ProviderSettings.cpp" line="273"/>
+        <location filename="../../settings/ProviderSettings.cpp" line="281"/>
         <source>Provider Settings</source>
         <translation>提供商配置</translation>
     </message>
@@ -2202,6 +2239,11 @@ Fields: language name, comment prefix, names from LLM (space-separated), file ex
         <location filename="../../settings/ProviderSettings.cpp" line="87"/>
         <location filename="../../settings/ProviderSettings.cpp" line="96"/>
         <location filename="../../settings/ProviderSettings.cpp" line="105"/>
+        <location filename="../../settings/ProviderSettings.cpp" line="114"/>
+        <location filename="../../settings/ProviderSettings.cpp" line="123"/>
+        <location filename="../../settings/ProviderSettings.cpp" line="132"/>
+        <location filename="../../settings/ProviderSettings.cpp" line="141"/>
+        <location filename="../../settings/ProviderSettings.cpp" line="150"/>
         <source>Enter your API key here</source>
         <translation>在此输入 API key</translation>
     </message>
@@ -2237,8 +2279,12 @@ Fields: language name, comment prefix, names from LLM (space-separated), file ex
     </message>
     <message>
         <location filename="../../settings/ProviderSettings.cpp" line="94"/>
+        <source>Ollama(Bearer) API Key:</source>
+        <translation>Ollama(Bearer) API Key:</translation>
+    </message>
+    <message>
         <source>Ollama BasicAuth API Key:</source>
-        <translation>Ollama BasicAuth API Key:</translation>
+        <translation type="vanished">Ollama BasicAuth API Key:</translation>
     </message>
     <message>
         <location filename="../../settings/ProviderSettings.cpp" line="103"/>
@@ -2246,39 +2292,89 @@ Fields: language name, comment prefix, names from LLM (space-separated), file ex
         <translation>llama.cpp API Key：</translation>
     </message>
     <message>
-        <location filename="../../settings/ProviderSettings.cpp" line="122"/>
+        <location filename="../../settings/ProviderSettings.cpp" line="112"/>
+        <source>DeepSeek API Key:</source>
+        <translation>DeepSeek API Key:</translation>
+    </message>
+    <message>
+        <location filename="../../settings/ProviderSettings.cpp" line="121"/>
+        <source>GLM (智谱) API Key:</source>
+        <translation>GLM (智谱) API Key:</translation>
+    </message>
+    <message>
+        <location filename="../../settings/ProviderSettings.cpp" line="130"/>
+        <source>Volc (火山方舟) API Key:</source>
+        <translation>Volc (火山方舟) API Key:</translation>
+    </message>
+    <message>
+        <location filename="../../settings/ProviderSettings.cpp" line="139"/>
+        <source>Tencent TokenHub API Key:</source>
+        <translation>Tencent TokenHub API Key:</translation>
+    </message>
+    <message>
+        <location filename="../../settings/ProviderSettings.cpp" line="148"/>
+        <source>Alibaba (百炼) API Key:</source>
+        <translation>Alibaba (百炼) API Key:</translation>
+    </message>
+    <message>
+        <location filename="../../settings/ProviderSettings.cpp" line="167"/>
         <source>OpenRouter Settings</source>
         <translation>OpenRouter 配置</translation>
     </message>
     <message>
-        <location filename="../../settings/ProviderSettings.cpp" line="124"/>
+        <location filename="../../settings/ProviderSettings.cpp" line="169"/>
         <source>OpenAI Settings</source>
         <translation>OpenAI 配置</translation>
     </message>
     <message>
-        <location filename="../../settings/ProviderSettings.cpp" line="126"/>
+        <location filename="../../settings/ProviderSettings.cpp" line="171"/>
         <source>OpenAI Compatible Settings</source>
         <translation>OpenAI 兼容配置</translation>
     </message>
     <message>
-        <location filename="../../settings/ProviderSettings.cpp" line="128"/>
+        <location filename="../../settings/ProviderSettings.cpp" line="173"/>
         <source>Claude Settings</source>
         <translation>Claude 配置</translation>
     </message>
     <message>
-        <location filename="../../settings/ProviderSettings.cpp" line="130"/>
+        <location filename="../../settings/ProviderSettings.cpp" line="175"/>
         <source>Mistral AI Settings</source>
         <translation>Mistral AI 配置</translation>
     </message>
     <message>
-        <location filename="../../settings/ProviderSettings.cpp" line="132"/>
+        <location filename="../../settings/ProviderSettings.cpp" line="177"/>
         <source>Google AI Settings</source>
         <translation>Google AI 配置</translation>
     </message>
     <message>
-        <location filename="../../settings/ProviderSettings.cpp" line="136"/>
+        <location filename="../../settings/ProviderSettings.cpp" line="181"/>
         <source>llama.cpp Settings</source>
         <translation>llama.cpp 配置</translation>
+    </message>
+    <message>
+        <location filename="../../settings/ProviderSettings.cpp" line="183"/>
+        <source>DeepSeek Settings</source>
+        <translation>DeepSeek 配置</translation>
+    </message>
+    <message>
+        <location filename="../../settings/ProviderSettings.cpp" line="185"/>
+        <source>GLM (智谱) Settings</source>
+        <translation>GLM (智谱) 配置</translation>
+    </message>
+    <message>
+        <location filename="../../settings/ProviderSettings.cpp" line="187"/>
+        <source>Volc (火山方舟) Settings</source>
+        <translation>Volc (火山方舟) 配置</translation>
+    </message>
+    <message>
+        <location filename="../../settings/ProviderSettings.cpp" line="189"/>
+        <source>Tencent TokenHub Settings</source>
+        <translation>Tencent TokenHub 配置</translation>
+    </message>
+    <message>
+        <location filename="../../settings/ProviderSettings.cpp" line="191"/>
+        <source>Alibaba (百炼) Settings</source>
+        <translation>Alibaba (百炼) 配置</translation>
     </message>
     <message>
         <location filename="../../settings/QuickRefactorSettings.cpp" line="28"/>
